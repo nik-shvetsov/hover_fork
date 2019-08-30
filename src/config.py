@@ -1,5 +1,3 @@
-
-
 import importlib
 import random
 
@@ -11,12 +9,11 @@ from tensorpack import imgaug
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
                          GenInstanceContourMap)
-
-#### 
+####
 class Config(object):
     def __init__(self, ):
 
-        self.seed = 10 
+        self.seed = 10
         mode = 'hover'
         self.model_type = 'np_hv'
 
@@ -49,36 +46,39 @@ class Config(object):
             'fcn8'     : '512x512_256x256',
             'dcan'     : '512x512_256x256',
             'segnet'   : '512x512_256x256',
-            'micronet' : '504x504_252x252', 
+            'micronet' : '504x504_252x252',
             'np_hv'    : '540x540_80x80',
             'np_dist'  : '540x540_80x80',
         }
 
-        self.data_ext = '.npy' 
+        self.data_ext = '.npy'
         # list of directories containing validation patches
-        self.train_dir = ['../../../train/Kumar_old_GT/%s/train/XXXX/'      % data_code_dict[self.model_type]]
-        self.valid_dir = ['../../../train/Kumar_old_GT/%s/valid_same/XXXX/' % data_code_dict[self.model_type], 
-                          '../../../train/Kumar_old_GT/%s/valid_diff/XXXX/' % data_code_dict[self.model_type]]
+        self.train_dir = ['/data/data_cpm17/train/'] # ['/data/data_kumar/train/']
+        self.valid_dir = ['/data/data_cpm17/test']
+
+        # self.valid_dir = ['../../../train/Kumar_old_GT/%s/valid_same/XXXX/' % data_code_dict[self.model_type],
+        #                   '../../../train/Kumar_old_GT/%s/valid_diff/XXXX/' % data_code_dict[self.model_type]]
 
         # nr of processes for parallel processing input
-        self.nr_procs_train = 8 
-        self.nr_procs_valid = 4 
+        self.nr_procs_train = 8
+        self.nr_procs_valid = 4
 
         self.input_norm  = True # normalize RGB to 0-1 range
 
         ####
         #
-        exp_id = 'v1.0.0.1/UHCW/No_SN/'
+        exp_id = 'v1.1'
         model_id = '%s' % self.model_type
         self.model_name = '%s/%s' % (exp_id, model_id)
         # loading chkpts in tensorflow, the path must not contain extra '/'
-        self.log_path = '/media/vqdang/Data_2/dang/output/NUC-SEG/collab/' # log root path
+        self.log_path = '/data/output/log_root' # log root path
         self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
 
         #### Info for running inference
-        self.inf_auto_find_chkpt = True
+        self.inf_auto_find_chkpt = False
         # path to checkpoints will be used for inference, replace accordingly
-        self.inf_model_path  = self.save_dir + '/model-19640.index'
+        self.inf_model_path  = '/data/weights_CPM17.npz' # '/data/weights_kumar.npz'
+        #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
         # where [Nuclei Type] will be used for getting the type of each instance
@@ -88,10 +88,15 @@ class Config(object):
         # list of [[root_dir1, codeX, subdirA, subdirB], [root_dir2, codeY, subdirC, subdirD] etc.]
         # code is used together with 'inf_output_dir' to make output dir for each set
         self.inf_imgs_ext = '.tif'
+
+        # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = [
-            ['../../../data/NUC_Kumar/train-set/orig_split/', 'XXXX', 'valid_diff'],
+            ['/data/data_cpm17', 'output_cpm_mat', 'test/Images'],
+            # ['/data/data_kumar', 'output_kumar_mat', 'test_diff/Images'],
+
+            # ['../../../data/NUC_Kumar/train-set/orig_split/', 'XXXX', 'valid_diff'],
         ]
-        self.inf_output_dir    = 'output/%s/%s/' % (exp_id, model_id)
+        self.inf_output_dir = '/data/output/%s/%s' % (exp_id, model_id)
 
         # for inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = ['images']
@@ -99,19 +104,20 @@ class Config(object):
         # for inference during training mode i.e run by trainer.py
         self.train_inf_output_tensor_names = ['predmap-coded', 'truemap-coded']
 
+
     def get_model(self):
         if self.model_type == 'np_hv':
             model_constructor = importlib.import_module('model.graph')
-            model_constructor = model_constructor.Model_NP_HV 
+            model_constructor = model_constructor.Model_NP_HV
         elif self.model_type == 'np_dist':
             model_constructor = importlib.import_module('model.graph')
-            model_constructor = model_constructor.Model_NP_DIST 
+            model_constructor = model_constructor.Model_NP_DIST
         else:
             model_constructor = importlib.import_module('model.%s' % self.model_type)
-            model_constructor = model_constructor.Graph       
+            model_constructor = model_constructor.Graph
         return model_constructor # NOTE return alias, not object
 
-    # refer to https://tensorpack.readthedocs.io/modules/dataflow.imgaug.html for 
+    # refer to https://tensorpack.readthedocs.io/modules/dataflow.imgaug.html for
     # information on how to modify the augmentation parameters
     def get_train_augmentors(self, input_shape, output_shape, view=False):
         print(input_shape, output_shape)
@@ -139,9 +145,9 @@ class Config(object):
                 ), 0.5),
             # standard color augmentation
             imgaug.RandomOrderAug(
-                [imgaug.Hue((-8, 8), rgb=True), 
+                [imgaug.Hue((-8, 8), rgb=True),
                 imgaug.Saturation(0.2, rgb=True),
-                imgaug.Brightness(26, clip=True),  
+                imgaug.Brightness(26, clip=True),
                 imgaug.Contrast((0.75, 1.25), clip=True),
                 ]),
             imgaug.ToUint8(),
@@ -159,11 +165,11 @@ class Config(object):
         if self.model_type == 'np_dist':
             label_augs = [GenInstanceDistance(crop_shape=output_shape, inst_norm=True)]
 
-        if not self.type_classification:            
+        if not self.type_classification:
             label_augs.append(BinarizeLabel())
 
         if not view:
-            label_augs.append(imgaug.CenterCrop(output_shape))        
+            label_augs.append(imgaug.CenterCrop(output_shape))
 
         return shape_augs, input_augs, label_augs
 
@@ -189,6 +195,6 @@ class Config(object):
         label_augs.append(BinarizeLabel())
 
         if not view:
-            label_augs.append(imgaug.CenterCrop(output_shape))        
+            label_augs.append(imgaug.CenterCrop(output_shape))
 
         return shape_augs, input_augs, label_augs

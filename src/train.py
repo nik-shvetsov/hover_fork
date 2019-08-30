@@ -39,12 +39,12 @@ class StatCollector(Inferencer, Config):
         pred, true = outputs
         self.true_list.extend(true)
         self.pred_list.extend(pred)
- 
+
     def _after_inference(self):
         # ! factor this out
         def _dice(true, pred, label):
-            true = np.array(true == label, np.int32)            
-            pred = np.array(pred == label, np.int32)            
+            true = np.array(true == label, np.int32)
+            pred = np.array(pred == label, np.int32)
             inter = (pred * true).sum()
             total = (pred + true).sum()
             return 2 * inter /  (total + 1.0e-8)
@@ -56,7 +56,7 @@ class StatCollector(Inferencer, Config):
         # have to get total number pixels for mean per pixel
         nr_pixels = np.size(true[...,:1])
 
-        if self.type_classification:            
+        if self.type_classification:
             pred_type = pred[...,:self.nr_classes]
             pred_inst = pred[...,self.nr_classes:]
 
@@ -127,7 +127,7 @@ class StatCollector(Inferencer, Config):
 ####
 
 ###########################################
-class Trainer(Config):   
+class Trainer(Config):
     ####
     def get_datagen(self, batch_size, mode='train', view=False):
         if mode == 'train':
@@ -156,8 +156,8 @@ class Trainer(Config):
                         label_aug=augmentors[2],
                         batch_size=batch_size,
                         nr_procs=nr_procs)
-        
-        return datagen      
+
+        return datagen
     ####
     def view_dataset(self, mode='train'):
         assert mode == 'train' or mode == 'valid', "Invalid view mode"
@@ -176,7 +176,7 @@ class Trainer(Config):
         else:
             logger.set_logger_dir(save_dir)
 
-        ######            
+        ######
         model_flags = opt['model_flags']
         model = self.get_model()(**model_flags)
         ######
@@ -192,7 +192,7 @@ class Trainer(Config):
         callbacks.append(DataParallelInferenceRunner(
                                 valid_datagen, infs, list(range(nr_gpus))))
         callbacks.append(MaxSaver('valid_dice'))
-        
+
         ######
         steps_per_epoch = train_datagen.size() // nr_gpus
 
@@ -227,7 +227,7 @@ class Trainer(Config):
                 tf.random.set_random_seed(self.seed)
 
                 log_dir = '%s/%02d/' % (self.save_dir, idx)
-                pretrained_path = opt['pretrained_path'] 
+                pretrained_path = opt['pretrained_path']
                 if pretrained_path == -1:
                     pretrained_path = get_last_chkpt_path(prev_log_dir)
                     init_weights = SaverRestore(pretrained_path, ignore=['learning_rate'])
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', help="comma separated list of GPU(s) to use.")
     parser.add_argument('--view', help="view dataset, received either 'train' or 'valid' as input")
     args = parser.parse_args()
-
+    
     trainer = Trainer()
     if args.view:
         trainer.view_dataset(args.view)

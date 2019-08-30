@@ -44,15 +44,15 @@ def visualize_instances(mask, canvas=None, color=None):
         inst_color = color if color is not None else inst_colors[idx]
         inst_map = np.array(mask == inst_id, np.uint8)
         y1, y2, x1, x2  = bounding_box(inst_map)
-        y1 = y1 - 2 if y1 - 2 >= 0 else y1 
-        x1 = x1 - 2 if x1 - 2 >= 0 else x1 
-        x2 = x2 + 2 if x2 + 2 <= mask.shape[1] - 1 else x2 
-        y2 = y2 + 2 if y2 + 2 <= mask.shape[0] - 1 else y2 
+        y1 = y1 - 2 if y1 - 2 >= 0 else y1
+        x1 = x1 - 2 if x1 - 2 >= 0 else x1
+        x2 = x2 + 2 if x2 + 2 <= mask.shape[1] - 1 else x2
+        y2 = y2 + 2 if y2 + 2 <= mask.shape[0] - 1 else y2
         inst_map_crop = inst_map[y1:y2, x1:x2]
         inst_canvas_crop = canvas[y1:y2, x1:x2]
         contours = cv2.findContours(inst_map_crop, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(inst_canvas_crop, contours[1], -1, inst_color, 2)
-        canvas[y1:y2, x1:x2] = inst_canvas_crop        
+        cv2.drawContours(inst_canvas_crop, [np.array(contours[1]).reshape((-1,1,2)).astype(np.int32)], -1, inst_color, 2)
+        canvas[y1:y2, x1:x2] = inst_canvas_crop
     return canvas
 
 ####
@@ -67,7 +67,7 @@ def gen_figure(imgs_list, titles, fig_inch, shape=None,
         nrows, ncols = shape
 
     # generate figure
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, 
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols,
                         sharex=share_ax, sharey=share_ax)
     axes = [axes] if nrows == 1 else axes
 
@@ -77,20 +77,20 @@ def gen_figure(imgs_list, titles, fig_inch, shape=None,
         for cell in ax:
             cell.set_title(titles[idx])
             cell.imshow(imgs_list[idx], cmap=colormap)
-            cell.tick_params(axis='both', 
-                            which='both', 
-                            bottom='off', 
-                            top='off', 
-                            labelbottom='off', 
-                            right='off', 
-                            left='off', 
+            cell.tick_params(axis='both',
+                            which='both',
+                            bottom='off',
+                            top='off',
+                            labelbottom='off',
+                            right='off',
+                            left='off',
                             labelleft='off')
             idx += 1
             if idx == len(titles):
                 break
         if idx == len(titles):
             break
- 
+
     fig.tight_layout()
     return fig
 ####

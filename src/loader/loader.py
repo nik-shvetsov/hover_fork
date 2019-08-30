@@ -10,18 +10,18 @@ from tensorpack.dataflow import (AugmentImageComponent, AugmentImageComponents,
 ####
 class DatasetSerial(RNGDataFlow):
     """
-    Produce ``(image, label)`` pair, where 
-        ``image`` has shape HWC and is RGB, has values in range [0-255].    
+    Produce ``(image, label)`` pair, where
+        ``image`` has shape HWC and is RGB, has values in range [0-255].
 
         ``label`` is a float image of shape (H, W, C). Number of C depends
                   on `self.model_mode` within `config.py`
 
-                  If self.model_mode is 'np+xy': 
+                  If self.model_mode is 'np+xy':
                     channel 0 binary nuclei map, values are either 0 (background) or 1 (nuclei)
                     channel 1 containing the X-map, values in range [-1, 1]
                     channel 2 containing the Y-map, values in range [-1, 1]
 
-                  If self.model_mode is 'np+dst': 
+                  If self.model_mode is 'np+dst':
                     channel 0 binary nuclei map, values are either 0 (background) or 1 (nuclei)
                     channel 1 containing the per nuclei distance map, values in range [0, 1]
     """
@@ -43,11 +43,11 @@ class DatasetSerial(RNGDataFlow):
             img = data[...,:3] # RGB images
             ann = data[...,3:] # instance ID map
             # TODO: assert to ensure correct dtype
-            
-            img = img.astype('uint8')     
+
+            img = img.astype('uint8')
             yield [img, ann]
 
-#### 
+####
 def valid_generator(ds, shape_aug=None, input_aug=None, label_aug=None, batch_size=16, nr_procs=1):
     ### augment both the input and label
     ds = ds if shape_aug is None else AugmentImageComponents(ds, shape_aug, (0, 1), copy=True)
@@ -57,7 +57,7 @@ def valid_generator(ds, shape_aug=None, input_aug=None, label_aug=None, batch_si
     ds = ds if label_aug is None else AugmentImageComponent(ds, label_aug, index=1, copy=True)
     #
     ds = BatchData(ds, batch_size, remainder=True)
-    ds = CacheData(ds) # cache all inference images 
+    ds = CacheData(ds) # cache all inference images
     return ds
 
 ####
@@ -73,7 +73,7 @@ def train_generator(ds, shape_aug=None, input_aug=None, label_aug=None, batch_si
     ds = PrefetchDataZMQ(ds, nr_procs)
     return ds
 
-#### 
+####
 def visualize(datagen, batch_size, view_size=4):
     """
     Read the batch from 'datagen' and display 'view_size' number of
@@ -96,7 +96,7 @@ def visualize(datagen, batch_size, view_size=4):
         return prepped_img
 
     assert view_size <= batch_size, 'Number of displayed images must <= batch size'
-    ds = RepeatedData(datagen, -1)    
+    ds = RepeatedData(datagen, -1)
     ds.reset_state()
     for imgs, segs in ds.get_data():
         for idx in range (0, view_size):

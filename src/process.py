@@ -23,11 +23,11 @@ from metrics.stats_utils import remap_label
 
 ###################
 
-# TODO: 
-# * due to the need of running this multiple times, should make 
+# TODO:
+# * due to the need of running this multiple times, should make
 # * it less reliant on the training config file
 
-## ! WARNING: 
+## ! WARNING:
 ## check the prediction channels, wrong ordering will break the code !
 ## the prediction channels ordering should match the ones produced in augs.py
 
@@ -35,8 +35,8 @@ cfg = Config()
 
 # * flag for HoVer-Net only
 # 1 - threshold, 2 - sobel based
-energy_mode = 2 
-marker_mode = 2 
+energy_mode = 2
+marker_mode = 2
 
 for data_dir_set in cfg.inf_data_list:
     data_root_dir = data_dir_set[0]
@@ -61,7 +61,7 @@ for data_dir_set in cfg.inf_data_list:
             ##
             img = cv2.imread(data_dir + basename + cfg.inf_imgs_ext)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                
+
             pred = sio.loadmat('%s/%s.mat' % (pred_dir, basename))
             pred = np.squeeze(pred['result'])
 
@@ -87,7 +87,7 @@ for data_dir_set in cfg.inf_data_list:
                 pred_inst = pred
 
             if cfg.model_type == 'np_hv':
-                pred_inst = postproc.hover.proc_np_hv(pred_inst, 
+                pred_inst = postproc.hover.proc_np_hv(pred_inst,
                                 marker_mode=marker_mode,
                                 energy_mode=energy_mode, rgb=img)
             elif cfg.model_type == 'np_dist':
@@ -105,7 +105,7 @@ for data_dir_set in cfg.inf_data_list:
             cv2.imwrite('%s/%s.png' % (proc_dir, basename), overlaid_output)
 
             # for instance segmentation only
-            if cfg.type_classification:                   
+            if cfg.type_classification:
                 #### * Get class of each instance id, stored at index id-1
                 pred_id_list = list(np.unique(pred_inst))[1:] # exclude background ID
                 pred_inst_type = np.full(len(pred_id_list), 0, dtype=np.int32)
@@ -123,14 +123,14 @@ for data_dir_set in cfg.inf_data_list:
                     pred_inst_type[idx] = inst_type
                 pred_inst_centroid = get_inst_centroid(pred_inst)
 
-                sio.savemat('%s/%s.mat' % (proc_dir, basename), 
+                sio.savemat('%s/%s.mat' % (proc_dir, basename),
                             {'inst_map'  :     pred_inst,
                              'type_map'  :     pred_type,
-                             'inst_type' :     pred_inst_type[:, None], 
+                             'inst_type' :     pred_inst_type[:, None],
                              'inst_centroid' : pred_inst_centroid,
                             })
             else:
-                sio.savemat('%s/%s.mat' % (proc_dir, basename), 
+                sio.savemat('%s/%s.mat' % (proc_dir, basename),
                             {'inst_map'  : pred_inst})
 
             ##

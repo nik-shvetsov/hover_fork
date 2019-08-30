@@ -22,7 +22,7 @@ class GenInstance(ImageAugmentor):
     def __init__(self, crop_shape=None):
         super(GenInstance, self).__init__()
         self.crop_shape = crop_shape
-    
+
     def reset_state(self):
         self.rng = get_rng(self)
 
@@ -118,13 +118,13 @@ class GenInstanceUnetMap(GenInstance):
         # setting 1 boundary pix of each instance to background
         fixed_ann = self._remove_1px_boundary(fixed_ann)
 
-        # cant do the shortcut because near2 also needs instances 
+        # cant do the shortcut because near2 also needs instances
         # outside of cropped portion
         inst_list = list(np.unique(fixed_ann))
         inst_list.remove(0) # 0 is background
         wmap = self._get_weight_map(fixed_ann, inst_list)
 
-        if self.wc is None:             
+        if self.wc is None:
             wmap += 1 # uniform weight for all classes
         else:
             class_weights = np.zeros_like(fixed_ann.shape[:2])
@@ -133,7 +133,7 @@ class GenInstanceUnetMap(GenInstance):
             wmap += class_weights
 
         # fix other maps to align
-        img[fixed_ann == 0] = 0 
+        img[fixed_ann == 0] = 0
         img = np.dstack([img, wmap])
 
         return img
@@ -142,15 +142,15 @@ class GenInstanceUnetMap(GenInstance):
 class GenInstanceContourMap(GenInstance):
     """
     Input annotation must be of original shape.
-    
+
     Perform following operation:
-        1) Dilate each instance by a kernel with 
+        1) Dilate each instance by a kernel with
            a diameter of 7 pix.
-        2) Erode each instance by a kernel with 
+        2) Erode each instance by a kernel with
            a diameter of 7 pix.
-        3) Obtain the contour by subtracting the 
+        3) Obtain the contour by subtracting the
            eroded instance from the dilated instance.
-    
+
     """
     def __init__(self, crop_shape=None):
         super(GenInstanceContourMap, self).__init__()
@@ -189,13 +189,13 @@ class GenInstanceContourMap(GenInstance):
         return img
 
 ####
-class GenInstanceHV(GenInstance):   
+class GenInstanceHV(GenInstance):
     """
         Input annotation must be of original shape.
-        
+
         The map is calculated only for instances within the crop portion
         but based on the original shape in original image.
-    
+
         Perform following operation:
         Obtain the horizontal and vertical distance maps for each
         nuclear instance.
@@ -234,7 +234,7 @@ class GenInstanceHV(GenInstance):
 
             # instance center of mass, rounded to nearest pixel
             inst_com = list(measurements.center_of_mass(inst_map))
-            
+
             inst_com[0] = int(inst_com[0] + 0.5)
             inst_com[1] = int(inst_com[1] + 0.5)
 
@@ -243,7 +243,7 @@ class GenInstanceHV(GenInstance):
             # shifting center of pixels grid to instance center of mass
             inst_x_range -= inst_com[1]
             inst_y_range -= inst_com[0]
-            
+
             inst_x, inst_y = np.meshgrid(inst_x_range, inst_y_range)
 
             # remove coord outside of instance
@@ -278,18 +278,18 @@ class GenInstanceHV(GenInstance):
         return img
 
 ####
-class GenInstanceDistance(GenInstance):   
+class GenInstanceDistance(GenInstance):
     """
     Input annotation must be of original shape.
-    
+
     The map is calculated only for instances within the crop portion
     but based on the original shape in original image.
-    
+
     Perform following operation:
     Obtain the standard distance map of nuclear pixels to their closest
     boundary.
-    Can be interpreted as the inverse distance map of nuclear pixels to 
-    the centroid. 
+    Can be interpreted as the inverse distance map of nuclear pixels to
+    the centroid.
     """
     def __init__(self, crop_shape=None, inst_norm=True):
         super(GenInstanceDistance, self).__init__()
@@ -303,7 +303,7 @@ class GenInstanceDistance(GenInstance):
         # re-cropping with fixed instance id map
         crop_ann = cropping_center(fixed_ann, self.crop_shape)
 
-        orig_dst = np.zeros(orig_ann.shape, dtype=np.float32)  
+        orig_dst = np.zeros(orig_ann.shape, dtype=np.float32)
 
         inst_list = list(np.unique(crop_ann))
         inst_list.remove(0) # 0 is background
@@ -330,9 +330,9 @@ class GenInstanceDistance(GenInstance):
             inst_dst = inst_dst.astype('float32')
             if self.inst_norm:
                 max_value = np.amax(inst_dst)
-                if max_value <= 0: 
+                if max_value <= 0:
                     continue # HACK: temporay patch for divide 0 i.e no nuclei (how?)
-                inst_dst = (inst_dst / np.amax(inst_dst)) 
+                inst_dst = (inst_dst / np.amax(inst_dst))
 
             ####
             dst_map_box = orig_dst[inst_box[0]:inst_box[1],
@@ -342,7 +342,7 @@ class GenInstanceDistance(GenInstance):
         #
         img = img.astype('float32')
         img = np.dstack([img, orig_dst])
-        
+
         return img
 
 ####
@@ -387,7 +387,7 @@ class MedianBlur(ImageAugmentor):
     def __init__(self, max_size=3):
         """
         Args:
-            max_size (int): max possible window size 
+            max_size (int): max possible window size
                             would be 2 * max_size + 1
         """
         super(MedianBlur, self).__init__()
@@ -400,4 +400,3 @@ class MedianBlur(ImageAugmentor):
 
     def _augment(self, img, ksize):
         return cv2.medianBlur(img, ksize)
-

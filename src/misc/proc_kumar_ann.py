@@ -1,8 +1,6 @@
-
 ##
 ## For processing .xml annotation file in Kumar dataset
 ##
-
 import glob
 import os
 import xml.etree.ElementTree as ET
@@ -13,13 +11,14 @@ import numpy as np
 from .utils import rm_n_mkdir
 
 ###
-imgs_dir = "" # .tif 
-anns_dir = "" # .xml folders
-save_dir = "" # storing .npy ground truth (HW)
+# Put in config.py
+
+imgs_dir = "/data/kumar_dataset/Tissue_images/" # .tif
+anns_dir = "/data/kumar_dataset/Annotations/" # .xml folders
+save_dir = "/data/kumar_dataset/Ground_truth/" # storing .npy ground truth (HW)
 
 file_list = glob.glob(imgs_dir + '*.tif')
 file_list.sort() # ensure same order [1]
-
 rm_n_mkdir(save_dir)
 
 for filename in file_list: # png for base
@@ -41,7 +40,7 @@ for filename in file_list: # png for base
         vertices = []
         for vertex_xml in region_xml.findall('.//Vertex'):
             attrib = vertex_xml.attrib
-            vertices.append([float(attrib['X']), 
+            vertices.append([float(attrib['X']),
                              float(attrib['Y'])])
         vertices = np.array(vertices) + 0.5
         vertices = vertices.astype('int32')
