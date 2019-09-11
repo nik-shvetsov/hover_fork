@@ -5,6 +5,7 @@ import shutil
 
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 ####
@@ -18,13 +19,13 @@ def bounding_box(img):
     rmin, rmax = np.where(rows)[0][[0, -1]]
     cmin, cmax = np.where(cols)[0][[0, -1]]
     # due to python indexing, need to add 1 to max
-    # else accessing will be 1px in the box, not out 
+    # else accessing will be 1px in the box, not out
     rmax += 1
     cmax += 1
     return [rmin, rmax, cmin, cmax]
 
 ####
-def cropping_center(x, crop_shape, batch=False):   
+def cropping_center(x, crop_shape, batch=False):
     orig_shape = x.shape
     if not batch:
         h0 = int((orig_shape[0] - crop_shape[0]) * 0.5)
@@ -33,7 +34,7 @@ def cropping_center(x, crop_shape, batch=False):
     else:
         h0 = int((orig_shape[1] - crop_shape[0]) * 0.5)
         w0 = int((orig_shape[2] - crop_shape[1]) * 0.5)
-        x = x[:,h0:h0 + crop_shape[0], w0:w0 + crop_shape[1]]        
+        x = x[:,h0:h0 + crop_shape[0], w0:w0 + crop_shape[1]]
     return x
 
 ####
@@ -51,9 +52,8 @@ def get_files(data_dir_list, data_ext):
 
     data_files = []
     for sub_dir in data_dir_list:
-        files = glob.glob(sub_dir + '/*'+ data_ext)
+        files = glob.glob('{}/*{}'.format(sub_dir,data_ext))
         data_files.extend(files)
-
     return data_files
 
 ####
@@ -67,3 +67,10 @@ def get_inst_centroid(inst_map):
                          (inst_moment["m01"] / inst_moment["m00"])]
         inst_centroid_list.append(inst_centroid)
     return np.array(inst_centroid_list)
+
+####
+def show_np_array(array):
+    plt.imshow(array)
+    plt.show()
+    plt.pause(5)
+    plt.close()

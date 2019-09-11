@@ -1,3 +1,4 @@
+import os
 import importlib
 import random
 
@@ -53,8 +54,8 @@ class Config(object):
 
         self.data_ext = '.npy'
         # list of directories containing validation patches
-        self.train_dir = ['/data/data_cpm17/train/'] # ['/data/data_kumar/train/']
-        self.valid_dir = ['/data/data_cpm17/test']
+        self.train_dir = ['/data/input/data_kumar/train/'] # ['/data/input/data_cpm17/train/']
+        self.valid_dir = ['/data/input/data_kumar/test_diff/','/data/input/data_kumar/test_same/'] # ['/data/input/data_cpm17/test']
 
         # self.valid_dir = ['../../../train/Kumar_old_GT/%s/valid_same/XXXX/' % data_code_dict[self.model_type],
         #                   '../../../train/Kumar_old_GT/%s/valid_diff/XXXX/' % data_code_dict[self.model_type]]
@@ -63,21 +64,23 @@ class Config(object):
         self.nr_procs_train = 8
         self.nr_procs_valid = 4
 
-        self.input_norm  = True # normalize RGB to 0-1 range
+        self.input_norm = True # normalize RGB to 0-1 range
 
         ####
         #
-        exp_id = 'v1.1'
+        exp_id = '1.0'
         model_id = '%s' % self.model_type
-        self.model_name = '%s/%s' % (exp_id, model_id)
+        self.model_name = os.path.join(exp_id, model_id)
+        #self.model_name = '%s/%s' % (exp_id, model_id)
         # loading chkpts in tensorflow, the path must not contain extra '/'
-        self.log_path = '/data/output/log_root' # log root path
-        self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
+        self.log_path = '/data/output/log' # log root path
+        self.save_dir = os.path.join(self.log_path, self.model_name)
+        #self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
 
         #### Info for running inference
         self.inf_auto_find_chkpt = False
         # path to checkpoints will be used for inference, replace accordingly
-        self.inf_model_path  = '/data/weights_CPM17.npz' # '/data/weights_kumar.npz'
+        self.inf_model_path  = '/data/input/weights_hv_kumar.npz' # '/data/input/weights_hv_CPM17.npz'
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
@@ -91,9 +94,9 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = [
-            ['/data/data_cpm17', 'output_cpm_mat', 'test/Images'],
-            # ['/data/data_kumar', 'output_kumar_mat', 'test_diff/Images'],
-
+            # ['/data/input/data_cpm17', 'output_cpm_mat', 'test/Images'],
+            ['/data/input/data_kumar', 'output_kumar_mat', 'test_diff/Images'],
+            # ['/data/input/data_uit_he', 'output_uit_he_mat', 'test/Images'],
             # ['../../../data/NUC_Kumar/train-set/orig_split/', 'XXXX', 'valid_diff'],
         ]
         self.inf_output_dir = '/data/output/%s/%s' % (exp_id, model_id)

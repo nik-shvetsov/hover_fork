@@ -1,4 +1,3 @@
-
 import argparse
 import json
 import os
@@ -211,11 +210,11 @@ class Trainer(Config):
     ####
     def run(self):
         def get_last_chkpt_path(prev_phase_dir):
-            stat_file_path = prev_phase_dir + '/stats.json'
+            stat_file_path = os.path.join(prev_phase_dir, 'stats.json')
             with open(stat_file_path) as stat_file:
                 info = json.load(stat_file)
             chkpt_list = [epoch_stat['global_step'] for epoch_stat in info]
-            last_chkpts_path = "%smodel-%d.index" % (prev_phase_dir, max(chkpt_list))
+            last_chkpts_path = "{}model-{}.index".format(prev_phase_dir, max(chkpt_list))
             return last_chkpts_path
 
         phase_opts = self.training_phase
@@ -226,7 +225,7 @@ class Trainer(Config):
                 np.random.seed(self.seed)
                 tf.random.set_random_seed(self.seed)
 
-                log_dir = '%s/%02d/' % (self.save_dir, idx)
+                log_dir = os.path.join(self.save_dir, str(idx))
                 pretrained_path = opt['pretrained_path']
                 if pretrained_path == -1:
                     pretrained_path = get_last_chkpt_path(prev_log_dir)
@@ -258,7 +257,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', help="comma separated list of GPU(s) to use.")
     parser.add_argument('--view', help="view dataset, received either 'train' or 'valid' as input")
     args = parser.parse_args()
-    
+
     trainer = Trainer()
     if args.view:
         trainer.view_dataset(args.view)

@@ -30,7 +30,7 @@ def get_best_chkpts(path, metric_name, comparator='>'):
     Args:
         path: directory contains all checkpoints, including the "stats.json" file
     """
-    stat_file = path + '/stats.json'
+    stat_file = os.path.join(path, 'stats.json')
     ops = {
             '>': operator.gt,
             '<': operator.lt,
@@ -49,7 +49,7 @@ def get_best_chkpts(path, metric_name, comparator='>'):
     for epoch_stat in info:
         epoch_value = epoch_stat[metric_name]
         if op_func(epoch_value, best_value):
-            chkpt_path = "%s/model-%d.index" % (path, epoch_stat['global_step'])
+            chkpt_path = os.path.join(path, 'model-{}.index'.format(epoch_stat['global_step']))
             if os.path.isfile(chkpt_path):
                 selected_stat = epoch_stat
                 best_value  = epoch_value
@@ -155,10 +155,10 @@ class Inferer(Config):
             data_out_code = data_dir_set[1]
 
             for subdir in data_dir_set[2:]:
-                data_dir = '%s/%s/' % (data_root_dir, subdir)
-                save_dir = '%s/%s/%s' % (self.inf_output_dir, data_out_code, subdir)
+                data_dir = os.path.join(data_root_dir, subdir)
+                save_dir = os.path.join(self.inf_output_dir, data_out_code, subdir)
 
-                file_list = glob.glob('%s/*%s' % (data_dir, self.inf_imgs_ext))
+                file_list = glob.glob(os.path.join(data_dir, '*{}'.format(self.inf_imgs_ext)))
                 file_list.sort() # ensure same order
 
                 rm_n_mkdir(save_dir)
@@ -168,12 +168,12 @@ class Inferer(Config):
                     print(data_dir, basename, end=' ', flush=True)
 
                     ##
-                    img = cv2.imread(data_dir + filename)
+                    img = cv2.imread(os.path.join(data_dir, filename))
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
                     ##
                     pred_map = self.__gen_prediction(img, predictor)
-                    sio.savemat('%s/%s.mat' % (save_dir, basename), {'result':[pred_map]})
+                    sio.savemat(os.path.join(save_dir,'{}.mat'.format(basename)), {'result':[pred_map]})
                     print('FINISH')
 
 ####

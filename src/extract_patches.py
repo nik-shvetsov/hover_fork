@@ -40,10 +40,10 @@ if __name__ == '__main__':
     ####
     out_root_path = ".../%dx%d_%dx%d" % \
                         (win_size[0], win_size[1], step_size[0], step_size[1])
-    out_dir = "%s/" % (out_root_path)
+    out_dir = os.path.join(out_root_path)
     #out_dir = "%s/%s/%s/" % (out_root_path, data_mode, 'XXXX')
 
-    file_list = glob.glob('%s/*%s' % (img_dir, img_ext))
+    file_list = glob.glob(os.path.join(img_dir, '*{}'.format(img_ext)))
     file_list.sort()
 
     rm_n_mkdir(out_dir)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         basename = filename.split('.')[0]
         print(filename)
 
-        img = cv2.imread(img_dir + basename + img_ext)
+        img = cv2.imread(os.path.join(img_dir, '{}{}'.format(basename, img_ext)))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         if cfg.type_classification:
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
         else:
             # assumes that ann is WxH; if WxHx2 (class labels available) then extract first channel after loading
-            ann_inst = np.load(ann_dir + basename + '.npy')
+            ann_inst = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
             ann_inst = ann_inst.astype('int32')
             ann = np.expand_dims(ann_inst, -1)
 

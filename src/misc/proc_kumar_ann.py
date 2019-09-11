@@ -17,7 +17,7 @@ imgs_dir = "/data/kumar_dataset/Tissue_images/" # .tif
 anns_dir = "/data/kumar_dataset/Annotations/" # .xml folders
 save_dir = "/data/kumar_dataset/Ground_truth/" # storing .npy ground truth (HW)
 
-file_list = glob.glob(imgs_dir + '*.tif')
+file_list = glob.glob(os.path.join(imgs_dir, '*.tif'))
 file_list.sort() # ensure same order [1]
 rm_n_mkdir(save_dir)
 
@@ -26,12 +26,12 @@ for filename in file_list: # png for base
     basename = filename.split('.')[0]
 
     print(basename)
-    img = cv2.imread(imgs_dir + filename)
+    img = cv2.imread(os.path.join(imgs_dir, filename))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     hw = img.shape[:2]
 
-    xml = ET.parse(anns_dir + basename + '.xml')
+    xml = ET.parse(os.path.join(anns_dir, '{}.xml'.format(basename)))
 
     contour_dbg = np.zeros(hw, np.uint8)
 
@@ -62,4 +62,4 @@ for filename in file_list: # png for base
     for idx, inst_map in enumerate(insts_list):
         ann[inst_map > 0] = idx + 1
 
-    np.save('%s/%s.npy' % (save_dir, basename), ann)
+    np.save(os.path.join(save_dir, '{}.npy'.format(basename)), ann)

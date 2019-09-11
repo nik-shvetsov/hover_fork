@@ -154,10 +154,5 @@ if __name__ == '__main__':
     xtractor = PatchExtractor((450, 450), (120, 120), debug=True)
     a = np.full([1200, 1200, 3], 255, np.uint8)
 
-    #plt.imshow(a)
-    #plt.show()
-    #plt.pause(5)
-    #plt.close()
-
     xtractor.extract(a, 'mirror')
     xtractor.extract(a, 'valid')

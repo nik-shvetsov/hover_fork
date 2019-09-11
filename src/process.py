@@ -43,11 +43,11 @@ for data_dir_set in cfg.inf_data_list:
     data_out_code = data_dir_set[1]
 
     for subdir in data_dir_set[2:]:
-        data_dir = '%s/%s/' % (data_root_dir, subdir)
-        pred_dir = '%s/%s/%s' % (cfg.inf_output_dir, data_out_code, subdir)
-        proc_dir = pred_dir + '_proc'
+        data_dir = os.path.join(data_root_dir, subdir)
+        pred_dir = os.path.join(cfg.inf_output_dir, data_out_code, subdir)
+        proc_dir = '{}_proc'.format(pred_dir)
 
-        file_list = glob.glob('%s/*.mat' % (pred_dir))
+        file_list = glob.glob(os.path.join(pred_dir, '*.mat'))
         file_list.sort() # ensure same order
 
         if not os.path.isdir(proc_dir):
@@ -59,13 +59,15 @@ for data_dir_set in cfg.inf_data_list:
             print(pred_dir, basename, end=' ', flush=True)
 
             ##
-            img = cv2.imread(data_dir + basename + cfg.inf_imgs_ext)
+            img = cv2.imread(os.path.join(data_dir, '{}{}'.format(basename, cfg.inf_imgs_ext)))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-            pred = sio.loadmat('%s/%s.mat' % (pred_dir, basename))
+            pred = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
             pred = np.squeeze(pred['result'])
 
             if hasattr(cfg, 'type_classification') and cfg.type_classification:
+                print ("cfg.type_classification == True")
+
                 pred_inst = pred[...,5:]
                 pred_type = pred[...,:5]
 
@@ -102,7 +104,7 @@ for data_dir_set in cfg.inf_data_list:
             pred_inst = remap_label(pred_inst, by_size=True)
             overlaid_output = visualize_instances(pred_inst, img)
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
-            cv2.imwrite('%s/%s.png' % (proc_dir, basename), overlaid_output)
+            cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
 
             # for instance segmentation only
             if cfg.type_classification:
@@ -123,14 +125,14 @@ for data_dir_set in cfg.inf_data_list:
                     pred_inst_type[idx] = inst_type
                 pred_inst_centroid = get_inst_centroid(pred_inst)
 
-                sio.savemat('%s/%s.mat' % (proc_dir, basename),
+                sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
                             {'inst_map'  :     pred_inst,
                              'type_map'  :     pred_type,
                              'inst_type' :     pred_inst_type[:, None],
                              'inst_centroid' : pred_inst_centroid,
                             })
             else:
-                sio.savemat('%s/%s.mat' % (proc_dir, basename),
+                sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
                             {'inst_map'  : pred_inst})
 
             ##

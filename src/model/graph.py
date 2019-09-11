@@ -111,7 +111,7 @@ class Model(ModelDesc, Config):
         super(Model, self).__init__()
         assert tf.test.is_gpu_available()
         self.freeze = freeze
-        self.data_format = 'NCHW'
+        self.data_format = 'NCHW' # ???
 
     def _get_inputs(self):
         return [InputDesc(tf.float32, [None] + self.train_input_shape + [3], 'images'),

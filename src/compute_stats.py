@@ -15,7 +15,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
     GT must be exhaustively annotated for instance location (detection)
 
     Args:
-        true_dir, pred_dir: Directory contains .mat annotation for each image. 
+        true_dir, pred_dir: Directory contains .mat annotation for each image.
                             Each .mat must contain:
 
                     --`inst_centroid`: Nx2, contains N instance centroid
@@ -29,7 +29,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
                      for instance types
     """
     ###
-    file_list = glob.glob(pred_dir + '*.mat')
+    file_list = glob.glob(os.path.join(pred_dir, '*.mat'))
     file_list.sort() # ensure same order [1]
 
     paired_all = [] # unique matched index pair
@@ -41,13 +41,13 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
 
-        true_info = sio.loadmat(true_dir + basename + '.mat')
+        true_info = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
         # dont squeeze, may be 1 instance exist
         true_centroid  = (true_info['inst_centroid']).astype('float32')
         true_inst_type = (true_info['inst_type']).astype('int32')
 
         if true_centroid.shape[0] != 0:
-                true_inst_type = true_inst_type[:,0]                
+                true_inst_type = true_inst_type[:,0]
         else: # no instance at all
             true_centroid = np.array([[0, 0]])
             true_inst_type = np.array([0])
@@ -56,7 +56,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
         # true_inst_type[(true_inst_type == 3) | (true_inst_type == 4)] = 3
         # true_inst_type[(true_inst_type == 5) | (true_inst_type == 6) | (true_inst_type == 7)] = 4
 
-        pred_info = sio.loadmat(pred_dir + basename + '.mat')
+        pred_info = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
         # dont squeeze, may be 1 instance exist
         pred_centroid  = (pred_info['inst_centroid']).astype('float32')
         pred_inst_type = (pred_info['inst_type']).astype('int32')
@@ -69,7 +69,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
 
         # ! if take longer than 1min for 1000 vs 1000 pairing, sthg is wrong with coord
         paired, unpaired_true, unpaired_pred = pair_coordinates(true_centroid, pred_centroid, 12)
- 
+
         # * Aggreate information
         # get the offset as each index represent 1 independent instance
         true_idx_offset = true_idx_offset + true_inst_type_all[-1].shape[0] if file_idx != 0 else 0
@@ -102,7 +102,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
     ###
     def _f1_type(paired_true, paired_pred, unpaired_true, unpaired_pred, type_id, w):
         type_samples = (paired_true == type_id) | (paired_pred == type_id)
-        
+
         paired_true = paired_true[type_samples]
         paired_pred = paired_pred[type_samples]
 
@@ -115,8 +115,8 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
             ignore = (paired_true == -1).sum()
             fp_dt -= ignore
 
-        fp_d = (unpaired_pred == type_id).sum() 
-        fn_d = (unpaired_true == type_id).sum() 
+        fp_d = (unpaired_pred == type_id).sum()
+        fn_d = (unpaired_true == type_id).sum()
 
         f1_type = (2 * (tp_dt + tn_dt)) / \
                     (2 * (tp_dt + tn_dt) + w[0] * fp_dt + w[1] * fn_dt \
@@ -127,8 +127,8 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
     # * quite meaningless for not exhaustive annotated dataset
     w = [1, 1]
     tp_d = paired_pred_type.shape[0]
-    fp_d = unpaired_pred_type.shape[0] 
-    fn_d = unpaired_true_type.shape[0] 
+    fp_d = unpaired_pred_type.shape[0]
+    fn_d = unpaired_true_type.shape[0]
 
     tp_tn_dt = (paired_pred_type == paired_true_type).sum()
     fp_fn_dt = (paired_pred_type != paired_true_type).sum()
@@ -154,7 +154,7 @@ def run_nuclei_inst_stat(pred_dir, true_dir, ext='.mat'):
     print_img_stats = False
     print(pred_dir)
 
-    file_list = glob.glob('%s/*%s' % (pred_dir, ext))
+    file_list = glob.glob(os.path.join(pred_dir,'*{}'.format(ext)))
     file_list.sort() # ensure same order
 
     metrics = [[], [], [], [], [], []]
@@ -162,11 +162,11 @@ def run_nuclei_inst_stat(pred_dir, true_dir, ext='.mat'):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
 
-        true = np.load(true_dir + basename + '.npy')
+        true = np.load(os.path.join(true_dir, '{}.npy'.format(basename)))
         true = true.astype('int32')
         true = true[...,0] # HxWx1, uncomment to use label class from CoNSeP
 
-        pred = sio.loadmat(pred_dir + basename + '.mat')
+        pred = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
         pred = (pred['inst_map']).astype('int32')
 
         # to ensure that the instance numbering is contiguous
@@ -207,4 +207,3 @@ if __name__ == '__main__':
         run_nuclei_inst_stat(args.true_dir, args.pred_dir)
     if args.mode == 'type':
         run_nuclei_type_stat(args.true_dir, args.pred_dir)
-
