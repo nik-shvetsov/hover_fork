@@ -14,10 +14,11 @@ from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
 ####
 class Config(object):
     def __init__(self, ):
+        # Select template (hv_kumar, hv_uit_w_kumar, hv_consep, hv_cmp17)
+        model_config = 'hv_kumar'
+
         # Load config yml file
-        yml_config = yaml.load(open('config.yml'), Loader=yaml.FullLoader)
-        # Select template (hv_kumar, hv_uit, hv_consep, hv_cmp17)
-        data_config = yml_config['hv_kumar']
+        data_config = yaml.load(open('config.yml'), Loader=yaml.FullLoader)[model_config]
 
         self.seed = data_config['seed']
         mode = data_config['mode']
@@ -56,6 +57,10 @@ class Config(object):
             'np_dist'  : '540x540_80x80',
         }
 
+        exp_id = data_config['exp_id']
+        model_id = '%s' % self.model_type
+        self.model_name = '{}-{}-{}'.format(model_config, model_id, exp_id)
+
         self.data_ext = data_config['data_ext']
         # list of directories containing validation patches
         self.train_dir = data_config['train_dir']
@@ -70,15 +75,9 @@ class Config(object):
 
         self.input_norm = data_config['input_norm'] # normalize RGB to 0-1 range
 
-        ####
-        # exp_id = datetime.utcnow().strftime('%Y%m%d.%H%M%S.%f')[:-3]
-        exp_id = data_config['exp_id']
-        model_id = '%s' % self.model_type
-        self.model_name = '{}_{}'.format(exp_id, model_id)
-        #self.model_name = '%s/%s' % (exp_id, model_id)
         # loading chkpts in tensorflow, the path must not contain extra '/'
         self.log_path = '/data/output/' # log root path
-        self.save_dir = os.path.join(self.log_path, self.model_name)
+        self.save_dir = os.path.join(self.log_path, 'train', self.model_name)
         #self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
 
         #### Info for running inference
@@ -98,7 +97,7 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = data_config['inf_data_list']
-        self.inf_output_dir = '/data/output/{}/{}'.format(exp_id, model_id)
+        self.inf_output_dir = '/data/output/infer/{}'.format(self.model_name)
 
         # for inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = data_config['eval_inf_input_tensor_names']
