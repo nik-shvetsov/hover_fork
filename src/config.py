@@ -1,6 +1,7 @@
 import os
 import importlib
 import random
+import yaml
 
 import cv2
 import numpy as np
@@ -13,16 +14,19 @@ from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
 ####
 class Config(object):
     def __init__(self, ):
+        # Load config yml file
+        yml_config = yaml.load(open('config.yml'), Loader=yaml.FullLoader)
+        # Select template (hv_kumar, hv_uit, hv_consep, hv_cmp17)
+        data_config = yml_config['hv_kumar']
 
-        self.seed = 10
-        mode = 'hover'
-        self.model_type = 'np_hv'
-
-        self.type_classification = False
-        self.nr_types = 5  # denotes number of classes for nuclear type classification
+        self.seed = data_config['seed']
+        mode = data_config['mode']
+        self.model_type = data_config['model_type']
+        self.type_classification = data_config['type_classification']
+        self.nr_types = data_config['nr_types']  # denotes number of classes for nuclear type classification
         # ! some semantic segmentation network like micronet,
         # ! nr_types will replace nr_classes if type_classification=True
-        self.nr_classes = 2 # Nuclei Pixels vs Background
+        self.nr_classes = data_config['nr_classes'] # Nuclei Pixels vs Background
 
         #### Dynamically setting the config file into variable
         if mode == 'hover':
@@ -52,35 +56,35 @@ class Config(object):
             'np_dist'  : '540x540_80x80',
         }
 
-        self.data_ext = '.npy'
+        self.data_ext = data_config['data_ext']
         # list of directories containing validation patches
-        self.train_dir = ['/data/input/data_kumar/train/'] # ['/data/input/data_cpm17/train/']
-        self.valid_dir = ['/data/input/data_kumar/test_diff/','/data/input/data_kumar/test_same/'] # ['/data/input/data_cpm17/test']
+        self.train_dir = data_config['train_dir']
+        self.valid_dir = data_config['valid_dir']
 
         # self.valid_dir = ['../../../train/Kumar_old_GT/%s/valid_same/XXXX/' % data_code_dict[self.model_type],
         #                   '../../../train/Kumar_old_GT/%s/valid_diff/XXXX/' % data_code_dict[self.model_type]]
 
         # nr of processes for parallel processing input
-        self.nr_procs_train = 8
-        self.nr_procs_valid = 4
+        self.nr_procs_train = data_config['nr_procs_train']
+        self.nr_procs_valid = data_config['nr_procs_valid']
 
-        self.input_norm = True # normalize RGB to 0-1 range
+        self.input_norm = data_config['input_norm'] # normalize RGB to 0-1 range
 
         ####
-        #
-        exp_id = '1.0'
+        # exp_id = datetime.utcnow().strftime('%Y%m%d.%H%M%S.%f')[:-3]
+        exp_id = data_config['exp_id']
         model_id = '%s' % self.model_type
-        self.model_name = os.path.join(exp_id, model_id)
+        self.model_name = '{}_{}'.format(exp_id, model_id)
         #self.model_name = '%s/%s' % (exp_id, model_id)
         # loading chkpts in tensorflow, the path must not contain extra '/'
-        self.log_path = '/data/output/log' # log root path
+        self.log_path = '/data/output/' # log root path
         self.save_dir = os.path.join(self.log_path, self.model_name)
         #self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
 
         #### Info for running inference
-        self.inf_auto_find_chkpt = False
+        self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
         # path to checkpoints will be used for inference, replace accordingly
-        self.inf_model_path  = '/data/input/weights_hv_kumar.npz' # '/data/input/weights_hv_CPM17.npz'
+        self.inf_model_path  = data_config['inf_model_path']
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
@@ -90,22 +94,17 @@ class Config(object):
         # TODO: encode the file extension for each folder?
         # list of [[root_dir1, codeX, subdirA, subdirB], [root_dir2, codeY, subdirC, subdirD] etc.]
         # code is used together with 'inf_output_dir' to make output dir for each set
-        self.inf_imgs_ext = '.tif'
+        self.inf_imgs_ext = data_config['inf_imgs_ext']
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
-        self.inf_data_list = [
-            # ['/data/input/data_cpm17', 'output_cpm_mat', 'test/Images'],
-            ['/data/input/data_kumar', 'output_kumar_mat', 'test_diff/Images'],
-            # ['/data/input/data_uit_he', 'output_uit_he_mat', 'test/Images'],
-            # ['../../../data/NUC_Kumar/train-set/orig_split/', 'XXXX', 'valid_diff'],
-        ]
-        self.inf_output_dir = '/data/output/%s/%s' % (exp_id, model_id)
+        self.inf_data_list = data_config['inf_data_list']
+        self.inf_output_dir = '/data/output/{}/{}'.format(exp_id, model_id)
 
         # for inference during evalutaion mode i.e run by inferer.py
-        self.eval_inf_input_tensor_names = ['images']
-        self.eval_inf_output_tensor_names = ['predmap-coded']
+        self.eval_inf_input_tensor_names = data_config['eval_inf_input_tensor_names']
+        self.eval_inf_output_tensor_names = data_config['eval_inf_output_tensor_names']
         # for inference during training mode i.e run by trainer.py
-        self.train_inf_output_tensor_names = ['predmap-coded', 'truemap-coded']
+        self.train_inf_output_tensor_names = data_config['train_inf_output_tensor_names']
 
 
     def get_model(self):

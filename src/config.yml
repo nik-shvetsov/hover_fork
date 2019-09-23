@@ -1,0 +1,139 @@
+# YAML condif file
+
+hv_kumar:
+  # Id inforamtion
+  exp_id: '1.0' #
+  mode: 'hover' # Net type
+  model_type: 'np_hv' # Net subtype
+
+  ### Network parameters
+  seed: 10
+  type_classification: False #
+  nr_types: 5  # Denotes number of classes for nuclear type classification
+  # Some semantic segmentation network like micronet, nr_types will replace nr_classes if type_classification=True
+  nr_classes: 2 # Nuclei Pixels vs Background
+
+  ### Train parameters
+  data_ext: '.npy' # Data extension
+  # List of directories containing validation patches
+  train_dir: '/data/input/data_kumar/train/'
+  valid_dir:
+    - '/data/input/data_kumar/test_diff/'
+    - '/data/input/data_kumar/test_same/'
+  # Number of processes for parallel processing input
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True # normalize RGB to 0-1 range
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False # Use that only if you've trained from scratch and have <stats.json> file
+  inf_model_path: '/data/input/weights_hv_kumar.npz' # Path to weights
+      # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
+      # where [Nuclei Type] will be used for getting the type of each instance
+      # while [Nuclei Pixels][Additional] will be used for extracting instances
+
+  inf_imgs_ext: '.tif' # Data extension of inference data
+
+  # root_dir, output_dirname, subdir1, subdir2[optional] ...
+  inf_data_list:
+    - - '/data/input/data_kumar'  # root_dir
+      - 'output_mat'              # output_dirname
+      - 'test_diff/Images'        # subdir1
+      # - subdir2[optional]
+
+  # For inference during evalutaion mode i.e run by inferer.py
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  # For inference during training mode i.e run by trainer.py
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
+
+##################################
+
+hv_cmp17:
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Network parameters
+  seed: 10
+  type_classification: False
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir: '/data/input/data_cpm17/train/'
+  valid_dir:
+    - '/data/input/data_cpm17/test'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_CPM17.npz'
+  inf_imgs_ext: '.tif'
+  inf_data_list:
+    - - '/data/input/data_cpm17'
+      - 'output_mat'
+      - 'test/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
+
+##################################
+
+hv_uit:
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Network parameters
+  seed: 10
+  type_classification: False
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: None
+  train_dir: None
+  valid_dir:
+    - None
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_kumar.npz'
+  inf_imgs_ext: '.tif'
+  inf_data_list:
+    - - '/data/input/data_uit_he'
+      - 'output_mat'
+      - 'test/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
+
+##################################
+
+hv_consep: None
