@@ -37,7 +37,7 @@ hv_kumar:
   # root_dir, output_dirname, subdir1, subdir2[optional] ...
   inf_data_list:
     - - '/data/input/data_kumar'  # root_dir
-      - 'output_mat'              # output_dirname
+      - 'mat'              # output_dirname
       - 'test_diff/Images'        # subdir1
       # - subdir2[optional]
 
@@ -81,7 +81,7 @@ hv_cmp17:
   inf_imgs_ext: '.tif'
   inf_data_list:
     - - '/data/input/data_cpm17'
-      - 'output_mat'
+      - 'mat'
       - 'test/Images'
 
   eval_inf_input_tensor_names:
@@ -122,7 +122,7 @@ hv_uit:
   inf_imgs_ext: '.tif'
   inf_data_list:
     - - '/data/input/data_uit_he'
-      - 'output_mat'
+      - 'mat'
       - 'test/Images'
 
   eval_inf_input_tensor_names:
