@@ -16,7 +16,8 @@ hv_kumar:
   ### Train parameters
   data_ext: '.npy' # Data extension
   # List of directories containing validation patches
-  train_dir: '/data/input/data_kumar/train/'
+  train_dir:
+    - '/data/input/data_kumar/train/'
   valid_dir:
     - '/data/input/data_kumar/test_diff/'
     - '/data/input/data_kumar/test_same/'
@@ -68,9 +69,10 @@ hv_cmp17:
 
   ### Train parameters
   data_ext: '.npy'
-  train_dir: '/data/input/data_cpm17/train/'
+  train_dir:
+    - '/data/input/data_cpm17/train/'
   valid_dir:
-    - '/data/input/data_cpm17/test'
+    - '/data/input/data_cpm17/test/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -136,4 +138,50 @@ hv_uit_w_kumar:
 
 ##################################
 
-hv_consep: None
+hv_seg_consep:
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Network parameters
+  seed: 10
+  type_classification: False
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir:
+    - '/data/input/data_consep/Train/'
+  valid_dir:
+    - '/data/input/data_consep/Test/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - - '/data/input/data_consep'
+      - 'mat'
+      - 'Test/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
+
+##################################
+
+hv_seg_cl_consep: None
+
+##################################
+
+custom_1: None
