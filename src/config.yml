@@ -1,4 +1,4 @@
-# YAML condif file
+# YAML config file
 
 hv_kumar:
   # Id inforamtion
@@ -8,7 +8,7 @@ hv_kumar:
 
   ### Network parameters
   seed: 10
-  type_classification: False #
+  type_classification: False # whether to predict the nuclear type, ! must use CoNSeP dataset, where nuclear type labels are available
   nr_types: 5  # Denotes number of classes for nuclear type classification
   # Some semantic segmentation network like micronet, nr_types will replace nr_classes if type_classification=True
   nr_classes: 2 # Nuclei Pixels vs Background
@@ -17,10 +17,10 @@ hv_kumar:
   data_ext: '.npy' # Data extension
   # List of directories containing validation patches
   train_dir:
-    - '/data/input/data_kumar/train/'
+    - '/data/input/data_kumar_540x540_80x80/train/Labels/'
   valid_dir:
-    - '/data/input/data_kumar/test_diff/'
-    - '/data/input/data_kumar/test_same/'
+    - '/data/input/data_kumar_540x540_80x80/test_diff/Labels/'
+    - '/data/input/data_kumar_540x540_80x80/test_same/Labels/'
   # Number of processes for parallel processing input
   nr_procs_train: 8
   nr_procs_valid: 4

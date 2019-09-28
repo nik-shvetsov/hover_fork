@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # 536x536 - 268x268 - 84x84   unet, dist
     # 540x540 - 270x270 - 80x80   xy, hover
     # 504x504 - 252x252 - 252x252 micronet
-    step_size = [270, 270] # should match self.train_mask_shape (config.py)
+    step_size = [80, 80] # should match self.train_mask_shape (config.py)
     win_size  = [540, 540] # should be at least twice time larger than
                            # self.train_base_shape (config.py) to reduce
                            # the padding effect during augmentation
@@ -33,15 +33,16 @@ if __name__ == '__main__':
     ###
     img_ext = '.tif'
     data_mode = 'valid'
-    img_dir = ''
+    img_dir = './../../.../input/data_kumar/test_diff/Images/'
     #img_dir = '../../../data/NUC_UHCW/No_SN/%s/' % data_mode
-    ann_dir = ''
+    ann_dir = './../../.../input/data_kumar/test_diff/Labels/'
     #ann_dir = '../../../data/NUC_UHCW/Labels_class/'
-    ####
-    out_root_path = ".../%dx%d_%dx%d" % \
-                        (win_size[0], win_size[1], step_size[0], step_size[1])
-    out_dir = os.path.join(out_root_path)
+
+    out_dir = os.path.join("./../../Labels_test_diff_kumar_%dx%d_%dx%d" % \
+                        (win_size[0], win_size[1], step_size[0], step_size[1]))
     #out_dir = "%s/%s/%s/" % (out_root_path, data_mode, 'XXXX')
+    ###
+
 
     file_list = glob.glob(os.path.join(img_dir, '*{}'.format(img_ext)))
     file_list.sort()
@@ -56,20 +57,24 @@ if __name__ == '__main__':
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         if cfg.type_classification:
+            # assumes that ann is HxWx2 (nuclei class labels are available at index 1 of C)
+            ann = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
             ann_inst = ann[...,0]
             ann_type = ann[...,1]
 
             # merge classes for CoNSeP (in paper we only utilise 3 nuclei classes and background)
             # If own dataset is used, then the below may need to be modified
             ann_type[(ann_type == 3) | (ann_type == 4)] = 3
-            ann_type[(ann_type == 5) | (ann_type == 6)] = 4
-            assert np.max(ann[...,1]) <= 4, np.max(ann[...,1])
+            ann_type[(ann_type == 5) | (ann_type == 6) | (ann_type == 7)] = 4
 
-            ann = np.concatenate([ann_inst, ann_type], axis=-1)
+            assert np.max(ann_type) <= cfg.nr_types-1, \
+                            ("Only {} types of nuclei are defined for training"\
+                            "but there are {} types found in the input image.").format(cfg.nr_types, np.max(ann_type))
+
+            ann = np.dstack([ann_inst, ann_type])
             ann = ann.astype('int32')
-
         else:
-            # assumes that ann is WxH; if WxHx2 (class labels available) then extract first channel after loading
+            # assumes that ann is HxW
             ann_inst = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
             ann_inst = ann_inst.astype('int32')
             ann = np.expand_dims(ann_inst, -1)
