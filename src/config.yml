@@ -6,6 +6,26 @@ hv_kumar:
   mode: 'hover' # Net type
   model_type: 'np_hv' # Net subtype
 
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_kumar/'
+  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
+                            # 'mirror' for u-net etc.
+  # check the patch_extractor.py 'main' to see the different
+  img_ext: '.tif'
+  data_modes:
+    - 'train'
+    - 'test_diff'
+    - 'test_same'
+  # orignal size (win size) - input size - output size (step size)
+  # 512x512 - 256x256 - 256x256 fcn8, dcan, segnet
+  # 536x536 - 268x268 - 84x84   unet, dist
+  # 540x540 - 270x270 - 80x80   xy, hover
+  # 504x504 - 252x252 - 252x252 micronet
+  step_size: [80, 80] # should match self.train_mask_shape (config.py)
+  win_size: [540, 540] # should be at least twice time larger than
+                         # self.train_base_shape (config.py) to reduce
+                         # the padding effect during augmentation
+
   ### Network parameters
   seed: 10
   type_classification: False # whether to predict the nuclear type, ! must use CoNSeP dataset, where nuclear type labels are available
@@ -17,10 +37,10 @@ hv_kumar:
   data_ext: '.npy' # Data extension
   # List of directories containing validation patches
   train_dir:
-    - '/data/input/data_kumar_540x540_80x80/train/Labels/'
+    - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
   valid_dir:
-    - '/data/input/data_kumar_540x540_80x80/test_diff/Labels/'
-    - '/data/input/data_kumar_540x540_80x80/test_same/Labels/'
+    - '/data/output/extract/hv_kumar_540x540_80x80/test_diff/Labels/'
+    - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
   # Number of processes for parallel processing input
   nr_procs_train: 8
   nr_procs_valid: 4
@@ -31,16 +51,16 @@ hv_kumar:
   inf_model_path: '/data/input/weights_hv_kumar.npz' # Path to weights
       # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
       # where [Nuclei Type] will be used for getting the type of each instance
-      # while [Nuclei Pixels][Additional] will be used for extracting instances
+      # while [Nuclei Pixels]self.out_extract_root = os.path.join(self.log_path, 'extract')[Additional] will be used for extracting instances
 
   inf_imgs_ext: '.tif' # Data extension of inference data
 
   # root_dir, output_dirname, subdir1, subdir2[optional] ...
   inf_data_list:
     - - '/data/input/data_kumar'  # root_dir
-      - 'mat'              # output_dirname
+      - 'mat'                     # output_dirname
       - 'test_diff/Images'        # subdir1
-      # - subdir2[optional]
+      - 'test_same/Images'        # subdir2[optional]
 
   # For inference during evalutaion mode i.e run by inferer.py
   eval_inf_input_tensor_names:
