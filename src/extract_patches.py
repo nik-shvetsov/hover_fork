@@ -28,7 +28,7 @@ if __name__ == '__main__':
             for filename in file_list:
                 filename = os.path.basename(filename)
                 basename = filename.split('.')[0]
-                print('Mode: {}, filename - '.format(data_mode, filename))
+                print('Mode: {}, filename - {}'.format(data_mode, filename))
 
                 img = cv2.imread(os.path.join(img_dir, '{}{}'.format(basename, cfg.img_ext)))
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

@@ -214,7 +214,7 @@ class Trainer(Config):
             with open(stat_file_path) as stat_file:
                 info = json.load(stat_file)
             chkpt_list = [epoch_stat['global_step'] for epoch_stat in info]
-            last_chkpts_path = "{}model-{}.index".format(prev_phase_dir, max(chkpt_list))
+            last_chkpts_path = os.path.join(prev_phase_dir, "model-{}.index".format(max(chkpt_list)))
             return last_chkpts_path
 
         phase_opts = self.training_phase
