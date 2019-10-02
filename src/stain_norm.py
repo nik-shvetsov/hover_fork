@@ -6,14 +6,14 @@ import staintools
 from misc.utils import rm_n_mkdir
 
 norm_brightness = False
-imgs_dir = '/data/NUC_UHCW/No_SN/valid/'
-save_dir = '/data/NUC_UHCW/SN_5784/valid/'
+imgs_dir = '/data/DATASET_NAME/No_SN/valid/'
+save_dir = '/data/DATASET_NAME/SN/valid/'
 
 file_list = glob.glob(os.path.join(imgs_dir, '*.png'))
 file_list.sort() # ensure same order [1]
 
 if norm_brightness:
-    standardizer = staintools.BrightnessStandardizer()
+    standardizer = staintools.LuminosityStandardizer()
 stain_normalizer = staintools.StainNormalizer(method='vahadane')
 
 # dict of paths to target image and dir code to make output folder

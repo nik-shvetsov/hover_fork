@@ -15,9 +15,9 @@ from stats_utils import *
 
 #####
 def compute_stat():
-    true   = cv2.imread('sample/true.png', cv2.IMREAD_GRAYSCALE)
-    pred_1 = cv2.imread('sample/pred_1.png', cv2.IMREAD_GRAYSCALE)
-    pred_2 = cv2.imread('sample/pred_2.png', cv2.IMREAD_GRAYSCALE)
+    true   = cv2.imread('metrics/sample/true.png', cv2.IMREAD_GRAYSCALE)
+    pred_1 = cv2.imread('metrics/sample/pred_1.png', cv2.IMREAD_GRAYSCALE)
+    pred_2 = cv2.imread('metrics/sample/pred_2.png', cv2.IMREAD_GRAYSCALE)
 
     true   = remap_label(true, by_size=False)
     pred_1 = remap_label(pred_1, by_size=False)
@@ -31,8 +31,8 @@ def compute_stat():
     pair_2_ajis = get_fast_aji(true, pred_2)
     pair_1_pq = get_fast_pq(true, pred_1)[0][-1]
     pair_2_pq = get_fast_pq(true, pred_2)[0][-1]
-    print('True vs Pred 1: DICE 2: %0.4f AJI: %0.4f AJI+: %0.4f PQ: %0.4f' % (pair_1_dice_2, pair_1_ajis, pair_1_ajip, pair_1_pq))        
-    print('True vs Pred 2: DICE 2: %0.4f AJI: %0.4f AJI+: %0.4f PQ: %0.4f' % (pair_2_dice_2, pair_2_ajis, pair_2_ajip, pair_2_pq))   
+    print('True vs Pred 1: DICE 2: %0.4f AJI: %0.4f AJI+: %0.4f PQ: %0.4f' % (pair_1_dice_2, pair_1_ajis, pair_1_ajip, pair_1_pq))
+    print('True vs Pred 2: DICE 2: %0.4f AJI: %0.4f AJI+: %0.4f PQ: %0.4f' % (pair_2_dice_2, pair_2_ajis, pair_2_ajip, pair_2_pq))
 
 # ##
 if __name__ == '__main__':
