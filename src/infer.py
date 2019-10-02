@@ -134,7 +134,7 @@ class Inferer(Config):
         if self.inf_auto_find_chkpt:
             print('-----Auto Selecting Checkpoint Basing On "%s" Through "%s" Comparison' % \
                         (self.inf_auto_metric, self.inf_auto_comparator))
-            model_path, stat = get_best_chkpts(self.save_dir, self.inf_auto_metric, self.inf_auto_comparator)
+            model_path, stat = get_best_chkpts(self.inf_model_path, self.inf_auto_metric, self.inf_auto_comparator)
             print('Selecting: %s' % model_path)
             print('Having Following Statistics:')
             for key, value in stat.items():
