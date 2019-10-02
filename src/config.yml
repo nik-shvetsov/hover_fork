@@ -1,5 +1,9 @@
 # YAML config file
 
+##################################
+#########Default profiles#########
+##################################
+
 hv_kumar:
   # Id inforamtion
   exp_id: '1.0' #
@@ -81,6 +85,16 @@ hv_cmp17:
   mode: 'hover'
   model_type: 'np_hv'
 
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_cpm17/'
+  extract_type: 'mirror'
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
   ### Network parameters
   seed: 10
   type_classification: False
@@ -90,9 +104,9 @@ hv_cmp17:
   ### Train parameters
   data_ext: '.npy'
   train_dir:
-    - '/data/input/data_cpm17/train/'
+    - '/data/output/extract/hv_cmp17_540x540_80x80/train/Labels/'
   valid_dir:
-    - '/data/input/data_cpm17/test/'
+    - '/data/output/extract/hv_cmp17_540x540_80x80/test/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -100,50 +114,9 @@ hv_cmp17:
   ### Inference parameters
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_CPM17.npz'
-  inf_imgs_ext: '.tif'
+  inf_imgs_ext: '.png'
   inf_data_list:
     - - '/data/input/data_cpm17'
-      - 'mat'
-      - 'test/Images'
-
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
-
-##################################
-
-hv_uit_w_kumar:
-  # Id inforamtion
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  ### Network parameters
-  seed: 10
-  type_classification: False
-  nr_types: 5
-  nr_classes: 2
-
-  ### Train parameters
-  data_ext: None
-  train_dir: None
-  valid_dir:
-    - None
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  ### Inference parameters
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_kumar.npz'
-  inf_imgs_ext: '.tif'
-  inf_data_list:
-    - - '/data/input/data_uit_he'
       - 'mat'
       - 'test/Images'
 
@@ -164,18 +137,30 @@ hv_seg_consep:
   mode: 'hover'
   model_type: 'np_hv'
 
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_consep/'
+  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
+                            # 'mirror' for u-net etc.
+  # check the patch_extractor.py 'main' to see the different
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
   ### Network parameters
   seed: 10
-  type_classification: False
+  type_classification: False # TODO FIX: True for data prep
   nr_types: 5
   nr_classes: 2
 
   ### Train parameters
   data_ext: '.npy'
   train_dir:
-    - '/data/input/data_consep/Train/'
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
   valid_dir:
-    - '/data/input/data_consep/Test/'
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -187,7 +172,7 @@ hv_seg_consep:
   inf_data_list:
     - - '/data/input/data_consep'
       - 'mat'
-      - 'Test/Images'
+      - 'test/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -200,8 +185,227 @@ hv_seg_consep:
 
 ##################################
 
-hv_seg_cl_consep: None
+hv_seg_cl_consep:  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_consep/'
+  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
+                            # 'mirror' for u-net etc.
+  # check the patch_extractor.py 'main' to see the different
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  ### Network parameters
+  seed: 10
+  type_classification: True
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - - '/data/input/data_consep'
+      - 'mat'
+      - 'test/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
+
+###################################
+#### Custom profiles and mixes ####
+###################################
+
+hv_consep_seg_uit:
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_consep/'
+  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
+                            # 'mirror' for u-net etc.
+  # check the patch_extractor.py 'main' to see the different
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  ### Network parameters
+  seed: 10
+  type_classification: False
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
+  inf_imgs_ext: '.tif'
+  inf_data_list:
+    - - '/data/input/data_uit_he'
+      - 'mat'
+      - 'test/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
+
+######################################
+
+1_valid_fw_hv_kumar:
+  # test using downloaded weights and kumar dataset
+
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_kumar/'
+  extract_type: 'mirror'
+  img_ext: '.tif'
+  data_modes:
+    - 'train'
+    - 'test_diff'
+    - 'test_same'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  ### Network parameters
+  seed: 10
+  type_classification: False
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_kumar_540x540_80x80/test_diff/Labels/'
+    - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True # normalize RGB to 0-1 range
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_kumar.npz'
+
+  inf_imgs_ext: '.tif'
+
+  inf_data_list:
+    - - '/data/input/data_kumar'
+      - 'mat'
+      - 'test_diff/Images'
+      - 'test_same/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
 
 ##################################
 
-custom_1: None
+2_valid_mw_hv_kumar:
+  # test with my trained weights and kumar dataset
+
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_kumar/'
+  extract_type: 'mirror'
+
+  img_ext: '.tif'
+  data_modes:
+    - 'train'
+    - 'test_diff'
+    - 'test_same'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  ### Network parameters
+  seed: 10
+  type_classification: False
+  nr_types: 5
+  nr_classes: 2
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_kumar_540x540_80x80/test_diff/Labels/'
+    - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: True
+  inf_model_path: '/data/output/train/hv_kumar-np_hv-1.0/1/'
+  inf_imgs_ext: '.tif'
+
+  inf_data_list:
+    - - '/data/input/data_kumar'
+      - 'mat'
+      - 'test_diff/Images'
+      - 'test_same/Images'
+
+  eval_inf_input_tensor_names:
+    - 'images'
+  eval_inf_output_tensor_names:
+    - 'predmap-coded'
+
+  train_inf_output_tensor_names:
+    - 'predmap-coded'
+    - 'truemap-coded'
