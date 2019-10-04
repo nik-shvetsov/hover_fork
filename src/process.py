@@ -45,7 +45,7 @@ for data_dir_set in cfg.inf_data_list:
     for subdir in data_dir_set[2:]:
         data_dir = os.path.join(data_root_dir, subdir)
         pred_dir = os.path.join(cfg.inf_output_dir, data_out_code, subdir)
-        proc_dir = '{}_proc'.format(pred_dir)
+        proc_dir = '{}_processed'.format(pred_dir)
 
         file_list = glob.glob(os.path.join(pred_dir, '*.mat'))
         file_list.sort() # ensure same order
