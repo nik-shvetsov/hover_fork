@@ -158,6 +158,11 @@ def run_nuclei_inst_stat(pred_dir, true_dir, ext='.mat'):
     file_list.sort() # ensure same order
 
     metrics = [[], [], [], [], [], []]
+
+    if print_img_stats:
+        print("Filename", end="\t")
+        print ("StdDICE", "dq", "sq", "pq", "fast_aji_plus", "get_fast_aji", sep='    ')
+
     for filename in file_list[:]:
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
@@ -186,6 +191,8 @@ def run_nuclei_inst_stat(pred_dir, true_dir, ext='.mat'):
             for scores in metrics:
                 print("%f " % scores[-1], end="  ")
             print()
+
+
     ####
     metrics = np.array(metrics)
     metrics_avg = np.mean(metrics, axis=-1)
