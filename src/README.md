@@ -26,7 +26,7 @@ To use the above models, modify `mode` and `self.model_type` in `config.py` as f
 
 ## Modifying Hyperparameters
 
-To modify hyperparameters, refer to `opt/`. For HoVer-Net, modify the script `opt/hover.py`, else modify `opt/other.py`. 
+To modify hyperparameters, refer to `opt/`. For HoVer-Net, modify the script `opt/hover.py`, else modify `opt/other.py`.
 
 ## Augmentation
 
@@ -36,6 +36,10 @@ To modify the augmentation pipeline, refer to `get_train_augmentors()` in `confi
 
 For instance segmentation, please store patches in a 4 dimensional numpy array with channels [RGB, inst]. Here, inst is the instance segmentation ground truth. I.e pixels range from 0 to N, where 0 is background and N is the number of nuclear instances for that particular image. <br/>
 For simultaneous instance segmentation and classification, please store patches in a 5 dimensional numpy array with channels [RGB, inst, type]. Here, type is the ground truth of the nuclear type. I.e every pixel ranges from 0-K, where 0 is background and K is the number of classes.
+
+## Current Repository Setup
+
+The repository is currently set up to run simultaneous segmentation and classification. To perform nuclear classificaion, as well as segmentation, `self.type_classification` is set as `True`. Note, for this the nuclear type labels **must** be available in the 5th dimension of the input patches. Otherwise, set `self.type_classification = False`.
 
 ## Training
 
@@ -60,7 +64,7 @@ similar to the above. However, the code only support 1 GPU for inference. To run
 Before running inference, set in `config.py`:
 - path where the output will be saved
 - path to data root directories
-- path to model checkpoint. 
+- path to model checkpoint
 
 Download the HoVer-Net instance segmentation checkpoints trained on: [Kumar](https://drive.google.com/open?id=13S7VPu-4uRUQlgA5r-FO5NcA4q3nyif7), [CoNSeP](https://drive.google.com/open?id=1Yk62MtSOfopDSZT5g0ZaoaeAoRTeWUj4), [CPM-17](https://drive.google.com/open?id=1YdEfxhSt57gNL5sgWiXOZNLIkhMrnE_v)
 
@@ -69,5 +73,3 @@ Download the HoVer-Net instance segmentation and classification checkpoints, tra
 To obtain the final instance segmentation, use the command: <br/>
 `python process.py` <br/>
 for post-processing the network predictions.
-
-

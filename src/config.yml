@@ -59,14 +59,11 @@ hv_kumar:
 
   inf_imgs_ext: '.tif' # Data extension of inference data
 
-  # root_dir, output_dirname, subdir1, subdir2[optional] ...
   inf_data_list:
-    - - '/data/input/data_kumar'  # root_dir
-      - 'mat'                     # output_dirname
-      - 'test_diff/Images'        # subdir1
-      - 'test_same/Images'        # subdir2[optional]
+    - '/data/input/data_kumar/test_diff/Images'
+    - '/data/input/data_kumar/test_same/Images'
 
-  # For inference during evalutaion mode i.e run by inferer.py
+  # For inference during evalutaion mode i.e run by infer.py
   eval_inf_input_tensor_names:
     - 'images'
   eval_inf_output_tensor_names:
@@ -116,9 +113,7 @@ hv_cmp17:
   inf_model_path: '/data/input/weights_hv_CPM17.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
-    - - '/data/input/data_cpm17'
-      - 'mat'
-      - 'test/Images'
+    - '/data/input/data_cpm17/test/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -170,9 +165,7 @@ hv_seg_consep:
   inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
-    - - '/data/input/data_consep'
-      - 'mat'
-      - 'test/Images'
+    - '/data/input/data_consep/test/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -223,9 +216,7 @@ hv_seg_cl_consep:  # Id inforamtion
   inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
-    - - '/data/input/data_consep'
-      - 'mat'
-      - 'test/Images'
+    - '/data/input/data_consep/test/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -279,9 +270,7 @@ hv_consep_seg_uit:
   inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
   inf_imgs_ext: '.tif'
   inf_data_list:
-    - - '/data/input/data_uit_he'
-      - 'mat'
-      - 'test/Images'
+    - '/data/input/data_uit_he/test/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -333,9 +322,7 @@ hv_consep_seg_class_uit:
   inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.tif'
   inf_data_list:
-    - - '/data/input/data_uit_he'
-      - 'mat'
-      - 'test/Images'
+    - '/data/input/data_uit_he/test/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -391,10 +378,8 @@ hv_consep_seg_class_uit:
   inf_imgs_ext: '.tif'
 
   inf_data_list:
-    - - '/data/input/data_kumar'
-      - 'mat'
-      - 'test_diff/Images'
-      - 'test_same/Images'
+    - '/data/input/data_kumar/test_diff/Images'
+    - '/data/input/data_kumar/test_same/Images'
 
   eval_inf_input_tensor_names:
     - 'images'
@@ -450,10 +435,8 @@ hv_consep_seg_class_uit:
   inf_imgs_ext: '.tif'
 
   inf_data_list:
-    - - '/data/input/data_kumar'
-      - 'mat'
-      - 'test_diff/Images'
-      - 'test_same/Images'
+    - '/data/input/data_kumar/test_diff/Images'
+    - '/data/input/data_kumar/test_same/Images'
 
   eval_inf_input_tensor_names:
     - 'images'

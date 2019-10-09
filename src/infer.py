@@ -150,31 +150,26 @@ class Inferer(Config):
             output_names = self.eval_inf_output_tensor_names)
         predictor = OfflinePredictor(pred_config)
 
-        for data_dir_set in self.inf_data_list:
-            data_root_dir = data_dir_set[0]
-            data_out_code = data_dir_set[1]
+        for num, data_dir in enumerate(self.inf_data_list):
+            save_dir = os.path.join(self.inf_output_dir, str(num))
 
-            for subdir in data_dir_set[2:]:
-                data_dir = os.path.join(data_root_dir, subdir)
-                save_dir = os.path.join(self.inf_output_dir, data_out_code, subdir)
+            file_list = glob.glob(os.path.join(data_dir, '*{}'.format(self.inf_imgs_ext)))
+            file_list.sort() # ensure same order
 
-                file_list = glob.glob(os.path.join(data_dir, '*{}'.format(self.inf_imgs_ext)))
-                file_list.sort() # ensure same order
+            rm_n_mkdir(save_dir)
+            for filename in file_list:
+                filename = os.path.basename(filename)
+                basename = filename.split('.')[0]
+                print(data_dir, basename, end=' ', flush=True)
 
-                rm_n_mkdir(save_dir)
-                for filename in file_list:
-                    filename = os.path.basename(filename)
-                    basename = filename.split('.')[0]
-                    print(data_dir, basename, end=' ', flush=True)
+                ##
+                img = cv2.imread(os.path.join(data_dir, filename))
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-                    ##
-                    img = cv2.imread(os.path.join(data_dir, filename))
-                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-                    ##
-                    pred_map = self.__gen_prediction(img, predictor)
-                    sio.savemat(os.path.join(save_dir,'{}.mat'.format(basename)), {'result':[pred_map]})
-                    print('FINISH')
+                ##
+                pred_map = self.__gen_prediction(img, predictor)
+                sio.savemat(os.path.join(save_dir,'{}.mat'.format(basename)), {'result':[pred_map]})
+                print('FINISH')
 
 ####
 if __name__ == '__main__':
