@@ -1,4 +1,3 @@
-
 import cv2
 import math
 import random
@@ -30,18 +29,25 @@ def visualize_instances(mask, canvas=None, color=None):
     Return:
         Image with the instance overlaid
     """
-
     canvas = np.full(mask.shape + (3,), 200, dtype=np.uint8) \
                 if canvas is None else np.copy(canvas)
 
-    insts_list = list(np.unique(mask))
-    insts_list.remove(0) # remove background
+    insts_list = list(np.unique(mask)) # [0,1,2,3,4,..,820]
+    insts_list.remove(0) # remove background ?? is 0 (first elem) always background? # [1,2,3,4,..820]
 
-    inst_colors = random_colors(len(insts_list))
-    inst_colors = np.array(inst_colors) * 255
+    if color is None:
+        inst_colors = random_colors(len(insts_list))
+        inst_colors = np.array(inst_colors) * 255
+
+   # assuming that colors and inst_colors are sorted equally
+    if color is not None:
+        unique_colors = list(np.unique(color))
+        num_palete = len(unique_colors) + 1 ## FIX
+        unique_colors = np.array(random_colors(num_palete)) * 255
 
     for idx, inst_id in enumerate(insts_list):
-        inst_color = color if color is not None else inst_colors[idx]
+        inst_color = inst_colors[idx] if color is None else unique_colors[color[idx]][0]
+
         inst_map = np.array(mask == inst_id, np.uint8)
         y1, y2, x1, x2  = bounding_box(inst_map)
         y1 = y1 - 2 if y1 - 2 >= 0 else y1

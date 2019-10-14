@@ -1,4 +1,3 @@
-
 import glob
 import os
 
@@ -61,8 +60,6 @@ for num, data_dir in enumerate(cfg.inf_data_list):
         pred = np.squeeze(pred['result'])
 
         if hasattr(cfg, 'type_classification') and cfg.type_classification:
-            print ("cfg.type_classification == True")
-
             pred_inst = pred[...,5:]
             pred_type = pred[...,:5]
 
@@ -97,9 +94,6 @@ for num, data_dir in enumerate(cfg.inf_data_list):
         # ! will be extremely slow on WSI/TMA so it's advisable to comment this out
         # * remap once so that further processing faster (metrics calculation, etc.)
         pred_inst = remap_label(pred_inst, by_size=True)
-        overlaid_output = visualize_instances(pred_inst, img)
-        overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
-        cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
 
         # for instance segmentation only
         if cfg.type_classification:
@@ -126,9 +120,16 @@ for num, data_dir in enumerate(cfg.inf_data_list):
                          'inst_type' :     pred_inst_type[:, None],
                          'inst_centroid' : pred_inst_centroid,
                         })
+            overlaid_output = visualize_instances(pred_inst, img, list(pred_inst_type[:, None]))
+            overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
+            cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
+
         else:
             sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
                         {'inst_map'  : pred_inst})
+            overlaid_output = visualize_instances(pred_inst, img)
+            overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
+            cv2.imwrite(os.path.join(proc_dir, '{}_uc.png'.format(basename)), overlaid_output)
 
         ##
         print('FINISH')
