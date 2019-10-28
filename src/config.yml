@@ -32,11 +32,10 @@ hv_kumar:
 
   ### Network parameters
   seed: 10
-  type_classification: False # whether to predict the nuclear type, ! must use CoNSeP dataset, where nuclear type labels are available
-  nr_types: 5  # Denotes number of classes for nuclear type classification
-  # Some semantic segmentation network like micronet, nr_types will replace nr_classes if type_classification=True
-  nr_classes: 2 # Nuclei Pixels vs Background
-
+  # self.nr_types = 5
+  # self.nr_classes = 2 # Nuclei Pixels vs Background
+  type_classification: False
+  
   ### Train parameters
   data_ext: '.npy' # Data extension
   # List of directories containing validation patches
@@ -63,17 +62,6 @@ hv_kumar:
     - '/data/input/data_kumar/test_diff/Images'
     - '/data/input/data_kumar/test_same/Images'
 
-  # For inference during evalutaion mode i.e run by infer.py
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  # For inference during training mode i.e run by trainer.py
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
-
 ##################################
 
 hv_cmp17:
@@ -95,8 +83,6 @@ hv_cmp17:
   ### Network parameters
   seed: 10
   type_classification: False
-  nr_types: 5
-  nr_classes: 2
 
   ### Train parameters
   data_ext: '.npy'
@@ -114,15 +100,6 @@ hv_cmp17:
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_cpm17/test/Images'
-
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
 
 ##################################
 
@@ -147,8 +124,6 @@ hv_seg_consep:
   ### Network parameters
   seed: 10
   type_classification: False # TODO FIX: True for data prep
-  nr_types: 5
-  nr_classes: 2
 
   ### Train parameters
   data_ext: '.npy'
@@ -166,15 +141,6 @@ hv_seg_consep:
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_consep/test/Images'
-
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
 
 ##################################
 
@@ -198,8 +164,6 @@ hv_seg_cl_consep:  # Id inforamtion
   ### Network parameters
   seed: 10
   type_classification: True
-  nr_types: 5
-  nr_classes: 2
 
   ### Train parameters
   data_ext: '.npy'
@@ -218,15 +182,6 @@ hv_seg_cl_consep:  # Id inforamtion
   inf_data_list:
     - '/data/input/data_consep/test/Images'
 
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
-
 ###################################
 #### Custom profiles and mixes ####
 ###################################
@@ -237,33 +192,8 @@ hv_consep_seg_uit:
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
-  extract_data_dir: '/data/input/data_consep/'
-  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
-                            # 'mirror' for u-net etc.
-  # check the patch_extractor.py 'main' to see the different
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
   ### Network parameters
-  seed: 10
   type_classification: False
-  nr_types: 5
-  nr_classes: 2
-
-  ### Train parameters
-  data_ext: '.npy'
-  train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
 
   ### Inference parameters
   inf_auto_find_chkpt: False
@@ -271,15 +201,6 @@ hv_consep_seg_uit:
   inf_imgs_ext: '.tif'
   inf_data_list:
     - '/data/input/data_uit_he/test/Images'
-
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
 
 ######################################
 
@@ -289,33 +210,8 @@ hv_consep_seg_class_uit:
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
-  extract_data_dir: '/data/input/data_consep/'
-  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
-                            # 'mirror' for u-net etc.
-  # check the patch_extractor.py 'main' to see the different
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
   ### Network parameters
-  seed: 10
   type_classification: True
-  nr_types: 5
-  nr_classes: 2
-
-  ### Train parameters
-  data_ext: '.npy'
-  train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
 
   ### Inference parameters
   inf_auto_find_chkpt: False
@@ -323,15 +219,6 @@ hv_consep_seg_class_uit:
   inf_imgs_ext: '.tif'
   inf_data_list:
     - '/data/input/data_uit_he/test/Images'
-
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
 
 ######################################
 
@@ -357,8 +244,6 @@ hv_consep_seg_class_uit:
   ### Network parameters
   seed: 10
   type_classification: False
-  nr_types: 5
-  nr_classes: 2
 
   ### Train parameters
   data_ext: '.npy'
@@ -380,15 +265,6 @@ hv_consep_seg_class_uit:
   inf_data_list:
     - '/data/input/data_kumar/test_diff/Images'
     - '/data/input/data_kumar/test_same/Images'
-
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
-
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
 
 ##################################
 
@@ -415,8 +291,6 @@ hv_consep_seg_class_uit:
   ### Network parameters
   seed: 10
   type_classification: False
-  nr_types: 5
-  nr_classes: 2
 
   ### Train parameters
   data_ext: '.npy'
@@ -438,11 +312,20 @@ hv_consep_seg_class_uit:
     - '/data/input/data_kumar/test_diff/Images'
     - '/data/input/data_kumar/test_same/Images'
 
-  eval_inf_input_tensor_names:
-    - 'images'
-  eval_inf_output_tensor_names:
-    - 'predmap-coded'
+##################################
 
-  train_inf_output_tensor_names:
-    - 'predmap-coded'
-    - 'truemap-coded'
+hv_consep_seg_class_ppatches:
+  # Id inforamtion
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  ### Network parameters
+  type_classification: True
+
+  ### Inference parameters
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_ppatches/test/Images'

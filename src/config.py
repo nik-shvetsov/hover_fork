@@ -35,10 +35,10 @@ class Config(object):
         mode = data_config['mode']
         self.model_type = data_config['model_type']
         self.type_classification = data_config['type_classification']
-        self.nr_types = data_config['nr_types']  # denotes number of classes for nuclear type classification
-        # ! some semantic segmentation network like micronet,
-        # ! nr_types will replace nr_classes if type_classification=True
-        self.nr_classes = data_config['nr_classes'] # Nuclei Pixels vs Background
+
+        self.nr_types = 5  # Denotes number of classes for nuclear type classification
+        # Some semantic segmentation network like micronet, nr_types will replace nr_classes if type_classification=True
+        self.nr_classes = 2 # Nuclei Pixels vs Background
 
         #### Dynamically setting the config file into variable
         if mode == 'hover':
@@ -109,11 +109,11 @@ class Config(object):
         self.inf_data_list = data_config['inf_data_list']
         self.inf_output_dir = os.path.join(self.log_path, 'infer', self.model_name)
 
-        # for inference during evalutaion mode i.e run by inferer.py
-        self.eval_inf_input_tensor_names = data_config['eval_inf_input_tensor_names']
-        self.eval_inf_output_tensor_names = data_config['eval_inf_output_tensor_names']
-        # for inference during training mode i.e run by trainer.py
-        self.train_inf_output_tensor_names = data_config['train_inf_output_tensor_names']
+        # For inference during evalutaion mode i.e run by inferer.py
+        self.eval_inf_input_tensor_names = ['images']
+        self.eval_inf_output_tensor_names = ['predmap-coded']
+        # For inference during training mode i.e run by trainer.py
+        self.train_inf_output_tensor_names = ['predmap-coded', 'truemap-coded']
 
 
     def get_model(self):
