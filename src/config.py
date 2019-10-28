@@ -2,6 +2,7 @@ import os
 import importlib
 import random
 import yaml
+from collections import defaultdict
 
 import cv2
 import numpy as np
@@ -19,7 +20,7 @@ class Config(object):
         self.log_path = '/data/output/' # log root path
 
         # Load config yml file
-        data_config = yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config]
+        data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
 
         # data extraion params
         self.extract_data_dir = data_config['extract_data_dir']
