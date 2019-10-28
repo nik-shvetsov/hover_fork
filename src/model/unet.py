@@ -12,7 +12,7 @@ try: # HACK: import beyond current level, may need to restructure
     from config import Config
 except ImportError:
     assert False, 'Fail to import config.py'
-    
+
 class Graph(ModelDesc, Config):
     def __init__(self):
         super(Graph, self).__init__()
@@ -22,7 +22,7 @@ class Graph(ModelDesc, Config):
     def _get_inputs(self):
         return [InputDesc(tf.float32, [None] + self.train_input_shape + [3], 'images'),
                 InputDesc(tf.float32, [None] + self.train_mask_shape  + [None], 'truemap-coded')]
-          
+
     # for node to receive manual info such as learning rate.
     def add_manual_variable(self, name, init_value, summary=True):
         var = tf.get_variable(name, initializer=init_value, trainable=False)
@@ -37,7 +37,7 @@ class Graph(ModelDesc, Config):
         return opt
 
     def _build_graph(self, inputs):
-        
+
         is_training = get_current_tower_context().is_training
 
         images, truemap_coded = inputs
@@ -47,18 +47,18 @@ class Graph(ModelDesc, Config):
         if hasattr(self, 'type_classification') and self.type_classification:
             true = truemap_coded[...,1]
         else:
-            true = truemap_coded[...,0]            
+            true = truemap_coded[...,0]
         true = tf.cast(true, tf.int32)
         true = tf.identity(true, name='truemap')
-        one  = tf.one_hot(true, self.nr_classes, axis=-1)
+        one  = tf.one_hot(true, self.nr_types if self.type_classification else self.nr_classes, axis=-1)
         true = tf.expand_dims(true, axis=-1)
 
         def encoder_blk(name, feat_in, num_feats, has_down=False):
             with tf.variable_scope(name):
-                feat = feat_in if not has_down else MaxPooling('pool1', feat_in, 2, strides=2, padding= 'same') 
+                feat = feat_in if not has_down else MaxPooling('pool1', feat_in, 2, strides=2, padding= 'same')
                 feat = Conv2D('conv_1', feat, num_feats, 3, padding='valid', strides=1, activation=tf.nn.relu)
                 feat = Conv2D('conv_2', feat, num_feats, 3, padding='valid', strides=1, activation=tf.nn.relu)
-                return feat                
+                return feat
 
         def decoder_blk(name, feat_in, num_feats, shorcut):
             with tf.variable_scope(name):
@@ -95,8 +95,8 @@ class Graph(ModelDesc, Config):
             feat = decoder_blk('u2', feat, 128, d2)
             feat = decoder_blk('u1', feat,  64, d1)
 
-            logi = Conv2D('conv_out', feat, 
-                                self.nr_types if self.type_classification else self.nr_classes, 
+            logi = Conv2D('conv_out', feat,
+                                self.nr_types if self.type_classification else self.nr_classes,
                                 1, use_bias=True, activation=tf.identity)
             logi = tf.transpose(logi, [0, 2, 3, 1])
             soft = tf.nn.softmax(logi, axis=-1)
@@ -132,8 +132,8 @@ class Graph(ModelDesc, Config):
             orig_imgs = tf.cast(orig_imgs  , tf.uint8)
             orig_imgs = crop_op(orig_imgs, (184, 184), "channels_last")
             tf.summary.image('input', orig_imgs, max_outputs=1)
-    
-            pred = colorize(prob[...,0], cmap='jet')
+
+            pred = colorize(prob_np[...,0], cmap='jet')
             true = colorize(true[...,0], cmap='jet')
             pen_map = colorize(pen_map, cmap='jet')
 

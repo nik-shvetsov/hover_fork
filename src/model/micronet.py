@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 
 from tensorpack import *
@@ -42,7 +41,7 @@ class Graph(ModelDesc, Config):
 
         ####
         is_training = get_current_tower_context().is_training
-        
+
         images, truemap_coded = inputs
 
         orig_imgs = images
@@ -50,17 +49,17 @@ class Graph(ModelDesc, Config):
         if self.type_classification:
             true = truemap_coded[...,1]
         else:
-            true = truemap_coded[...,0]            
+            true = truemap_coded[...,0]
         true = tf.cast(true, tf.int32)
         true = tf.identity(true, name='truemap')
-        one  = tf.one_hot(true, self.nr_classes, axis=-1)
+        one  = tf.one_hot(true, self.nr_types if self.type_classification else self.nr_classes, axis=-1)
         true = tf.expand_dims(true, axis=-1)
 
         def down_branch(name, main_in, aux_in, ch):
             with tf.variable_scope(name):
                 a = Conv2D('conv1', main_in, ch, 3, padding='valid', use_bias=False, activation=BNReLU)
                 a = Conv2D('conv2', a, ch, 3, padding='valid', use_bias=True, activation=tf.nn.relu)
-                a = MaxPooling('pool', a, 2, strides=2, padding= 'same') 
+                a = MaxPooling('pool', a, 2, strides=2, padding= 'same')
 
                 b = Conv2D('conv3', aux_in, ch, 3, padding='valid', use_bias=False, activation=BNReLU)
                 b = Conv2D('conv4',      b, ch, 3, padding='valid', use_bias=True, activation=tf.nn.relu)
@@ -85,15 +84,15 @@ class Graph(ModelDesc, Config):
             ch = main_in.get_shape().as_list()[1] # NCHW
             with tf.variable_scope(name): # preserve the depth
                 a = Conv2DTranspose('up', main_in, ch, up_kernel, strides=up_strides, padding='same', use_bias=True, activation=tf.identity)
-                a = Conv2D('conv', a, self.nr_classes, 3, padding='valid', activation=tf.nn.relu)
+                a = Conv2D('conv', a, self.nr_types if self.type_classification else self.nr_classes, 3, padding='valid', activation=tf.nn.relu)
                 a = tf.layers.dropout(a, rate=0.5, seed=5, training=is_training)
             return a
 
         #### Xavier initializer
-        with argscope(Conv2D, activation=tf.identity, 
+        with argscope(Conv2D, activation=tf.identity,
                     kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(uniform=True),
                     bias_initializer=tf.constant_initializer(0.1)), \
-             argscope(Conv2DTranspose, activation=tf.identity, 
+             argscope(Conv2DTranspose, activation=tf.identity,
                     kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(uniform=True),
                     bias_initializer=tf.constant_initializer(0.1)), \
                 argscope([Conv2D, Conv2DTranspose, MaxPooling, BatchNorm], data_format=self.data_format):
@@ -124,8 +123,8 @@ class Graph(ModelDesc, Config):
             soft_list = []
             prob_list = []
             for idx, sub_out in enumerate(out_list):
-                logi = Conv2D('conv_out%d' % idx, sub_out, 
-                                self.nr_types if self.type_classification else self.nr_classes, 
+                logi = Conv2D('conv_out%d' % idx, sub_out,
+                                self.nr_types if self.type_classification else self.nr_classes,
                                 3, padding='valid', use_bias=True, activation=tf.identity)
                 logi = tf.transpose(logi, [0, 2, 3, 1])
                 soft = tf.nn.softmax(logi, axis=-1)
@@ -136,7 +135,7 @@ class Graph(ModelDesc, Config):
                 else:
                     prob_np = tf.identity(soft[...,1], name='predmap-prob')
                     prob_np = tf.expand_dims(prob_np, axis=-1)
-                
+
                 soft_list.append(soft)
                 prob_list.append(prob_np)
 
@@ -149,7 +148,7 @@ class Graph(ModelDesc, Config):
 
         ####
         if is_training:
-            ######## LOSS                       
+            ######## LOSS
             # get the variable to received fed weight from external scheduler
             with tf.variable_scope("", reuse=True):
                 aux_loss_dw = tf.get_variable('aux_loss_dw')

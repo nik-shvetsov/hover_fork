@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 
 from tensorpack import *
@@ -50,7 +49,7 @@ class Graph(ModelDesc, Config):
                     assert stride == 2, 'U-Net supports stride 2 down-sample only'
                     l = MaxPooling('max_pool', l, 2, strides=2)
                 for idx in range(0, nr_blks):
-                    l = Conv2D('conv_%d' % idx, l, channel, 3, 
+                    l = Conv2D('conv_%d' % idx, l, channel, 3,
                                 padding='valid', strides=1, activation=BNReLU)
             return l
         ####
@@ -62,12 +61,12 @@ class Graph(ModelDesc, Config):
                     l = Conv2DTranspose('deconv', l, up_channel, 2, strides=2)
                     l = tf.concat([l, shorcut], axis=1)
                 for idx in range(0, nr_blks):
-                    l = Conv2D('conv_%d' % idx, l, channel, 3, 
+                    l = Conv2D('conv_%d' % idx, l, channel, 3,
                                 padding='valid', strides=1, activation=BNReLU)
-            return l            
+            return l
         ####
         is_training = get_current_tower_context().is_training
-        
+
         images, truemap_coded = inputs
 
         orig_imgs = images
@@ -76,7 +75,7 @@ class Graph(ModelDesc, Config):
             true_type = truemap_coded[...,1]
             true_type = tf.cast(true_type, tf.int32)
             true_type = tf.identity(true_type, name='truemap-type')
-            one_type  = tf.one_hot(true_type, 5, axis=-1)
+            one_type  = tf.one_hot(true_type, self.nr_types, axis=-1)
             true_type = tf.expand_dims(true_type, axis=-1)
 
         true_dst = truemap_coded[...,-1]
@@ -93,11 +92,11 @@ class Graph(ModelDesc, Config):
 
             ####
             with tf.variable_scope('encoder'):
-                e0 = down_conv_block('e0',  i,   32, nr_blks=2, stride=1) 
-                e1 = down_conv_block('e1', e0,   64, nr_blks=2, stride=2) 
-                e2 = down_conv_block('e2', e1,  128, nr_blks=2, stride=2) 
-                e3 = down_conv_block('e3', e2,  256, nr_blks=2, stride=2) 
-                e4 = down_conv_block('e4', e3,  512, nr_blks=2, stride=2) 
+                e0 = down_conv_block('e0',  i,   32, nr_blks=2, stride=1)
+                e1 = down_conv_block('e1', e0,   64, nr_blks=2, stride=2)
+                e2 = down_conv_block('e2', e1,  128, nr_blks=2, stride=2)
+                e3 = down_conv_block('e3', e2,  256, nr_blks=2, stride=2)
+                e4 = down_conv_block('e4', e3,  512, nr_blks=2, stride=2)
 
                 c0 = crop_op(e0, (176, 176))
                 c1 = crop_op(e1, (80, 80))
@@ -116,7 +115,7 @@ class Graph(ModelDesc, Config):
             pred_dst = tf.identity(logi_dst, name='predmap-dst')
 
             if self.type_classification:
-                logi_type = Conv2D('conv_out_type', d0, 5, 1, activation=tf.identity)
+                logi_type = Conv2D('conv_out_type', d0, self.nr_types, 1, activation=tf.identity)
                 logi_type = tf.transpose(logi_type, [0, 2, 3, 1])
                 soft_type = tf.nn.softmax(logi_type, axis=-1)
                 # encoded so that inference can extract all output at once
