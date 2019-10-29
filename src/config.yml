@@ -35,7 +35,7 @@ hv_kumar:
   # self.nr_types = 5
   # self.nr_classes = 2 # Nuclei Pixels vs Background
   type_classification: False
-  
+
   ### Train parameters
   data_ext: '.npy' # Data extension
   # List of directories containing validation patches
@@ -186,42 +186,6 @@ hv_seg_cl_consep:  # Id inforamtion
 #### Custom profiles and mixes ####
 ###################################
 
-hv_consep_seg_uit:
-  # Id inforamtion
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  ### Network parameters
-  type_classification: False
-
-  ### Inference parameters
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
-  inf_imgs_ext: '.tif'
-  inf_data_list:
-    - '/data/input/data_uit_he/test/Images'
-
-######################################
-
-hv_consep_seg_class_uit:
-  # Id inforamtion
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  ### Network parameters
-  type_classification: True
-
-  ### Inference parameters
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
-  inf_imgs_ext: '.tif'
-  inf_data_list:
-    - '/data/input/data_uit_he/test/Images'
-
-######################################
-
 1_valid_fw_hv_kumar:
   # test using downloaded weights and kumar dataset
 
@@ -315,13 +279,35 @@ hv_consep_seg_class_uit:
 ##################################
 
 hv_consep_seg_class_ppatches:
-  # Id inforamtion
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
+  ### Data preparaion (if needed)
+  extract_data_dir: '/data/input/data_consep/'
+  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
+                            # 'mirror' for u-net etc.
+  # check the patch_extractor.py 'main' to see the different
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
   ### Network parameters
+  seed: 10
   type_classification: True
+
+  ### Train parameters
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
 
   ### Inference parameters
   inf_auto_find_chkpt: False
@@ -329,3 +315,5 @@ hv_consep_seg_class_ppatches:
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_ppatches/test/Images'
+
+##################################
