@@ -123,6 +123,9 @@ for num, data_dir in enumerate(cfg.inf_data_list):
             overlaid_output = visualize_instances(pred_inst, img, (cfg.nr_types, pred_inst_type[:, None])) #cfg.nr_types + 1
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
             cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
+            with open(os.path.join(proc_dir, f'{basename}.log'), 'w') as log_file:
+                unique, counts = np.unique(pred_inst_type[:, None], return_counts=True)
+                print(f'{basename} : {dict(zip(unique, counts))}', file = log_file)
 
         else:
             sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
@@ -130,6 +133,8 @@ for num, data_dir in enumerate(cfg.inf_data_list):
             overlaid_output = visualize_instances(pred_inst, img)
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
             cv2.imwrite(os.path.join(proc_dir, '{}_uc.png'.format(basename)), overlaid_output)
+
+
 
         ##
         print('FINISH')
