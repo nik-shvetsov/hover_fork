@@ -120,7 +120,7 @@ for num, data_dir in enumerate(cfg.inf_data_list):
                          'inst_type' :     pred_inst_type[:, None],
                          'inst_centroid' : pred_inst_centroid,
                         })
-            overlaid_output = visualize_instances(pred_inst, img, list(pred_inst_type[:, None]))
+            overlaid_output = visualize_instances(pred_inst, img, (cfg.nr_types, pred_inst_type[:, None])) #cfg.nr_types + 1
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
             cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
 

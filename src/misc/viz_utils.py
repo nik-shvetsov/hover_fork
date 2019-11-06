@@ -9,44 +9,45 @@ from matplotlib import cm
 from .utils import bounding_box
 
 ####
-def random_colors(N, bright=True):
+def gen_colors(N, random=True, bright=True):
     """
-    Generate random colors.
+    Generate colors.
     To get visually distinct colors, generate them in HSV space then
     convert to RGB.
     """
     brightness = 1.0 if bright else 0.7
     hsv = [(i / N, 1, brightness) for i in range(N)]
     colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
-    random.shuffle(colors)
+    if (random): random.shuffle(colors)
     return colors
 
 ####
-def visualize_instances(mask, canvas=None, color=None):
+def visualize_instances(mask, canvas=None, color_info=None):
     """
     Args:
         mask: array of NW
     Return:
         Image with the instance overlaid
     """
+    if color_info is not None:
+        num_colors = color_info[0]
+
     canvas = np.full(mask.shape + (3,), 200, dtype=np.uint8) \
                 if canvas is None else np.copy(canvas)
 
     insts_list = list(np.unique(mask)) # [0,1,2,3,4,..,820]
     insts_list.remove(0) # remove background ?? is 0 (first elem) always background? # [1,2,3,4,..820]
 
-    if color is None:
-        inst_colors = random_colors(len(insts_list))
+    if num_colors is None:
+        inst_colors = gen_colors(len(insts_list))
         inst_colors = np.array(inst_colors) * 255
 
    # assuming that colors and inst_colors are sorted equally
-    if color is not None:
-        unique_colors = list(np.unique(color))
-        num_palete = len(unique_colors) + 1 ## FIX
-        unique_colors = np.array(random_colors(num_palete)) * 255
+    if num_colors is not None:
+        unique_colors = np.array(gen_colors(num_colors, random=False)) * 255
 
     for idx, inst_id in enumerate(insts_list):
-        inst_color = inst_colors[idx] if color is None else unique_colors[color[idx]][0]
+        inst_color = inst_colors[idx] if num_colors is None else unique_colors[int(color_info[1][idx][0])]
 
         inst_map = np.array(mask == inst_id, np.uint8)
         y1, y2, x1, x2  = bounding_box(inst_map)
