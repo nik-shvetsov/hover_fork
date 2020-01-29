@@ -2,6 +2,7 @@ import argparse
 import glob
 import math
 import os
+from datetime import datetime
 from collections import deque
 
 import cv2
@@ -169,7 +170,7 @@ class Inferer(Config):
                 ##
                 pred_map = self.__gen_prediction(img, predictor)
                 sio.savemat(os.path.join(save_dir,'{}.mat'.format(basename)), {'result':[pred_map]})
-                print('FINISH')
+                print(f"Finished. {datetime.now().strftime('%H:%M:%S.%f')}")
 
 ####
 if __name__ == '__main__':

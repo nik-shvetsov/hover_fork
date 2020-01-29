@@ -1,5 +1,6 @@
 import glob
 import os
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -110,7 +111,7 @@ for num, data_dir in enumerate(cfg.inf_data_list):
                     if len(type_list) > 1:
                         inst_type = type_list[1][0]
                     else:
-                        print('[Warn] Instance has `background` type' )
+                        print('[Warn] Instance has `background` type')
                 pred_inst_type[idx] = inst_type
             pred_inst_centroid = get_inst_centroid(pred_inst)
 
@@ -137,4 +138,4 @@ for num, data_dir in enumerate(cfg.inf_data_list):
 
 
         ##
-        print('FINISH')
+        print(f"Finished. {datetime.now().strftime('%H:%M:%S.%f')}")
