@@ -21,6 +21,10 @@ from misc.viz_utils import visualize_instances
 from misc.utils import get_inst_centroid
 from metrics.stats_utils import remap_label
 
+from joblib import Parallel, delayed
+
+AV_CPU = os.cpu_count()
+
 ###################
 
 # TODO:
@@ -48,7 +52,7 @@ for num, data_dir in enumerate(cfg.inf_data_list):
     if not os.path.isdir(proc_dir):
         os.makedirs(proc_dir)
 
-    for filename in file_list:
+    def process_image(filename):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
         print(pred_dir, basename, end=' ', flush=True)
@@ -138,4 +142,8 @@ for num, data_dir in enumerate(cfg.inf_data_list):
 
 
         ##
-        print(f"Finished. {datetime.now().strftime('%H:%M:%S.%f')}")
+        print(f"Finished for {filename}. {datetime.now().strftime('%H:%M:%S.%f')}")
+
+    Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
+
+    print (f"Done parallel process for ```{data_dir}```. {datetime.now().strftime('%H:%M:%S.%f')}")
