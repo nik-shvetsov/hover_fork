@@ -55,7 +55,7 @@ for num, data_dir in enumerate(cfg.inf_data_list):
     def process_image(filename):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
-        print(pred_dir, basename, end=' ', flush=True)
+        print(pred_dir, basename, flush=True)
 
         ##
         img = cv2.imread(os.path.join(data_dir, '{}{}'.format(basename, cfg.inf_imgs_ext)))
@@ -142,8 +142,14 @@ for num, data_dir in enumerate(cfg.inf_data_list):
 
 
         ##
-        print(f"Finished for {filename}. {datetime.now().strftime('%H:%M:%S.%f')}")
+        print(f"Finished for {basename} {datetime.now().strftime('%H:%M:%S.%f')}")
+
+    start = datetime.now()
+    print(f"Stared parallel process for ```{data_dir}``` {start.strftime('%d/%m %H:%M:%S.%f')}")
+
 
     Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
-
-    print (f"Done parallel process for ```{data_dir}```. {datetime.now().strftime('%H:%M:%S.%f')}")
+    
+    end = datetime.now()
+    print(f"Done parallel process for ```{data_dir}``` {end.strftime('%d/%m %H:%M:%S.%f')}")
+    print(f"Overall time elapsed: {end - start}")
