@@ -109,6 +109,7 @@ class Config(object):
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = data_config['inf_data_list']
         self.inf_output_dir = os.path.join(self.log_path, 'infer', self.model_name)
+        self.remap_labels = data_config['remap_labels']
 
         # For inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = ['images']

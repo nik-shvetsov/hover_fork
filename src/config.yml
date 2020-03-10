@@ -61,7 +61,8 @@ hv_kumar:
   inf_data_list:
     - '/data/input/data_kumar/test_diff/Images'
     - '/data/input/data_kumar/test_same/Images'
-
+  
+  remap_labels: False
 ##################################
 
 hv_cmp17:
@@ -310,11 +311,11 @@ hv_consep_seg_class_ppatches:
   input_norm: True
 
   ### Inference parameters
-  remap_labels: False
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_ppatches/test/Images'
-
+    
+  remap_labels: False
 ##################################
