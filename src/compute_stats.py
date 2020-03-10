@@ -149,9 +149,8 @@ def run_nuclei_type_stat(pred_dir, true_dir, exhaustive=True):
     print(np.array(results))
     return
 
-def run_nuclei_inst_stat(pred_dir, true_dir, ext='.mat'):
+def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
     # print stats of each image
-    print_img_stats = True
     print(pred_dir)
 
     file_list = glob.glob(os.path.join(pred_dir,'*{}'.format(ext)))
@@ -211,6 +210,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.mode == 'instance':
-        run_nuclei_inst_stat(args.pred_dir, args.true_dir)
+        run_nuclei_inst_stat(args.pred_dir, args.true_dir, print_img_stats=True)
     if args.mode == 'type':
         run_nuclei_type_stat(args.pred_dir, args.true_dir)
