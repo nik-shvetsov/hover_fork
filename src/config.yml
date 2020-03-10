@@ -310,6 +310,7 @@ hv_consep_seg_class_ppatches:
   input_norm: True
 
   ### Inference parameters
+  remap_labels: False
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'

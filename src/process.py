@@ -98,7 +98,8 @@ for num, data_dir in enumerate(cfg.inf_data_list):
 
         # ! will be extremely slow on WSI/TMA so it's advisable to comment this out
         # * remap once so that further processing faster (metrics calculation, etc.)
-        pred_inst = remap_label(pred_inst, by_size=True)
+        if (cfg.remap_labels):
+            pred_inst = remap_label(pred_inst, by_size=True)
 
         # for instance segmentation only
         if cfg.type_classification:
