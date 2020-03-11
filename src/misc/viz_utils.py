@@ -9,7 +9,7 @@ from matplotlib import cm
 from .utils import bounding_box
 
 ####
-def gen_colors(N, random=True, bright=True):
+def gen_colors(N, random_colors=True, bright=True):
     """
     Generate colors.
     To get visually distinct colors, generate them in HSV space then
@@ -18,7 +18,7 @@ def gen_colors(N, random=True, bright=True):
     brightness = 1.0 if bright else 0.7
     hsv = [(i / N, 1, brightness) for i in range(N)]
     colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
-    if (random): random.shuffle(colors)
+    if (random_colors): random.shuffle(colors)
     return colors
 
 ####
@@ -29,8 +29,7 @@ def visualize_instances(mask, canvas=None, color_info=None):
     Return:
         Image with the instance overlaid
     """
-    if color_info is not None:
-        num_colors = color_info[0]
+    num_colors = color_info[0] if color_info is not None else None
 
     canvas = np.full(mask.shape + (3,), 200, dtype=np.uint8) \
                 if canvas is None else np.copy(canvas)
@@ -44,7 +43,7 @@ def visualize_instances(mask, canvas=None, color_info=None):
 
    # assuming that colors and inst_colors are sorted equally
     if num_colors is not None:
-        unique_colors = np.array(gen_colors(num_colors, random=False)) * 255
+        unique_colors = np.array(gen_colors(num_colors, random_colors=False)) * 255
 
     for idx, inst_id in enumerate(insts_list):
         inst_color = inst_colors[idx] if num_colors is None else unique_colors[int(color_info[1][idx][0])]
