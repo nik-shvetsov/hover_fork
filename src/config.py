@@ -37,7 +37,17 @@ class Config(object):
         self.model_type = data_config['model_type']
         self.type_classification = data_config['type_classification']
 
-        self.nr_types = 5  # Denotes number of classes for nuclear type classification
+        self.nr_types = 5  # denotes number of classes for nuclear type classification, plus background class
+        # define your nuclei type name here, 0 preserved for background id
+        self.nuclei_type_dict = {
+            'Misc': 1,
+            'Inflammatory': 2,
+            'Epithelial': 3,
+            'Spindle': 4,
+        }
+        assert len(self.nuclei_type_dict.values()) == self.nr_types - 1
+
+
         # Some semantic segmentation network like micronet, nr_types will replace nr_classes if type_classification=True
         self.nr_classes = 2 # Nuclei Pixels vs Background
 
