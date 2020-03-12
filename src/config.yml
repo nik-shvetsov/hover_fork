@@ -32,9 +32,15 @@ hv_kumar:
 
   ### Network parameters
   seed: 10
-  # self.nr_types = 5
   # self.nr_classes = 2 # Nuclei Pixels vs Background
   type_classification: False
+  nr_types: 5 # denotes number of classes for nuclear type classification, plus background class
+  nuclei_types: # define your nuclei type name here, 0 preserved for background id
+    # Background: 0
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
 
   ### Train parameters
   data_ext: '.npy' # Data extension
@@ -66,12 +72,10 @@ hv_kumar:
 ##################################
 
 hv_cmp17:
-  # Id inforamtion
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
   extract_data_dir: '/data/input/data_cpm17/'
   extract_type: 'mirror'
   img_ext: '.png'
@@ -81,11 +85,16 @@ hv_cmp17:
   step_size: [80, 80]
   win_size: [540, 540]
 
-  ### Network parameters
   seed: 10
   type_classification: False
 
-  ### Train parameters
+  nr_types: 5
+  nuclei_types:
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
+
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_cmp17_540x540_80x80/train/Labels/'
@@ -95,7 +104,6 @@ hv_cmp17:
   nr_procs_valid: 4
   input_norm: True
 
-  ### Inference parameters
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_CPM17.npz'
   inf_imgs_ext: '.png'
@@ -106,16 +114,12 @@ hv_cmp17:
 ##################################
 
 hv_seg_consep:
-  # Id inforamtion
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
   extract_data_dir: '/data/input/data_consep/'
-  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
-                            # 'mirror' for u-net etc.
-  # check the patch_extractor.py 'main' to see the different
+  extract_type: 'mirror' 
   img_ext: '.png'
   data_modes:
     - 'train'
@@ -123,11 +127,15 @@ hv_seg_consep:
   step_size: [80, 80]
   win_size: [540, 540]
 
-  ### Network parameters
   seed: 10
-  type_classification: False # TODO FIX: True for data prep
+  type_classification: False
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
 
-  ### Train parameters
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
@@ -137,7 +145,6 @@ hv_seg_consep:
   nr_procs_valid: 4
   input_norm: True
 
-  ### Inference parameters
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
   inf_imgs_ext: '.png'
@@ -147,16 +154,13 @@ hv_seg_consep:
   remap_labels: False
 ##################################
 
-hv_seg_class_consep:  # Id inforamtion
+hv_seg_class_consep:
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
   extract_data_dir: '/data/input/data_consep/'
-  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
-                            # 'mirror' for u-net etc.
-  # check the patch_extractor.py 'main' to see the different
+  extract_type: 'mirror'
   img_ext: '.png'
   data_modes:
     - 'train'
@@ -164,11 +168,15 @@ hv_seg_class_consep:  # Id inforamtion
   step_size: [80, 80]
   win_size: [540, 540]
 
-  ### Network parameters
   seed: 10
   type_classification: True
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
 
-  ### Train parameters
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
@@ -178,7 +186,6 @@ hv_seg_class_consep:  # Id inforamtion
   nr_procs_valid: 4
   input_norm: True
 
-  ### Inference parameters
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
@@ -194,12 +201,10 @@ hv_seg_class_consep:  # Id inforamtion
 1_test_valid_fw_hv_kumar:
   # test using downloaded weights and kumar dataset
 
-  # Id inforamtion
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
   extract_data_dir: '/data/input/data_kumar/'
   extract_type: 'mirror'
   img_ext: '.tif'
@@ -210,11 +215,15 @@ hv_seg_class_consep:  # Id inforamtion
   step_size: [80, 80]
   win_size: [540, 540]
 
-  ### Network parameters
   seed: 10
   type_classification: False
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
 
-  ### Train parameters
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
@@ -223,9 +232,8 @@ hv_seg_class_consep:  # Id inforamtion
     - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
-  input_norm: True # normalize RGB to 0-1 range
+  input_norm: True
 
-  ### Inference parameters
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_kumar.npz'
 
@@ -241,12 +249,10 @@ hv_seg_class_consep:  # Id inforamtion
 2_test_valid_mw_hv_kumar:
   # test with my trained weights and kumar dataset
 
-  # Id inforamtion
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
   extract_data_dir: '/data/input/data_kumar/'
   extract_type: 'mirror'
 
@@ -258,11 +264,15 @@ hv_seg_class_consep:  # Id inforamtion
   step_size: [80, 80]
   win_size: [540, 540]
 
-  ### Network parameters
   seed: 10
   type_classification: False
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
 
-  ### Train parameters
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
@@ -273,7 +283,6 @@ hv_seg_class_consep:  # Id inforamtion
   nr_procs_valid: 4
   input_norm: True
 
-  ### Inference parameters
   inf_auto_find_chkpt: True
   inf_model_path: '/data/output/train/hv_kumar-np_hv-1.0/1/'
   inf_imgs_ext: '.tif'
@@ -290,11 +299,9 @@ hv_consep_seg_class_2_batch:
   mode: 'hover'
   model_type: 'np_hv'
 
-  ### Data preparaion (if needed)
   extract_data_dir: '/data/input/data_consep/'
-  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
-                            # 'mirror' for u-net etc.
-  # check the patch_extractor.py 'main' to see the different
+  extract_type: 'mirror' 
+
   img_ext: '.png'
   data_modes:
     - 'train'
@@ -302,11 +309,15 @@ hv_consep_seg_class_2_batch:
   step_size: [80, 80]
   win_size: [540, 540]
 
-  ### Network parameters
   seed: 10
   type_classification: True
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle': 4
 
-  ### Train parameters
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
@@ -316,7 +327,6 @@ hv_consep_seg_class_2_batch:
   nr_procs_valid: 4
   input_norm: True
 
-  ### Inference parameters
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
