@@ -1,5 +1,5 @@
-
 import random
+import tempfile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -74,7 +74,7 @@ def train_generator(ds, shape_aug=None, input_aug=None, label_aug=None, batch_si
     return ds
 
 ####
-def visualize(datagen, batch_size, view_size=4):
+def visualize(datagen, batch_size, view_size=4, aug_only=False, preview=False):
     """
     Read the batch from 'datagen' and display 'view_size' number of
     of images and their corresponding Ground Truth
@@ -102,9 +102,15 @@ def visualize(datagen, batch_size, view_size=4):
         for idx in range (0, view_size):
             displayed_img = prep_imgs(imgs[idx], segs[idx])
             plt.subplot(view_size, 1, idx+1)
-            plt.imshow(displayed_img)
+            if aug_only:
+                plt.imshow(imgs[idx]) #displayed_img
+            else:
+                plt.imshow(displayed_img)
+        plt.savefig(f'{str(tempfile.NamedTemporaryFile().name)}.png')
         plt.show()
+        if (preview):
+            break
+
     return
-###
 
 ###########################################################################

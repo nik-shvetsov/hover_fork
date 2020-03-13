@@ -11,6 +11,7 @@ from scipy.ndimage.interpolation import affine_transform, map_coordinates
 from scipy.ndimage.morphology import (distance_transform_cdt,
                                       distance_transform_edt)
 from skimage import morphology as morph
+from skimage.color import rgb2hed, rgb2gray, gray2rgb
 
 from tensorpack.dataflow.imgaug import ImageAugmentor
 from tensorpack.utils.utils import get_rng
@@ -400,3 +401,25 @@ class MedianBlur(ImageAugmentor):
 
     def _augment(self, img, ksize):
         return cv2.medianBlur(img, ksize)
+
+class RGB2HED(ImageAugmentor):
+    def __init__(self,):
+        super(RGB2HED, self).__init__()
+
+    def _get_augment_params(self, img):
+        return None
+
+    def _augment(self, img, s):
+        result = rgb2hed(img)
+        R, G, B = cv2.split(img)
+        equ = cv2.merge((cv2.equalizeHist(R), cv2.equalizeHist(G), cv2.equalizeHist(B)))
+        return equ
+        # R, G, B = cv2.split(img)
+        # equ = cv2.merge((cv2.equalizeHist(R), cv2.equalizeHist(G), cv2.equalizeHist(B)))
+        # result = rgb2hed(equ)
+        # return result
+
+        # grs = rgb2gray(img)
+        # equ = cv2.equalizeHist(grs)
+        # rgb = gray2rgb(equ)
+        # return rgb2hed(rgb)

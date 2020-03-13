@@ -11,7 +11,7 @@ from tensorpack import imgaug
 
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
-                         GenInstanceContourMap)
+                         GenInstanceContourMap, RGB2HED)
 ####
 class Config(object):
     def __init__(self, ):
@@ -149,23 +149,41 @@ class Config(object):
             imgaug.CenterCrop(input_shape),
         ]
 
-        input_augs = [
+        prev_augs = [
             imgaug.RandomApplyAug(
-                imgaug.RandomChooseAug(
-                    [
+                imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
                     imgaug.GaussianNoise(),
-                    ]
-                ), 0.5),
+                ]), 0.5
+            ),
             # standard color augmentation
-            imgaug.RandomOrderAug(
-                [imgaug.Hue((-8, 8), rgb=True),
+            imgaug.RandomOrderAug([
+                imgaug.Hue((-8, 8), rgb=True), 
                 imgaug.Saturation(0.2, rgb=True),
-                imgaug.Brightness(26, clip=True),
+                imgaug.Brightness(26, clip=True),  
                 imgaug.Contrast((0.75, 1.25), clip=True),
                 ]),
             imgaug.ToUint8(),
+        ]
+
+        input_augs = [
+            imgaug.RandomOrderAug([
+                imgaug.Hue((179, 180), rgb=True), 
+                imgaug.Saturation(0.5, rgb=True), 
+                imgaug.Brightness(50, clip=True), 
+                imgaug.Contrast((1.00, 1.50), clip=True),
+            ]),
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    GaussianBlur(),
+                    MedianBlur(),
+                    imgaug.GaussianNoise(),
+                ]
+                ), 0.5
+            ),
+            RGB2HED(),
+            imgaug.ToUint8(),# imgaug.ToFloat32(),
         ]
 
         label_augs = []
