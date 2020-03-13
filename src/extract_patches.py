@@ -54,7 +54,8 @@ if __name__ == '__main__':
                     # assumes that ann is HxW
                     ann_inst = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
                     ann_inst = ann_inst.astype('int32')
-                    ann = np.expand_dims(ann_inst, -1)
+                    # fix for 2-way annotations in consep dataset
+                    ann = np.expand_dims(ann_inst, -1) if (len(np.shape(ann_inst)) == 2) else ann_inst
 
                 img = np.concatenate([img, ann], axis=-1)
                 sub_patches = xtractor.extract(img, cfg.extract_type)
