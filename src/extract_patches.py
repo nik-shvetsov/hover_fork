@@ -34,10 +34,13 @@ if __name__ == '__main__':
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
                 if cfg.type_classification:
-                    # assumes that ann is HxWx2 (nuclei class labels are available at index 1 of C)
-                    ann = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
-                    ann_inst = ann[...,0]
-                    ann_type = ann[...,1]
+                    # # assumes that ann is HxWx2 (nuclei class labels are available at index 1 of C)
+                    # ann = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
+                    # ann_inst = ann[...,0]
+                    # ann_type = ann[...,1]
+                    ann = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename)))
+                    ann_inst = ann['inst_map']
+                    ann_type = ann['class_map']
 
                     # merge classes for CoNSeP (in paper we only utilise 3 nuclei classes and background)
                     # If own dataset is used, then the below may need to be modified
@@ -52,10 +55,9 @@ if __name__ == '__main__':
                     ann = ann.astype('int32')
                 else:
                     # assumes that ann is HxW
-                    ann_inst = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
-                    ann_inst = ann_inst.astype('int32')
-                    # fix for 2-way annotations in consep dataset
-                    ann = np.expand_dims(ann_inst, -1) if (len(np.shape(ann_inst)) == 2) else ann_inst
+                    ann_inst = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename))) # .mat?
+                    ann_inst = (ann_inst['inst_map']).astype('int32')
+                    ann = np.expand_dims(ann_inst, -1)
 
                 img = np.concatenate([img, ann], axis=-1)
                 sub_patches = xtractor.extract(img, cfg.extract_type)

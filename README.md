@@ -2,9 +2,17 @@
 
 A multiple branch network that performs nuclear instance segmentation and classification within a single network. The network leverages the horizontal and vertical distances of nuclear pixels to their centres of mass to separate clustered cells. A dedicated up-sampling branch is used to classify the nuclear type for each segmented instance. <br />
 
-This is an extended version of our previous work: XY-Net. <br />
+This is an extended version of our previous work: XY-Net.  <br />
 
+[Link](https://www.sciencedirect.com/science/article/abs/pii/S1361841519301045?via%3Dihub) to Medical Image Analysis paper. 
 [Link to paper](https://arxiv.org/abs/1812.06499v4)
+
+## Dataset
+
+Download the CoNSeP dataset as used in our paper from [this link](https://warwick.ac.uk/fac/sci/dcs/research/tia/data/hovernet/). <br />
+Download the Kumar, CPM-15, CPM-17 and TNBC datsets from [this link](https://drive.google.com/open?id=1l55cv3DuY-f7-JotDN7N5nbNnjbLWchK).  <br />
+
+Ground truth files are in `.mat` format, refer to the README included with the datasets for further information. 
 
 ## Repository Structure
 
@@ -22,22 +30,22 @@ This is an extended version of our previous work: XY-Net. <br />
 
 ## HoVer-Net
 
-![](network.png)
+![](diagram.png)
 
 
 ## Citation
 
-If any part of this code is used, please give appropriate citation to our paper: <br />
-
-**Graham, Simon, Quoc Dang Vu, Shan E. Ahmed Raza, Ayesha Azam, Yee Wah Tsang, Jin Tae Kwak, and Nasir Rajpoot. "HoVer-Net: Simultaneous Segmentation and Classification of Nuclei in Multi-Tissue Histology Images." arXiv preprint arXiv:1812.06499v4 (2019).** <br />
+If any part of this code is used, please give appropriate citation to our paper. <br />
 
 BibTex entry: <br />
 ```
 @article{graham2019hover,
-  title={HoVer-Net: Simultaneous Segmentation and Classification of Nuclei in Multi-Tissue Histology Images},
-  author={Simon Graham, Quoc Dang Vu, Shan E Ahmed Raza, Ayesha Azam, Yee Wah Tsang, Jin Tae Kwak, Nasir Rajpoot},
-  journal={arXiv preprint arXiv:1812.06499v4},
-  year={2019}
+  title={Hover-net: Simultaneous segmentation and classification of nuclei in multi-tissue histology images},
+  author={Graham, Simon and Vu, Quoc Dang and Raza, Shan E Ahmed and Azam, Ayesha and Tsang, Yee Wah and Kwak, Jin Tae and Rajpoot, Nasir},
+  journal={Medical Image Analysis},
+  pages={101563},
+  year={2019},
+  publisher={Elsevier}
 }
 ```
 
@@ -88,5 +96,3 @@ The same version of this repository is officially available on the following sit
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-

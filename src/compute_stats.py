@@ -180,9 +180,11 @@ def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
 
-        true = np.load(os.path.join(true_dir, '{}.npy'.format(basename)))
-        true = true.astype('int32')
-        true = true[...,0] # HxWx1, uncomment to use label class from CoNSeP
+        # true = np.load(os.path.join(true_dir, '{}.npy'.format(basename)))
+        # true = true.astype('int32')
+        # true = true[...,0] # HxWx1, uncomment to use label class from CoNSeP
+        true = sio.loadmat(true_dir + basename + '.mat')
+        true = (true['inst_map']).astype('int32')
 
         pred = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
         pred = (pred['inst_map']).astype('int32')
