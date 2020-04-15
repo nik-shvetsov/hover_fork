@@ -11,6 +11,7 @@ from scipy import io as sio
 
 from tensorpack.predict import OfflinePredictor, PredictConfig
 from tensorpack.tfutils.sessinit import get_model_loader
+from tensorpack.tfutils.export import ModelExporter
 
 from config import Config
 from misc.utils import rm_n_mkdir
@@ -150,6 +151,8 @@ class Inferer(Config):
             input_names  = self.eval_inf_input_tensor_names,
             output_names = self.eval_inf_output_tensor_names)
         predictor = OfflinePredictor(pred_config)
+        exporter = ModelExporter(pred_config)
+        exporter.export_compact('/data/output/export/model')
 
         for num, data_dir in enumerate(self.inf_data_list):
             save_dir = os.path.join(self.inf_output_dir, str(num))

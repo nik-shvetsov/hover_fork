@@ -218,6 +218,7 @@ class Trainer(Config):
 
         launch_train_with_config(config, SyncMultiGPUTrainerParameterServer(nr_gpus))
         tf.reset_default_graph() # remove the entire graph in case of multiple runs
+        # TODO: save
         return
     ####
     def run(self):

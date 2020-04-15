@@ -149,12 +149,13 @@ class Config(object):
             imgaug.CenterCrop(input_shape),
         ]
 
-        prev_augs = [
+        input_augs = [
             imgaug.RandomApplyAug(
                 imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
                     imgaug.GaussianNoise(),
+                    RGB2HED(),
                 ]), 0.5
             ),
             # standard color augmentation
@@ -167,7 +168,7 @@ class Config(object):
             imgaug.ToUint8(),
         ]
 
-        input_augs = [
+        view_augs = [
             imgaug.RandomOrderAug([
                 imgaug.Hue((179, 180), rgb=True), 
                 imgaug.Saturation(0.5, rgb=True), 
@@ -179,11 +180,11 @@ class Config(object):
                     GaussianBlur(),
                     MedianBlur(),
                     imgaug.GaussianNoise(),
+                    RGB2HED(),
                 ]
                 ), 0.5
             ),
-            RGB2HED(),
-            imgaug.ToUint8(),# imgaug.ToFloat32(),
+            imgaug.ToUint8(),
         ]
 
         label_augs = []
