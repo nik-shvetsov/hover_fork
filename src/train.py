@@ -167,12 +167,14 @@ class Trainer(Config):
 
         return datagen
     ####
+
     def view_dataset(self, mode='train'):
         assert mode == 'train' or mode == 'valid', "Invalid view mode"
         datagen = self.get_datagen(4, mode=mode, view=True)
-        loader.visualize(datagen, 4)
+        loader.visualize(datagen, 4, aug_only=True, preview=True)
         return
     ####
+    
     def run_once(self, opt, sess_init=None, save_dir=None):
         ####
         train_datagen = self.get_datagen(opt['train_batch_size'], mode='train')
@@ -216,6 +218,7 @@ class Trainer(Config):
 
         launch_train_with_config(config, SyncMultiGPUTrainerParameterServer(nr_gpus))
         tf.reset_default_graph() # remove the entire graph in case of multiple runs
+        # TODO: save
         return
     ####
     def run(self):

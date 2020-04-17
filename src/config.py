@@ -11,7 +11,7 @@ from tensorpack import imgaug
 
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
-                         GenInstanceContourMap)
+                         GenInstanceContourMap, RGB2HED)
 ####
 class Config(object):
     def __init__(self, ):
@@ -111,8 +111,9 @@ class Config(object):
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = data_config['inf_data_list']
         self.inf_output_dir = os.path.join(self.log_path, 'infer', self.model_name)
+        self.model_export_dir = os.path.join(self.log_path, 'export', self.model_name)
         self.remap_labels = data_config['remap_labels']
-
+        
         # For inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = ['images']
         self.eval_inf_output_tensor_names = ['predmap-coded']
@@ -151,20 +152,39 @@ class Config(object):
 
         input_augs = [
             imgaug.RandomApplyAug(
-                imgaug.RandomChooseAug(
-                    [
+                imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
                     imgaug.GaussianNoise(),
-                    ]
-                ), 0.5),
+                    RGB2HED(),
+                ]), 0.5
+            ),
             # standard color augmentation
-            imgaug.RandomOrderAug(
-                [imgaug.Hue((-8, 8), rgb=True),
+            imgaug.RandomOrderAug([
+                imgaug.Hue((-8, 8), rgb=True), 
                 imgaug.Saturation(0.2, rgb=True),
-                imgaug.Brightness(26, clip=True),
+                imgaug.Brightness(26, clip=True),  
                 imgaug.Contrast((0.75, 1.25), clip=True),
                 ]),
+            imgaug.ToUint8(),
+        ]
+
+        view_augs = [
+            imgaug.RandomOrderAug([
+                imgaug.Hue((179, 180), rgb=True), 
+                imgaug.Saturation(0.5, rgb=True), 
+                imgaug.Brightness(50, clip=True), 
+                imgaug.Contrast((1.00, 1.50), clip=True),
+            ]),
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    GaussianBlur(),
+                    MedianBlur(),
+                    imgaug.GaussianNoise(),
+                    RGB2HED(),
+                ]
+                ), 0.5
+            ),
             imgaug.ToUint8(),
         ]
 

@@ -11,6 +11,7 @@ from scipy import io as sio
 
 from tensorpack.predict import OfflinePredictor, PredictConfig
 from tensorpack.tfutils.sessinit import get_model_loader
+from tensorpack.tfutils.export import ModelExporter
 
 from config import Config
 from misc.utils import rm_n_mkdir
@@ -130,7 +131,7 @@ class Inferer(Config):
         return pred_map
 
     ####
-    def run(self):
+    def run(self, save_only):
 
         if self.inf_auto_find_chkpt:
             print('-----Auto Selecting Checkpoint Basing On "%s" Through "%s" Comparison' % \
@@ -150,6 +151,13 @@ class Inferer(Config):
             input_names  = self.eval_inf_input_tensor_names,
             output_names = self.eval_inf_output_tensor_names)
         predictor = OfflinePredictor(pred_config)
+
+        if save_only:
+            exporter = ModelExporter(pred_config)
+            print ('{}/compact.pb'.format(self.model_export_dir))
+            exporter.export_compact(filename='{}/compact.pb'.format(self.model_export_dir))
+            exporter.export_serving(os.path.join(self.model_export_dir, 'serving'))
+            return
 
         for num, data_dir in enumerate(self.inf_data_list):
             save_dir = os.path.join(self.inf_output_dir, str(num))
@@ -175,7 +183,8 @@ class Inferer(Config):
 ####
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.', default="0")
+    parser.add_argument('--gpu', help='Comma separated list of GPU(s) to use.', default="0")
+    parser.add_argument('--save_only', help='Whether to save the model, without actual inference', default=False)
     args = parser.parse_args()
 
     if args.gpu:
@@ -183,4 +192,4 @@ if __name__ == '__main__':
     n_gpus = len(args.gpu.split(','))
 
     inferer = Inferer()
-    inferer.run()
+    inferer.run(args.save_only)
