@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 from scipy import io as sio
 
+import tensorflow as tf
 from tensorpack.predict import OfflinePredictor, PredictConfig
 from tensorpack.tfutils.sessinit import SaverRestoreRelaxed
 
@@ -20,9 +21,17 @@ class InfererExternal():
         --model_path /data/output/export/model/serving/variables/variables.data-00000-of-00001 \
         --input_img /data/output/image.png \
         --save_dir /data/output/
+
+    Example with compact tf model:
+    python external_infer.py \
+        --model_path /data/output/export/model/compact.pb \
+        --input_img /data/output/image.png \
+        --save_dir /data/output/
     '''
 
+
     def __init__(self, model_path, input_img, save_dir):
+        # values for np_hv model graph
         self.infer_mask_shape = [80,  80]
         self.infer_input_shape = [270, 270]
         self.inf_batch_size = 16
@@ -34,24 +43,7 @@ class InfererExternal():
         self.input_img_path = input_img
 
 
-    def apply_compact(self, graph_path, input_img_path):
-        """Run the pruned and frozen inference graph. Not implemented.
-        TODO: Should be implemented like TF serving without tensorpack.
-        """
-        with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-            with tf.gfile.GFile(graph_path, "rb") as f:
-                graph_def = tf.GraphDef()
-                graph_def.ParseFromString(f.read())
-                tf.import_graph_def(graph_def)
-
-            input_img = sess.graph.get_tensor_by_name(self.eval_inf_input_tensor_names[0])
-            prediction_img = sess.graph.get_tensor_by_name(self.eval_inf_output_tensor_names[0])
-            img = cv2.cvtColor(cv2.imread(input_img_path), cv2.COLOR_BGR2RGB)
-            prediction = sess.run(prediction_img, {input_img: img[None, ...]})
-            return prediction[0]
-
-
-    def __gen_prediction(self, x, predictor):
+    def __gen_prediction(self, x, predictor, compact=None):
 
         step_size = self.infer_mask_shape
         msk_size = self.infer_mask_shape
@@ -77,7 +69,6 @@ class InfererExternal():
         padr = last_w + win_size[1] - im_w
 
         x = np.lib.pad(x, ((padt, padb), (padl, padr), (0, 0)), 'reflect')
-
         #### TODO: optimize this
         sub_patches = []
         # generating subpatches from orginal
@@ -86,16 +77,15 @@ class InfererExternal():
                 win = x[row:row+win_size[0],
                         col:col+win_size[1]]
                 sub_patches.append(win)
-
         pred_map = deque()
         while len(sub_patches) > self.inf_batch_size:
             mini_batch  = sub_patches[:self.inf_batch_size]
             sub_patches = sub_patches[self.inf_batch_size:]
-            mini_output = predictor(mini_batch)[0]
+            mini_output = predictor(mini_batch)[0] if compact==False else predictor(mini_batch)
             mini_output = np.split(mini_output, self.inf_batch_size, axis=0)
             pred_map.extend(mini_output)
         if len(sub_patches) != 0:
-            mini_output = predictor(sub_patches)[0]
+            mini_output = predictor(sub_patches)[0] if compact==False else predictor(sub_patches)
             mini_output = np.split(mini_output, len(sub_patches), axis=0)
             pred_map.extend(mini_output)
 
@@ -115,7 +105,34 @@ class InfererExternal():
         return pred_map
 
 
-    def run(self):
+    def apply_compact(self, prefix='import/'):
+        """Run the pruned and frozen inference graph.
+        TODO: Should be implemented like TF serving without tensorpack.
+        """
+        with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+            with tf.gfile.GFile(self.inf_model_path, "rb") as f:
+                graph_def = tf.GraphDef()
+                graph_def.ParseFromString(f.read())
+                tf.import_graph_def(graph_def)
+
+                input_img = sess.graph.get_tensor_by_name('{}{}'.format(prefix, self.eval_inf_input_tensor_names[0]))
+                prediction_img = sess.graph.get_tensor_by_name('{}{}'.format(prefix, self.eval_inf_output_tensor_names[0]))
+                img = cv2.cvtColor(cv2.imread(self.input_img_path), cv2.COLOR_BGR2RGB)
+                basename = os.path.basename(self.input_img_path).split('.')[0]
+                ###
+                def predictor_gen():
+                    def predictor(image):
+                        image = np.array(image)
+                        return sess.run(prediction_img, {input_img: image})
+                    return predictor
+                ###
+                pred_map = self.__gen_prediction(img, predictor_gen(), compact=True)
+                sio.savemat(os.path.join(self.save_dir,'{}.mat'.format(basename)), {'result':[pred_map]})
+                print(f"Finished. {datetime.now().strftime('%H:%M:%S.%f')}")
+
+
+    def apply_model(self):
+        # Using tensorpack!! predictor
         model_constructor = importlib.import_module('model.graph')
         model_constructor = model_constructor.Model_NP_HV
 
@@ -124,17 +141,12 @@ class InfererExternal():
             model=model_constructor(),
             input_names=self.eval_inf_input_tensor_names,
             output_names=self.eval_inf_output_tensor_names)
-            
+        ###
         predictor = OfflinePredictor(pred_config)
-        #
-        # img = cv2.imread(input_img_path)
-        # prediction = pred([img])[0]
-        # return prediction[0]
-        #
         img = cv2.cvtColor(cv2.imread(self.input_img_path), cv2.COLOR_BGR2RGB)
         basename = os.path.basename(self.input_img_path).split('.')[0]
         ###
-        pred_map = self.__gen_prediction(img, predictor)
+        pred_map = self.__gen_prediction(img, predictor, compact=False)
         sio.savemat(os.path.join(self.save_dir,'{}.mat'.format(basename)), {'result':[pred_map]})
         print(f"Finished. {datetime.now().strftime('%H:%M:%S.%f')}")
 
@@ -153,4 +165,5 @@ if __name__ == '__main__':
     n_gpus = len(args.gpu.split(','))
 
     inferer = InfererExternal(args.model_path, args.input_img, args.save_dir)
-    inferer.run()
+    if (args.model_path.endswith('.pb')): inferer.apply_compact()
+    else: inferer.run()
