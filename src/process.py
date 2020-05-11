@@ -140,17 +140,16 @@ for num, data_dir in enumerate(cfg.inf_data_list):
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
             cv2.imwrite(os.path.join(proc_dir, '{}_uc.png'.format(basename)), overlaid_output)
 
-
-
         ##
         print(f"Finished for {basename} {datetime.now().strftime('%H:%M:%S.%f')}")
 
     start = datetime.now()
-    print(f"Stared parallel process for ```{data_dir}``` {start.strftime('%d/%m %H:%M:%S.%f')}")
-
-
-    Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
-    
+    print(f"Stared process for ```{data_dir}``` {start.strftime('%d/%m %H:%M:%S.%f')}")
+    # Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
+    for filename in file_list:
+        process_image(filename)
     end = datetime.now()
-    print(f"Done parallel process for ```{data_dir}``` {end.strftime('%d/%m %H:%M:%S.%f')}")
+    print(f"Done process for ```{data_dir}``` {end.strftime('%d/%m %H:%M:%S.%f')}")
     print(f"Overall time elapsed: {end - start}")
+
+

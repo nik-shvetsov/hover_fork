@@ -17,7 +17,7 @@ class Config(object):
     def __init__(self, ):
         # Select template (hv_kumar, hv_uit_w_kumar, hv_consep, hv_cmp17)
         self.model_config = os.environ['H_PROFILE'] if 'H_PROFILE' in os.environ else ''
-        self.log_path = '/data/output/' # log root path
+        self.log_path = '/pfs/out/' # log root path
 
         # Load config yml file
         data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])

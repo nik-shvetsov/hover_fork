@@ -55,7 +55,7 @@ if __name__ == '__main__':
                     ann = ann.astype('int32')
                 else:
                     # assumes that ann is HxW
-                    ann_inst = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename))) # .mat?
+                    ann_inst = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename)))
                     ann_inst = (ann_inst['inst_map']).astype('int32')
                     ann = np.expand_dims(ann_inst, -1)
 
