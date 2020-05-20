@@ -29,7 +29,7 @@ class Config(object):
         self.win_size = data_config['win_size']
         self.step_size = data_config['step_size']
         self.img_ext = data_config['img_ext']
-        self.out_extract_root = os.path.join(self.log_path, 'extract')
+        self.out_extract_root = self.log_path
 
         # init model params
         self.seed = data_config['seed']
@@ -90,7 +90,7 @@ class Config(object):
         self.input_norm = data_config['input_norm'] # normalize RGB to 0-1 range
 
         # loading chkpts in tensorflow, the path must not contain extra '/'
-        self.save_dir = os.path.join(self.log_path, 'train', self.model_name)
+        self.save_dir = self.log_path
         #self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
 
         #### Info for running inference
@@ -110,8 +110,8 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = data_config['inf_data_list']
-        self.inf_output_dir = os.path.join(self.log_path, 'infer', self.model_name)
-        self.model_export_dir = os.path.join(self.log_path, 'export', self.model_name)
+        self.inf_output_dir = self.log_path
+        self.model_export_dir = self.log_path
         self.remap_labels = data_config['remap_labels']
         
         # For inference during evalutaion mode i.e run by inferer.py

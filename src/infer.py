@@ -160,7 +160,7 @@ class Inferer(Config):
             return
 
         for num, data_dir in enumerate(self.inf_data_list):
-            save_dir = os.path.join(self.inf_output_dir, str(num))
+            save_dir = self.inf_output_dir
 
             file_list = glob.glob(os.path.join(data_dir, '*{}'.format(self.inf_imgs_ext)))
             file_list.sort() # ensure same order
