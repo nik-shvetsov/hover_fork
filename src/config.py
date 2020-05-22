@@ -18,9 +18,9 @@ class Config(object):
         # Select template (hv_kumar, hv_uit_w_kumar, hv_consep, hv_cmp17)
         self.model_config = os.environ['H_PROFILE'] if 'H_PROFILE' in os.environ else ''
         self.log_path = '/pfs/out/' # log root path
-
+        config_path = os.environ['CONFIG_PATH'] if 'CONFIG_PATH' in os.environ else '/pfs/config'
         # Load config yml file
-        data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
+        data_config = defaultdict(lambda: None, yaml.load(open(os.path.join(config_path, 'config.yml')), Loader=yaml.FullLoader)[self.model_config])
 
         # data extraion params
         self.extract_data_dir = data_config['extract_data_dir']
