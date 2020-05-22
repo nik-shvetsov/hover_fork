@@ -110,6 +110,7 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = data_config['inf_data_list']
+        # self.inf_output_dir = os.path.join(self.log_path, self.model_config)
         self.inf_output_dir = self.log_path
         self.model_export_dir = self.log_path
         self.remap_labels = data_config['remap_labels']

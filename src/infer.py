@@ -165,7 +165,7 @@ class Inferer(Config):
             file_list = glob.glob(os.path.join(data_dir, '*{}'.format(self.inf_imgs_ext)))
             file_list.sort() # ensure same order
 
-            rm_n_mkdir(save_dir)
+            # rm_n_mkdir(save_dir)
             for filename in file_list:
                 filename = os.path.basename(filename)
                 basename = filename.split('.')[0]
