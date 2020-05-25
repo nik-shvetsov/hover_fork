@@ -13,22 +13,25 @@ from config import Config
 ###########################################################################
 if __name__ == '__main__':
     cfg = Config()
-    
     xtractor = PatchExtractor(cfg.win_size, cfg.step_size)
-    work_dir = cfg.extract_data_dir
+    work_dir = os.path.join(cfg.extract_data_dir, 'train') # data_mode[0]
     img_dir = os.path.join(work_dir, 'Images')
     ann_dir = os.path.join(work_dir, 'Labels')
     # out_dir = os.path.join(cfg.out_extract_root, ('{}_{}x{}_{}x{}'\
     #     .format(cfg.model_config, cfg.win_size[0], cfg.win_size[1], cfg.step_size[0], cfg.step_size[1])), data_mode, 'Labels')
     out_dir = os.path.join(cfg.out_extract_root, 'Labels')
+    print (img_dir)
+    print (ann_dir)
     file_list = glob.glob(os.path.join(img_dir, '*{}'.format(cfg.img_ext)))
     file_list.sort()
+
+    print(file_list)
 
     rm_n_mkdir(out_dir)
     for filename in file_list:
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
-        print('Mode: {}, filename - {}'.format(data_mode, filename))
+        #print('Mode: {}, filename - {}'.format(data_mode, filename))
 
         img = cv2.imread(os.path.join(img_dir, '{}{}'.format(basename, cfg.img_ext)))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
