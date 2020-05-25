@@ -80,6 +80,8 @@ class Config(object):
         self.train_dir = data_config['train_dir']
         self.valid_dir = data_config['valid_dir']
 
+        self.pretrained_path = data_config['pretrained_path']
+
         # self.valid_dir = ['../../../train/Kumar_old_GT/%s/valid_same/XXXX/' % data_code_dict[self.model_type],
         #                   '../../../train/Kumar_old_GT/%s/valid_diff/XXXX/' % data_code_dict[self.model_type]]
 
@@ -111,7 +113,7 @@ class Config(object):
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = data_config['inf_data_list']
         # self.inf_output_dir = os.path.join(self.log_path, self.model_config)
-        self.inf_output_dir = self.log_path
+        self.inf_output_dir = data_config['inf_output_dir']
         self.model_export_dir = self.log_path
         self.remap_labels = data_config['remap_labels']
         
@@ -210,7 +212,7 @@ class Config(object):
         return shape_augs, input_augs, label_augs
 
     def get_valid_augmentors(self, input_shape, output_shape, view=False):
-        print(input_shape, output_shape)
+        # print(input_shape, output_shape)
         shape_augs = [
             imgaug.CenterCrop(input_shape),
         ]

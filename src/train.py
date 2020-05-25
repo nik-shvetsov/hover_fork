@@ -218,7 +218,7 @@ class Trainer(Config):
 
         launch_train_with_config(config, SyncMultiGPUTrainerParameterServer(nr_gpus))
         tf.reset_default_graph() # remove the entire graph in case of multiple runs
-        # TODO: save
+        # save
         return
     ####
     def run(self):
@@ -238,8 +238,10 @@ class Trainer(Config):
                 np.random.seed(self.seed)
                 tf.random.set_random_seed(self.seed)
 
-                log_dir = os.path.join(self.save_dir, str(idx))
-                pretrained_path = opt['pretrained_path']
+                # log_dir = os.path.join(self.save_dir, str(idx))
+                log_dir = self.save_dir
+                # pretrained_path = opt['pretrained_path']
+                pretrained_path = self.pretrained_path
                 if pretrained_path == -1:
                     pretrained_path = get_last_chkpt_path(prev_log_dir)
                     init_weights = SaverRestore(pretrained_path, ignore=['learning_rate'])
@@ -254,9 +256,10 @@ class Trainer(Config):
 
             opt = phase_opts[0]
             init_weights = None
-            if 'pretrained_path' in opt:
-                assert opt['pretrained_path'] != -1
-                init_weights = get_model_loader(opt['pretrained_path'])
+            pretrained_path = self.pretrained_path
+            if pretrained_path is not None:
+                assert pretrained_path != -1
+                init_weights = get_model_loader(pretrained_path)
             self.run_once(opt, sess_init=init_weights, save_dir=self.save_dir)
 
         return

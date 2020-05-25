@@ -19,6 +19,7 @@ from config import Config
 
 from misc.viz_utils import visualize_instances
 from misc.utils import get_inst_centroid
+from misc.utils import rm_n_mkdir
 from metrics.stats_utils import remap_label
 
 from joblib import Parallel, delayed
@@ -40,17 +41,18 @@ cfg = Config()
 # * flag for HoVer-Net only
 # 1 - threshold, 2 - sobel based
 energy_mode = 2
-marker_mode = 2
+marker_mode = 2 
 
-for num, data_dir in enumerate(cfg.inf_data_list):
-    pred_dir = os.path.join(cfg.inf_output_dir, str(num))
-    proc_dir = '{}_processed'.format(pred_dir)
+pred_dir = cfg.inf_output_dir
+proc_dir = cfg.log_path
+
+for item in ['imgs', 'logs', 'pred']:
+    rm_n_mkdir(os.path.join(proc_dir, item))
+
+for data_dir in cfg.inf_data_list:
 
     file_list = glob.glob(os.path.join(pred_dir, '*.mat'))
     file_list.sort() # ensure same order
-
-    if not os.path.isdir(proc_dir):
-        os.makedirs(proc_dir)
 
     def process_image(filename):
         filename = os.path.basename(filename)
@@ -120,7 +122,7 @@ for num, data_dir in enumerate(cfg.inf_data_list):
                 pred_inst_type[idx] = inst_type
             pred_inst_centroid = get_inst_centroid(pred_inst)
 
-            sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
+            sio.savemat(os.path.join(proc_dir, 'pred', '{}.mat'.format(basename)),
                         {'inst_map'  :     pred_inst,
                          'type_map'  :     pred_type,
                          'inst_type' :     pred_inst_type[:, None],
@@ -128,26 +130,26 @@ for num, data_dir in enumerate(cfg.inf_data_list):
                         })
             overlaid_output = visualize_instances(pred_inst, img, (cfg.nr_types, pred_inst_type[:, None])) #cfg.nr_types + 1
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
-            cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
-            with open(os.path.join(proc_dir, f'{basename}.log'), 'w') as log_file:
+            cv2.imwrite(os.path.join(proc_dir, 'imgs', '{}.png'.format(basename)), overlaid_output)
+            with open(os.path.join(proc_dir, 'logs', f'{basename}.log'), 'w') as log_file:
                 unique, counts = np.unique(pred_inst_type[:, None], return_counts=True)
                 print(f'{basename} : {dict(zip(unique, counts))}', file = log_file)
 
         else:
-            sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
+            sio.savemat(os.path.join(proc_dir, 'pred','{}.mat'.format(basename)),
                         {'inst_map'  : pred_inst})
             overlaid_output = visualize_instances(pred_inst, img)
             overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
-            cv2.imwrite(os.path.join(proc_dir, '{}_uc.png'.format(basename)), overlaid_output)
+            cv2.imwrite(os.path.join(proc_dir, 'imgs', '{}.png'.format(basename)), overlaid_output)
 
         ##
         print(f"Finished for {basename} {datetime.now().strftime('%H:%M:%S.%f')}")
 
     start = datetime.now()
     print(f"Stared process for ```{data_dir}``` {start.strftime('%d/%m %H:%M:%S.%f')}")
-    # Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
-    for filename in file_list:
-        process_image(filename)
+    Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
+    # for filename in file_list:
+    #     process_image(filename)
     end = datetime.now()
     print(f"Done process for ```{data_dir}``` {end.strftime('%d/%m %H:%M:%S.%f')}")
     print(f"Overall time elapsed: {end - start}")

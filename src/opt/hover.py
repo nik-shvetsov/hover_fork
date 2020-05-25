@@ -26,7 +26,7 @@ np_hv = {
                 # tuple(initial value, schedule)
                 'learning_rate': (1.0e-4, [('25', 1.0e-5)]),
             },
-            'pretrained_path'  : '/data/input/pretrained/ImageNet-ResNet50-Preact.npz',
+            'pretrained_path'  : '/pretrained/ImageNet-ResNet50-Preact.npz',
             'train_batch_size' : 8,
             'infer_batch_size' : 16,
 
