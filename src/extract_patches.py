@@ -40,7 +40,7 @@ if __name__ == '__main__':
                     # ann_type = ann[...,1]
                     ann = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename)))
                     ann_inst = ann['inst_map']
-                    ann_type = ann['class_map']
+                    ann_type = ann['type_map']
 
                     # merge classes for CoNSeP (in paper we only utilise 3 nuclei classes and background)
                     # If own dataset is used, then the below may need to be modified
