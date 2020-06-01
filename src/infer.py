@@ -156,7 +156,7 @@ class Inferer(Config):
             exporter = ModelExporter(pred_config)
             print ('{}/compact.pb'.format(self.model_export_dir))
             exporter.export_compact(filename='{}/compact.pb'.format(self.model_export_dir))
-            exporter.export_serving(os.path.join(self.model_export_dir, 'serving'))
+            exporter.export_serving(os.path.join(self.model_export_dir, 'serving'), signature_name='serving_default')
             return
 
         for num, data_dir in enumerate(self.inf_data_list):
