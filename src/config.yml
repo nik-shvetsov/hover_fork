@@ -187,7 +187,7 @@ hv_seg_class_consep:
   input_norm: True
 
   inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
+  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_consep/test/Images'
@@ -328,7 +328,7 @@ hv_consep_seg_class_2_batch:
   input_norm: True
 
   inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_seg_class_CoNSeP.npz'
+  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_ppatches/test/Images'

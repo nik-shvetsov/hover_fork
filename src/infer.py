@@ -154,6 +154,7 @@ class Inferer(Config):
 
         if save_only:
             exporter = ModelExporter(pred_config)
+            rm_n_mkdir(self.model_export_dir)
             print ('{}/compact.pb'.format(self.model_export_dir))
             exporter.export_compact(filename='{}/compact.pb'.format(self.model_export_dir))
             exporter.export_serving(os.path.join(self.model_export_dir, 'serving'), signature_name='serving_default')
@@ -184,7 +185,7 @@ class Inferer(Config):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', help='Comma separated list of GPU(s) to use.', default="0")
-    parser.add_argument('--save_only', help='Whether to save the model, without actual inference', default=False)
+    parser.add_argument('--save_only', help='Whether to save the model, without actual inference', default=False, action='store_true')
     args = parser.parse_args()
 
     if args.gpu:
