@@ -148,7 +148,7 @@ for num, data_dir in enumerate(cfg.inf_data_list):
     start = datetime.now()
     print(f"Stared parallel process for ```{data_dir}``` {start.strftime('%d/%m %H:%M:%S.%f')}")
 
-
+    print(f"Using {AV_CPU - 2} CPU cores")
     Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
     
     end = datetime.now()
