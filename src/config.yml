@@ -377,3 +377,49 @@ hv_consep_seg_class_uit_2001:
     
   remap_labels: False
 ##################################
+
+hv_pannuke_seg_class:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  extract_data_dir: '/data/input/data_pannuke/'
+  extract_type: 'mirror' 
+
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'valid'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  seed: 10
+  type_classification: True
+  
+  nr_types: 6 
+  nuclei_types:
+    Neoplastic cells: 0
+    Inflammatory: 1
+    Connective/Soft tissue cells: 2
+    Dead Cells: 3
+    Epithelial: 4
+    Background: 5
+
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/train/Masks/'
+  valid_dir:
+    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/valid/Masks/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_infer_hover/weights_hovernet.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_pannuke/test/Images'
+    
+  remap_labels: True
+##################################
