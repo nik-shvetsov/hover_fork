@@ -1,4 +1,5 @@
 import math
+import random
 
 import cv2
 import matplotlib.cm as cm
@@ -11,7 +12,9 @@ from scipy.ndimage.interpolation import affine_transform, map_coordinates
 from scipy.ndimage.morphology import (distance_transform_cdt,
                                       distance_transform_edt)
 from skimage import morphology as morph
-from skimage.color import rgb2hed, rgb2gray, gray2rgb
+from skimage import img_as_ubyte
+from skimage.color import rgb2hed, rgb2gray, gray2rgb, rgb2hsv
+from skimage.exposure import equalize_hist
 
 from tensorpack.dataflow.imgaug import ImageAugmentor
 from tensorpack.utils.utils import get_rng
@@ -402,6 +405,7 @@ class MedianBlur(ImageAugmentor):
     def _augment(self, img, ksize):
         return cv2.medianBlur(img, ksize)
 
+
 class RGB2HED(ImageAugmentor):
     def __init__(self,):
         super(RGB2HED, self).__init__()
@@ -410,16 +414,50 @@ class RGB2HED(ImageAugmentor):
         return None
 
     def _augment(self, img, s):
-        result = rgb2hed(img)
-        R, G, B = cv2.split(img)
-        equ = cv2.merge((cv2.equalizeHist(R), cv2.equalizeHist(G), cv2.equalizeHist(B)))
-        return equ
-        # R, G, B = cv2.split(img)
-        # equ = cv2.merge((cv2.equalizeHist(R), cv2.equalizeHist(G), cv2.equalizeHist(B)))
-        # result = rgb2hed(equ)
-        # return result
+        R, G, B = cv2.split(np.uint8(img))
+        return cv2.merge((cv2.equalizeHist(R), cv2.equalizeHist(G), cv2.equalizeHist(B)))
 
-        # grs = rgb2gray(img)
-        # equ = cv2.equalizeHist(grs)
-        # rgb = gray2rgb(equ)
-        # return rgb2hed(rgb)
+
+class EqRGB2HED(ImageAugmentor):
+    def __init__(self,):
+        super(EqRGB2HED, self).__init__()
+
+    def _get_augment_params(self, img):
+        return None
+
+    def _augment(self, img, s):
+        image = rgb2hed(img)
+        image[:,:,0] = equalize_hist(image[:,:,0])
+        image[:,:,1] = equalize_hist(image[:,:,1])
+        image[:,:,2] = equalize_hist(image[:,:,2])
+        return (img_as_ubyte(image))
+
+
+class ChannelsRGB2HED(ImageAugmentor):
+    def __init__(self,):
+        super(ChannelsRGB2HED, self).__init__()
+
+    def _get_augment_params(self, img):
+        return None
+
+    def _augment(self, img, s):
+        img_hed = rgb2hed(img)
+        cmap_hema = LinearSegmentedColormap.from_list('mycmap', ['white', 'navy'])
+        cmap_dab = LinearSegmentedColormap.from_list('mycmap', ['white', 'saddlebrown'])
+        cmap_eosin = LinearSegmentedColormap.from_list('mycmap', ['darkviolet','white'])
+        maps = [cmap_hema, cmap_eosin, cmap_dab]
+        pick = random.choice(maps)
+        idx = maps.index(pick)
+        return plt.plot(ihc_hed[:, :, idx], cmap=pick)
+
+
+class ColorShiftOCV(ImageAugmentor):
+    def __init__(self,):
+        super(ColorSpaceShift, self).__init__()
+
+    def _get_augment_params(self, img):
+        return None
+
+    def _augment(self, img, s):
+        # return random.choice([rgb2hsv(img), hsv2rgb(img)])
+        return cv2.cvtColor(img, random.choice([cv2.COLOR_RGB2HSV, cv2.COLOR_HSV2RGB]))
