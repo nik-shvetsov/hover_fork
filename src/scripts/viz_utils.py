@@ -1,9 +1,7 @@
 import cv2
-import math
-import colorsys
 import numpy as np
-import matplotlib.pyplot as plt
 import itertools
+
 
 def bounding_box(img):
     rows = np.any(img, axis=1)
@@ -15,6 +13,11 @@ def bounding_box(img):
     rmax += 1
     cmax += 1
     return [rmin, rmax, cmin, cmax]
+
+
+def normalize(mask, dtype=np.uint8):
+    return (255 * mask / np.amax(mask)).astype(dtype)
+
 
 def class_colour(class_value):
     """
@@ -88,43 +91,4 @@ def visualize_instances(input_image, predict_instance, predict_type=None, line_t
         cv2.drawContours(overlay, np.asarray(contours), -1,
                          class_colour(iter_type), line_thickness)
     return overlay
-####
-
-def gen_figure(imgs_list, titles, fig_inch, shape=None,
-                share_ax='all', show=False, colormap=plt.get_cmap('jet')):
-
-    num_img = len(imgs_list)
-    if shape is None:
-        ncols = math.ceil(math.sqrt(num_img))
-        nrows = math.ceil(num_img / ncols)
-    else:
-        nrows, ncols = shape
-
-    # generate figure
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, 
-                        sharex=share_ax, sharey=share_ax)
-    axes = [axes] if nrows == 1 else axes
-
-    # not very elegant
-    idx = 0
-    for ax in axes:
-        for cell in ax:
-            cell.set_title(titles[idx])
-            cell.imshow(imgs_list[idx], cmap=colormap)
-            cell.tick_params(axis='both', 
-                            which='both', 
-                            bottom='off', 
-                            top='off', 
-                            labelbottom='off', 
-                            right='off', 
-                            left='off', 
-                            labelleft='off')
-            idx += 1
-            if idx == len(titles):
-                break
-        if idx == len(titles):
-            break
- 
-    fig.tight_layout()
-    return fig
 ####
