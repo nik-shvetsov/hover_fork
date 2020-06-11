@@ -36,9 +36,13 @@ class InfererURL():
     """
 
     def __init__(self, input_img, save_dir):
+        # self.nr_types = 6
+        # self.input_shape = [256, 256]
+        # self.mask_shape = [164, 164] 
+        # self.input_norm  = True
+
         # input_img as PIL
         # values for np_hv model graph
-
         self.server_url = os.environ['ENDPOINT'] if 'ENDPOINT' in os.environ else 'http://localhost:8501/v1/models/hover:predict'
         self.infer_mask_shape = [80,  80]
         self.infer_input_shape = [270, 270]

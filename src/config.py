@@ -12,7 +12,7 @@ from tensorpack import imgaug
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
                          GenInstanceContourMap, 
-                         ColorShiftOCV, ChannelsRGB2HED, EqRGB2HED, RGB2HED)
+                         ColorShiftOCV, EqRGB2HED, RGB2HED)
 ####
 class Config(object):
     def __init__(self, ):
@@ -158,7 +158,7 @@ class Config(object):
                     MedianBlur(),
                     imgaug.GaussianNoise(),
                     RGB2HED(), 
-                    ColorShiftOCV(), ChannelsRGB2HED(), EqRGB2HED(),
+                    ColorShiftOCV(), EqRGB2HED(),
                 ]), 0.5
             ),
             # standard color augmentation
@@ -184,7 +184,7 @@ class Config(object):
                     MedianBlur(),
                     imgaug.GaussianNoise(),
                     RGB2HED(),
-                    ColorShiftOCV(), ChannelsRGB2HED(), EqRGB2HED(),
+                    ColorShiftOCV(), EqRGB2HED(),
                 ]
                 ), 0.5
             ),

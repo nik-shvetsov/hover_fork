@@ -16,6 +16,8 @@ from skimage import img_as_ubyte
 from skimage.color import rgb2hed, rgb2gray, gray2rgb, rgb2hsv
 from skimage.exposure import equalize_hist
 
+from matplotlib.colors import LinearSegmentedColormap
+
 from tensorpack.dataflow.imgaug import ImageAugmentor
 from tensorpack.utils.utils import get_rng
 
@@ -433,22 +435,22 @@ class EqRGB2HED(ImageAugmentor):
         return (img_as_ubyte(image))
 
 
-class ChannelsRGB2HED(ImageAugmentor):
-    def __init__(self,):
-        super(ChannelsRGB2HED, self).__init__()
+# class ChannelsRGB2HED(ImageAugmentor):
+#     def __init__(self,):
+#         super(ChannelsRGB2HED, self).__init__()
 
-    def _get_augment_params(self, img):
-        return None
+#     def _get_augment_params(self, img):
+#         return None
 
-    def _augment(self, img, s):
-        img_hed = rgb2hed(img)
-        cmap_hema = LinearSegmentedColormap.from_list('mycmap', ['white', 'navy'])
-        cmap_dab = LinearSegmentedColormap.from_list('mycmap', ['white', 'saddlebrown'])
-        cmap_eosin = LinearSegmentedColormap.from_list('mycmap', ['darkviolet','white'])
-        maps = [cmap_hema, cmap_eosin, cmap_dab]
-        pick = random.choice(maps)
-        idx = maps.index(pick)
-        return plt.plot(ihc_hed[:, :, idx], cmap=pick)
+#     def _augment(self, img, s):
+#         img_hed = rgb2hed(img)
+#         cmap_hema = LinearSegmentedColormap.from_list('cmap_hema', ['white', 'navy'])
+#         cmap_dab = LinearSegmentedColormap.from_list('cmap_dab', ['white', 'saddlebrown'])
+#         cmap_eosin = LinearSegmentedColormap.from_list('cmap_eosin', ['darkviolet','white'])
+#         maps = ["cmap_hema", "cmap_eosin", "cmap_dab"]
+#         pick = random.choice(maps)
+#         idx = maps.index(pick)
+#         # return plt.plot(img_hed[:, :, idx], cmap=pick)
 
 
 class ColorShiftOCV(ImageAugmentor):
