@@ -453,7 +453,7 @@ class ChannelsRGB2HED(ImageAugmentor):
 
 class ColorShiftOCV(ImageAugmentor):
     def __init__(self,):
-        super(ColorSpaceShift, self).__init__()
+        super(ColorShiftOCV, self).__init__()
 
     def _get_augment_params(self, img):
         return None
