@@ -198,103 +198,7 @@ hv_seg_class_consep:
 #### Custom profiles and mixes ####
 ###################################
 
-1_test_valid_fw_hv_kumar:
-  # test using downloaded weights and kumar dataset
-
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  extract_data_dir: '/data/input/data_kumar/'
-  extract_type: 'mirror'
-  img_ext: '.tif'
-  data_modes:
-    - 'train'
-    - 'test_diff'
-    - 'test_same'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  seed: 10
-  type_classification: False
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle': 4
-
-  data_ext: '.npy'
-  train_dir:
-    - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_kumar_540x540_80x80/test_diff/Labels/'
-    - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_kumar.npz'
-
-  inf_imgs_ext: '.tif'
-
-  inf_data_list:
-    - '/data/input/data_kumar/test_diff/Images'
-    - '/data/input/data_kumar/test_same/Images'
-  
-  remap_labels: False
-##################################
-
-2_test_valid_mw_hv_kumar:
-  # test with my trained weights and kumar dataset
-
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  extract_data_dir: '/data/input/data_kumar/'
-  extract_type: 'mirror'
-
-  img_ext: '.tif'
-  data_modes:
-    - 'train'
-    - 'test_diff'
-    - 'test_same'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  seed: 10
-  type_classification: False
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle': 4
-
-  data_ext: '.npy'
-  train_dir:
-    - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_kumar_540x540_80x80/test_diff/Labels/'
-    - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: True
-  inf_model_path: '/data/output/train/hv_kumar-np_hv-1.0/1/'
-  inf_imgs_ext: '.tif'
-
-  inf_data_list:
-    - '/data/input/data_kumar/test_diff/Images'
-    - '/data/input/data_kumar/test_same/Images'
-  
-  remap_labels: False
-##################################
-
-hv_consep_seg_class_2_batch:
+hv_consep_seg_class_ppatch_batch:
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
@@ -391,21 +295,20 @@ hv_pannuke_seg_class:
     - 'train'
     - 'valid'
     - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
+  step_size: [164, 164]
+  win_size: [256, 256]
 
   seed: 10
   type_classification: True
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic cells: 0
-    Inflammatory: 1
-    Connective/Soft tissue cells: 2
-    Dead Cells: 3
-    Epithelial: 4
-    Background: 5
-
+    Neoplastic cells: 1
+    Inflammatory: 2
+    Connective/Soft tissue cells: 3
+    Dead Cells: 4
+    Epithelial: 5
+    
   data_ext: '.npy'
   train_dir:
     - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/train/Masks/'
@@ -421,5 +324,4 @@ hv_pannuke_seg_class:
   inf_data_list:
     - '/data/input/data_pannuke/test/Images'
     
-  remap_labels: True
-##################################
+  remap_labels: False

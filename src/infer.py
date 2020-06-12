@@ -151,7 +151,7 @@ class Inferer(Config):
             input_names  = self.eval_inf_input_tensor_names,
             output_names = self.eval_inf_output_tensor_names)
         predictor = OfflinePredictor(pred_config)
-
+        
         if save_only:
             exporter = ModelExporter(pred_config)
             rm_n_mkdir(self.model_export_dir)
