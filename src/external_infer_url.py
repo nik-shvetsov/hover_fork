@@ -8,7 +8,7 @@ import requests
 
 from tempfile import NamedTemporaryFile
 from datetime import datetime
-from collections import deque
+from collections import deque, defaultdict
 
 import cv2
 import numpy as np
@@ -17,6 +17,8 @@ from PIL import Image
 
 from scripts.viz_utils import visualize_instances
 import scripts.process_utils as proc_utils
+
+
 
 class InfererURL():
     """
@@ -30,19 +32,22 @@ class InfererURL():
         # values for np_hv model graph
         self.server_url = os.environ['ENDPOINT']
         assert requests.get(':'.join(self.server_url.split(':')[:-1])).ok == True
+
+        self.model_config = os.environ['H_PROFILE'] if 'H_PROFILE' in os.environ else ''
+        assert self.model_config != ''
+
+        data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
         
-        ### graph specific
-        self.mask_shape = [80,  80] # [164, 164] # 
-        self.input_shape = [270, 270] # [256, 256] # 
-        self.nr_types = 5 # 6  # denotes number of classes (including BG) for nuclear type classification
-        ###
+        self.mask_shape = data_config['step_size'] # [80,  80] # [164, 164] 
+        self.input_shape = data_config['win_size'] # [270, 270] # [256, 256] 
+        self.nr_types = data_config['nr_types'] # 5 # 6  # denotes number of classes (including BG) for nuclear type classification
+        self.input_norm  = data_config['input_norm'] # True
+        self.remap_labels = data_config['remap_labels'] # False
 
         self.inf_batch_size = 25
         self.eval_inf_input_tensor_names = ['images:0']
         self.eval_inf_output_tensor_names = ['predmap-coded:0']
 
-        self.input_norm  = True
-        self.remap_labels = False
         self.save_dir = save_dir
         
         # if it is PIL image
