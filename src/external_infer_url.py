@@ -1,6 +1,6 @@
 import os
 import math
-
+import timeit
 import argparse
 import importlib
 import json
@@ -28,7 +28,8 @@ class InfererURL():
     def __init__(self, input_img, save_dir):
         # input_img as PIL
         # values for np_hv model graph
-        self.server_url = os.environ['ENDPOINT'] if 'ENDPOINT' in os.environ else 'http://localhost:8501/v1/models/hover_consep:predict'
+        self.server_url = os.environ['ENDPOINT']
+        assert requests.get(':'.join(self.server_url.split(':')[:-1])).ok == True
         
         ### graph specific
         self.mask_shape = [80,  80] # [164, 164] # 
@@ -58,7 +59,15 @@ class InfererURL():
             self.input_img = cv2.cvtColor(cv2.imread(input_img), cv2.COLOR_BGR2RGB)
         else: 
             raise Exception('Unsupported type of input image.')
-    
+
+    def _timer(func):
+        def wrapped(self, *args, **kwargs):
+            start_time = timeit.default_timer()
+            func(self, *args, **kwargs)
+            elapsed = timeit.default_timer() - start_time 
+            if (kwargs['logging']==True): print(f"Finished {func.__name__}. Time elapsed: {'{:.3f}'.format(elapsed)} sec")
+        return wrapped
+
     def __gen_prediction(self, x):
 
         step_size = self.mask_shape
@@ -191,9 +200,10 @@ class InfererURL():
         response.raise_for_status()
         prediction = np.array(response.json()['outputs'])
         return prediction # [0]
-        
 
+    @_timer    
     def run(self, logging=False):
+
         temp_file = NamedTemporaryFile()
         name_out = os.path.join(self.save_dir, os.path.split(temp_file.name)[1])
 
@@ -216,12 +226,11 @@ class InfererURL():
 
         np.save(f'{name_out}.npy', pred)
         if logging: print(f"Saved pred to <{name_out}.npy>. {datetime.now().strftime('%H:%M:%S')}")
-        
 
 
 if __name__ == '__main__':
     """
-    Example: 
+    Example: ENDPOINT=http://localhost:8501/v1/models/hover:predict \
         python external_infer_url.py --input_img '/data/input/data_consep/data/test/Images/test_1.png' --save_dir '/data/output/'
     """
     parser = argparse.ArgumentParser()
