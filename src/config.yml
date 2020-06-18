@@ -285,7 +285,7 @@ hv_consep_seg_class_uit_2001:
 hv_pannuke_seg_class:
   exp_id: '1.0'
   mode: 'hover'
-  model_type: 'np_hv'
+  model_type: 'np_hv_opt'
 
   extract_data_dir: '/data/input/data_pannuke/'
   extract_type: 'mirror' 
