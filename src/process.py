@@ -116,7 +116,7 @@ def process(parallel=False):
                         if len(type_list) > 1:
                             inst_type = type_list[1][0]
                         else:
-                            if not parallel: print('[Warn] Instance has `background` type')
+                            if not parallel: pass # print('[Warn] Instance has `background` type')
                     pred_inst_type[idx] = inst_type
                 pred_inst_centroid = get_inst_centroid(pred_inst)
 
@@ -126,7 +126,7 @@ def process(parallel=False):
                             'inst_type' :     pred_inst_type[:, None],
                             'inst_centroid' : pred_inst_centroid,
                             })
-                overlaid_output = visualize_instances(pred_inst, img, (cfg.nr_types, pred_inst_type[:, None])) #cfg.nr_types + 1
+                overlaid_output = visualize_instances(pred_inst, img, (cfg.nr_types, pred_inst_type[:, None]), 2) # outline inflammatory
                 overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
                 cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
                 with open(os.path.join(proc_dir, f'{basename}.log'), 'w') as log_file:

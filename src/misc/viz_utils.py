@@ -21,8 +21,44 @@ def gen_colors(N, random_colors=True, bright=True):
     if (random_colors): random.shuffle(colors)
     return colors
 
+def gen_colors_outline(N, outline_idx=2):
+    """
+    Generate colors.
+    To get visually distinct colors, generate them in HSV space then
+    convert to RGB.
+    Outline specific color
+    """
+    pallete_bright_1 = np.array([[255.0, 0.0, 0.0], # red
+                                [204.0, 255.0, 0.0], # greeny yellow 
+                                [0.0, 255.0, 102.0], # green - Inflammatory
+                                [0.0, 102.0, 255.0], # blue - Epithelial
+                                [204.0, 0.0, 255.0]]) # pink
+
+    pallete_bright_2 = np.array([[255.0, 0.0, 0.0], # bright red
+                                [255.0, 255.0, 0.0], # bright yellow
+                                [0.0, 255.0, 0.0], # bright green
+                                [0.0, 255.0, 255.0], # bright cyan
+                                [0.0, 0.0, 255.0], # bright blue
+                                [255.0, 0.0, 255.0]]) # bright pink
+    
+    compare_pallete = np.array([[255.0, 0.0, 0.0], # bright red
+                                [255.0, 255.0, 0.0], # bright yellow Neoplastic
+                                [0.0, 255.0, 0.0], # bright green Inflammatory
+                                [0.0, 255.0, 255.0], # bright cyan Connective
+                                [255.0, 0.0, 255.0], # bright pink Dead cells
+                                [0.0, 0.0, 255.0]]) # bright blue Epithelial
+    
+    full_pallete
+
+
+    brightness = 0.6
+    hsv = [(i / N, 1, 1.0) if i == outline_idx else (i / N, 1, brightness) for i in range(N)]
+    colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
+    # return colors
+    return list(compare_pallete / 255.0)
+
 ####
-def visualize_instances(mask, canvas=None, color_info=None):
+def visualize_instances(mask, canvas=None, color_info=None, idx_outline=2):
     """
     Args:
         mask: array of NW
@@ -35,17 +71,20 @@ def visualize_instances(mask, canvas=None, color_info=None):
                 if canvas is None else np.copy(canvas)
 
     insts_list = list(np.unique(mask)) # [0,1,2,3,4,..,820]
-    insts_list.remove(0) # remove background ?? is 0 (first elem) always background? # [1,2,3,4,..820]
+    insts_list.remove(0) # remove background
 
+    # assuming that it is segmentation only
     if num_colors is None:
-        inst_colors = gen_colors(len(insts_list))
-        inst_colors = np.array(inst_colors) * 255
+        inst_colors = np.array(gen_colors(len(insts_list))) * 255
 
    # assuming that colors and inst_colors are sorted equally
     if num_colors is not None:
-        unique_colors = np.array(gen_colors(num_colors, random_colors=False)) * 255
+        unique_colors = np.array(gen_colors_outline(num_colors, idx_outline)) * 255
 
     for idx, inst_id in enumerate(insts_list):
+        if (color_info[1][idx][0]) == 0: # if background inst
+            continue
+        
         inst_color = inst_colors[idx] if num_colors is None else unique_colors[int(color_info[1][idx][0])]
 
         inst_map = np.array(mask == inst_id, np.uint8)

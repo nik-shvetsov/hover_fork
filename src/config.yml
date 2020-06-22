@@ -40,7 +40,7 @@ hv_kumar:
     Misc: 1
     Inflammatory: 2
     Epithelial: 3
-    Spindle': 4
+    Spindle: 4
 
   ### Train parameters
   data_ext: '.npy' # Data extension
@@ -93,7 +93,7 @@ hv_cmp17:
     Misc: 1
     Inflammatory: 2
     Epithelial: 3
-    Spindle': 4
+    Spindle: 4
 
   data_ext: '.npy'
   train_dir:
@@ -134,7 +134,7 @@ hv_seg_consep:
     Misc: 1
     Inflammatory: 2
     Epithelial: 3
-    Spindle': 4
+    Spindle: 4
 
   data_ext: '.npy'
   train_dir:
@@ -175,7 +175,7 @@ hv_seg_class_consep:
     Misc: 1
     Inflammatory: 2
     Epithelial: 3
-    Spindle': 4
+    Spindle: 4
 
   data_ext: '.npy'
   train_dir:
@@ -220,7 +220,7 @@ hv_consep_seg_class_ppatch_batch:
     Misc: 1
     Inflammatory: 2
     Epithelial: 3
-    Spindle': 4
+    Spindle: 4
 
   data_ext: '.npy'
   train_dir:
@@ -262,7 +262,7 @@ hv_consep_seg_class_uit_2001:
     Misc: 1
     Inflammatory: 2
     Epithelial: 3
-    Spindle': 4
+    Spindle: 4
 
   data_ext: '.npy'
   train_dir:
