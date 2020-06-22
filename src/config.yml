@@ -319,7 +319,7 @@ hv_pannuke_seg_class:
   input_norm: True
 
   inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_infer_hover/weights_hovernet.npz'
+  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_pannuke/test/Images'
@@ -365,9 +365,55 @@ hv_pannuke_seg_class_ppatch_batch:
   input_norm: True
 
   inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_infer_hover/weights_hovernet.npz'
+  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
   inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_ppatches/test/Images'
+    
+  remap_labels: False
+
+  ####
+
+hv_pannuke_seg_class_uit_2001:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv_opt'
+
+  extract_data_dir: '/data/input/data_pannuke/'
+  extract_type: 'mirror' 
+
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'valid'
+    - 'test'
+  step_size: [164, 164]
+  win_size: [256, 256]
+
+  seed: 10
+  type_classification: True
+  
+  nr_types: 6 
+  nuclei_types:
+    Neoplastic cells: 1
+    Inflammatory: 2
+    Connective/Soft tissue cells: 3
+    Dead Cells: 4
+    Epithelial: 5
+    
+  data_ext: '.npy'
+  train_dir:
+    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/train/Masks/'
+  valid_dir:
+    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/valid/Masks/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_uit_2001/test/Images'
     
   remap_labels: False
