@@ -40,8 +40,10 @@ class Config(object):
 
         # Some semantic segmentation network like micronet, nr_types will replace nr_classes if type_classification=True
         self.nr_classes = 2 # Nuclei Pixels vs Background
-        self.nr_types = data_config['nr_types']  
+        
         self.nuclei_type_dict = data_config['nuclei_types']
+        self.nr_types = len(self.nuclei_type_dict.values()) + 1
+
         assert len(self.nuclei_type_dict.values()) == self.nr_types - 1
 
         #### Dynamically setting the config file into variable
@@ -72,17 +74,28 @@ class Config(object):
             'np_dist'  : '540x540_80x80',
         }
 
+        self.color_palete = {
+        'Background': [255.0, 0.0, 0.0],    # red
+        'Neoplastic': [255.0, 255.0, 0.0],  # bright yellow
+        'Inflammatory': [0.0, 255.0, 0.0],  # dark green
+        'Connective': [0.0, 255.0, 170.0],  # emerald       # Soft tissue cells
+        'Epithelial': [0.0, 0.0, 255.0],    # dark blue
+        'Dead cells': [255.0, 0.0, 170.0],  # pink
+        'Spindle': [0.0, 170.0, 255.0],     # light blue
+        'Misc': [255.0, 170.0, 0.0],        # orange
+        'light green': [170.0, 255.0, 0.0], # light green
+        'purple': [170.0, 0.0, 255.0],      # purple
+        'cyan': [0.0, 170.0, 255.0]        # cyan
+        }
+
         exp_id = data_config['exp_id']
-        model_id = '%s' % self.model_type
+        model_id = self.model_type
         self.model_name = '{}-{}-{}'.format(self.model_config, model_id, exp_id)
 
         self.data_ext = data_config['data_ext']
         # list of directories containing validation patches
         self.train_dir = data_config['train_dir']
         self.valid_dir = data_config['valid_dir']
-
-        # self.valid_dir = ['../../../train/Kumar_old_GT/%s/valid_same/XXXX/' % data_code_dict[self.model_type],
-        #                   '../../../train/Kumar_old_GT/%s/valid_diff/XXXX/' % data_code_dict[self.model_type]]
 
         # nr of processes for parallel processing input
         self.nr_procs_train = data_config['nr_procs_train']
@@ -92,7 +105,6 @@ class Config(object):
 
         # loading chkpts in tensorflow, the path must not contain extra '/'
         self.save_dir = os.path.join(self.log_path, 'train', self.model_name)
-        #self.save_dir = '%s/%s' % (self.log_path, self.model_name) # log file destination
 
         #### Info for running inference
         self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
@@ -133,7 +145,7 @@ class Config(object):
             model_constructor = importlib.import_module('model.graph')
             model_constructor = model_constructor.Model_NP_DIST
         else:
-            model_constructor = importlib.import_module('model.%s' % self.model_type)
+            model_constructor = importlib.import_module(f'model.{self.model_type}')
             model_constructor = model_constructor.Graph
         return model_constructor # NOTE return alias, not object
 

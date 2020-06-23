@@ -19,53 +19,51 @@ def gen_colors(N, random_colors=True, bright=True):
     hsv = [(i / N, 1, brightness) for i in range(N)]
     colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
     if (random_colors): random.shuffle(colors)
-    return colors
+    return (np.array(colors) * 255)
 
-def gen_colors_outline(N, outline_idx=2):
-    """
-    Generate colors.
-    To get visually distinct colors, generate them in HSV space then
-    convert to RGB.
-    Outline specific color
-    """
-    pallete_bright_1 = np.array([[255.0, 0.0, 0.0], # red
-                                [204.0, 255.0, 0.0], # greeny yellow 
-                                [0.0, 255.0, 102.0], # green - Inflammatory
-                                [0.0, 102.0, 255.0], # blue - Epithelial
-                                [204.0, 0.0, 255.0]]) # pink
+# def gen_colors_outline(N, outline_idx=2):
+#     """
+#     Generate colors.
+#     To get visually distinct colors, generate them in HSV space then
+#     convert to RGB.
+#     Outline specific color
+#     """
+#     pallete_bright_1 = np.array([[255.0, 0.0, 0.0], # red
+#                                 [204.0, 255.0, 0.0], # greeny yellow 
+#                                 [0.0, 255.0, 102.0], # green - Inflammatory
+#                                 [0.0, 102.0, 255.0], # blue - Epithelial
+#                                 [204.0, 0.0, 255.0]]) # pink
 
-    pallete_bright_2 = np.array([[255.0, 0.0, 0.0], # bright red
-                                [255.0, 255.0, 0.0], # bright yellow
-                                [0.0, 255.0, 0.0], # bright green
-                                [0.0, 255.0, 255.0], # bright cyan
-                                [0.0, 0.0, 255.0], # bright blue
-                                [255.0, 0.0, 255.0]]) # bright pink
+#     pallete_bright_2 = np.array([[255.0, 0.0, 0.0], # bright red
+#                                 [255.0, 255.0, 0.0], # bright yellow
+#                                 [0.0, 255.0, 0.0], # bright green
+#                                 [0.0, 255.0, 255.0], # bright cyan
+#                                 [0.0, 0.0, 255.0], # bright blue
+#                                 [255.0, 0.0, 255.0]]) # bright pink
     
-    compare_pallete = np.array([[255.0, 0.0, 0.0], # bright red
-                                [255.0, 255.0, 0.0], # bright yellow Neoplastic
-                                [0.0, 255.0, 0.0], # bright green Inflammatory
-                                [0.0, 255.0, 255.0], # bright cyan Connective
-                                [255.0, 0.0, 255.0], # bright pink Dead cells
-                                [0.0, 0.0, 255.0]]) # bright blue Epithelial
-    
-    full_pallete
+#     compare_pallete = np.array([[255.0, 0.0, 0.0], # bright red
+#                                 [255.0, 255.0, 0.0], # bright yellow Neoplastic
+#                                 [0.0, 255.0, 0.0], # bright green Inflammatory
+#                                 [0.0, 255.0, 255.0], # bright cyan Connective
+#                                 [255.0, 0.0, 255.0], # bright pink Dead cells
+#                                 [0.0, 0.0, 255.0]]) # bright blue Epithelial
 
 
-    brightness = 0.6
-    hsv = [(i / N, 1, 1.0) if i == outline_idx else (i / N, 1, brightness) for i in range(N)]
-    colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
-    # return colors
-    return list(compare_pallete / 255.0)
+#     brightness = 0.6
+#     hsv = [(i / N, 1, 1.0) if i == outline_idx else (i / N, 1, brightness) for i in range(N)]
+#     colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
+#     # return colors
+#     return list(compare_pallete / 255.0)
 
 ####
-def visualize_instances(mask, canvas=None, color_info=None, idx_outline=2):
+def visualize_instances(mask, canvas=None, color_info=None, to_outline='Inflammatory'):
     """
     Args:
         mask: array of NW
+        color_info: tuple ((cfg.nuclei_type_dict, cfg.color_palete), pred_inst_type[:, None])
     Return:
         Image with the instance overlaid
     """
-    num_colors = color_info[0] if color_info is not None else None
 
     canvas = np.full(mask.shape + (3,), 200, dtype=np.uint8) \
                 if canvas is None else np.copy(canvas)
@@ -73,19 +71,22 @@ def visualize_instances(mask, canvas=None, color_info=None, idx_outline=2):
     insts_list = list(np.unique(mask)) # [0,1,2,3,4,..,820]
     insts_list.remove(0) # remove background
 
-    # assuming that it is segmentation only
-    if num_colors is None:
-        inst_colors = np.array(gen_colors(len(insts_list))) * 255
+    if color_info is None:
+        inst_colors = gen_colors(len(insts_list))
 
-   # assuming that colors and inst_colors are sorted equally
-    if num_colors is not None:
-        unique_colors = np.array(gen_colors_outline(num_colors, idx_outline)) * 255
+    if color_info is not None:
+        unique_colors = {}
+        for key in color_info[0][0].keys(): # type_dict
+            unique_colors[color_info[0][0][key]] = color_info[0][1][key] # color palete
 
     for idx, inst_id in enumerate(insts_list):
         if (color_info[1][idx][0]) == 0: # if background inst
             continue
-        
-        inst_color = inst_colors[idx] if num_colors is None else unique_colors[int(color_info[1][idx][0])]
+
+        if color_info is None:
+            inst_color = inst_colors[idx]  
+        else:
+            inst_color = unique_colors[int(color_info[1][idx][0])]
 
         inst_map = np.array(mask == inst_id, np.uint8)
         y1, y2, x1, x2  = bounding_box(inst_map)

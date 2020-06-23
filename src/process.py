@@ -126,12 +126,13 @@ def process(parallel=False):
                             'inst_type' :     pred_inst_type[:, None],
                             'inst_centroid' : pred_inst_centroid,
                             })
-                overlaid_output = visualize_instances(pred_inst, img, (cfg.nr_types, pred_inst_type[:, None]), 2) # outline inflammatory
+                overlaid_output = visualize_instances(pred_inst, img, ((cfg.nuclei_type_dict, cfg.color_palete), pred_inst_type[:, None])) # to_outline='Inflammatory' outline 
                 overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
                 cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
                 with open(os.path.join(proc_dir, f'{basename}.log'), 'w') as log_file:
                     unique, counts = np.unique(pred_inst_type[:, None], return_counts=True)
                     unique = list(unique)
+                    print (unique)
                     if 0 in unique: unique.remove(0) 
                     print(f'{basename} : {dict(zip([{str(v): str(k) for k, v in cfg.nuclei_type_dict.items()}[str(item)] for item in unique], counts))}', file = log_file)
 

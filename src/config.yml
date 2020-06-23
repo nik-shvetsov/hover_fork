@@ -303,10 +303,10 @@ hv_pannuke_seg_class:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic cells: 1
+    Neoplastic: 1
     Inflammatory: 2
-    Connective/Soft tissue cells: 3
-    Dead Cells: 4
+    Connective: 3
+    Dead cells: 4
     Epithelial: 5
     
   data_ext: '.npy'
@@ -349,10 +349,10 @@ hv_pannuke_seg_class_ppatch_batch:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic cells: 1
+    Neoplastic: 1
     Inflammatory: 2
-    Connective/Soft tissue cells: 3
-    Dead Cells: 4
+    Connective: 3
+    Dead cells: 4
     Epithelial: 5
     
   data_ext: '.npy'
@@ -395,10 +395,10 @@ hv_pannuke_seg_class_uit_2001:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic cells: 1
+    Neoplastic: 1
     Inflammatory: 2
-    Connective/Soft tissue cells: 3
-    Dead Cells: 4
+    Connective: 3
+    Dead cells: 4
     Epithelial: 5
     
   data_ext: '.npy'
