@@ -116,7 +116,8 @@ def process(parallel=False):
                         if len(type_list) > 1:
                             inst_type = type_list[1][0]
                         else:
-                            if not parallel: pass # print('[Warn] Instance has `background` type')
+                            if not parallel: 
+                                pass # print('[Warn] Instance has `background` type')
                     pred_inst_type[idx] = inst_type
                 pred_inst_centroid = get_inst_centroid(pred_inst)
 
@@ -132,8 +133,9 @@ def process(parallel=False):
                 with open(os.path.join(proc_dir, f'{basename}.log'), 'w') as log_file:
                     unique, counts = np.unique(pred_inst_type[:, None], return_counts=True)
                     unique = list(unique)
-                    print (unique)
-                    if 0 in unique: unique.remove(0) 
+                    if 0 in unique: # remove backround entries
+                        counts = np.delete(counts, unique.index(0))
+                        unique.remove(0)
                     print(f'{basename} : {dict(zip([{str(v): str(k) for k, v in cfg.nuclei_type_dict.items()}[str(item)] for item in unique], counts))}', file = log_file)
 
             else:

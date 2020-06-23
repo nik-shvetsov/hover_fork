@@ -77,7 +77,7 @@ class Config(object):
         self.color_palete = {
         'Background': [255.0, 0.0, 0.0],    # red
         'Neoplastic': [255.0, 255.0, 0.0],  # bright yellow
-        'Inflammatory': [0.0, 255.0, 0.0],  # dark green
+        'Inflammatory': [0.0, 255.0, 0.0],  # bright green
         'Connective': [0.0, 255.0, 170.0],  # emerald       # Soft tissue cells
         'Epithelial': [0.0, 0.0, 255.0],    # dark blue
         'Dead cells': [255.0, 0.0, 170.0],  # pink
