@@ -56,7 +56,7 @@ def gen_colors(N, random_colors=True, bright=True):
 #     return list(compare_pallete / 255.0)
 
 ####
-def visualize_instances(mask, canvas=None, color_info=None, to_outline='Inflammatory'):
+def visualize_instances(mask, canvas=None, color_info=None, to_outline=''):
     """
     Args:
         mask: array of NW
@@ -77,7 +77,10 @@ def visualize_instances(mask, canvas=None, color_info=None, to_outline='Inflamma
     if color_info is not None:
         unique_colors = {}
         for key in color_info[0][0].keys(): # type_dict
-            unique_colors[color_info[0][0][key]] = color_info[0][1][key] # color palete
+            if (bool(to_outline) is True) and (key != to_outline):
+                unique_colors[color_info[0][0][key]] = [224.0, 224.0, 224.0]
+            else:
+                unique_colors[color_info[0][0][key]] = color_info[0][1][key] # color palete
 
     for idx, inst_id in enumerate(insts_list):
         if (color_info[1][idx][0]) == 0: # if background inst

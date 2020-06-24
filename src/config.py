@@ -126,6 +126,7 @@ class Config(object):
         self.inf_output_dir = os.path.join(self.log_path, 'infer', self.model_name)
         self.model_export_dir = os.path.join(self.log_path, 'export', self.model_name)
         self.remap_labels = data_config['remap_labels']
+        self.outline = data_config['outline']
         
         # For inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = ['images']

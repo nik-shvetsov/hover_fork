@@ -193,6 +193,7 @@ hv_consep_seg_class:
     - '/data/input/data_consep/data/test/Images'
   
   remap_labels: True
+  outline: 'Inflammatory'
 
 ###################################
 #### Custom profiles and mixes ####
@@ -238,6 +239,7 @@ hv_consep_seg_class_ppatch_batch:
     - '/data/input/data_ppatches/test/Images'
     
   remap_labels: True
+  outline: 'Inflammatory'
 ##################################
 
 hv_consep_seg_class_uit_2001:
@@ -280,6 +282,7 @@ hv_consep_seg_class_uit_2001:
     - '/data/input/data_uit_2001/test/Images'
     
   remap_labels: True
+  outline: 'Inflammatory'
 ##################################
 
 hv_pannuke_seg_class:
@@ -325,7 +328,7 @@ hv_pannuke_seg_class:
     - '/data/input/data_pannuke/test/Images'
     
   remap_labels: True
-
+  outline: 'Inflammatory'
 
 #####
 hv_pannuke_seg_class_ppatch_batch:
@@ -371,6 +374,7 @@ hv_pannuke_seg_class_ppatch_batch:
     - '/data/input/data_ppatches/test/Images'
     
   remap_labels: True
+  outline: 'Inflammatory'
 
   ####
 
@@ -417,3 +421,4 @@ hv_pannuke_seg_class_uit_2001:
     - '/data/input/data_uit_2001/test/Images'
     
   remap_labels: True
+  outline: 'Inflammatory'
