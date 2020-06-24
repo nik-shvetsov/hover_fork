@@ -314,9 +314,9 @@ hv_pannuke_seg_class:
     
   data_ext: '.npy'
   train_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/train/Masks/'
+    - '/data/output/extract/hv_seg_pannuke_256x256_164x164/train/Labels/'
   valid_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/valid/Masks/'
+    - '/data/output/extract/hv_seg_pannuke_256x256_164x164/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -328,9 +328,57 @@ hv_pannuke_seg_class:
     - '/data/input/data_pannuke/test/Images'
     
   remap_labels: True
-  outline: 'Inflammatory'
+  outline: ''
 
 #####
+
+hv_pannuke_seg_class_consep_data:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv_opt'
+
+  extract_data_dir: '/data/input/data_pannuke/'
+  extract_type: 'mirror' 
+
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'valid'
+    - 'test'
+  step_size: [164, 164]
+  win_size: [256, 256]
+
+  seed: 10
+  type_classification: True
+  
+  nr_types: 6 
+  nuclei_types:
+    Neoplastic: 1
+    Inflammatory: 2
+    Connective: 3
+    Dead cells: 4
+    Epithelial: 5
+    
+  data_ext: '.npy'
+  train_dir:
+    - '/data/input/data_pannuke/train/Labels/'
+  valid_dir:
+    - '/data/input/data_pannuke/valid/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_consep/data/test/Images'
+    
+  remap_labels: True
+  outline: ''
+
+#####
+
 hv_pannuke_seg_class_ppatch_batch:
   exp_id: '1.0'
   mode: 'hover'
@@ -360,9 +408,9 @@ hv_pannuke_seg_class_ppatch_batch:
     
   data_ext: '.npy'
   train_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/train/Masks/'
+    - '/data/input/data_pannuke/train/Labels/'
   valid_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/valid/Masks/'
+    - '/data/input/data_pannuke/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -407,9 +455,9 @@ hv_pannuke_seg_class_uit_2001:
     
   data_ext: '.npy'
   train_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/train/Masks/'
+    - '/data/input/data_pannuke/train/Labels/'
   valid_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_540x540_80x80/valid/Masks/'
+    - '/data/input/data_pannuke/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True

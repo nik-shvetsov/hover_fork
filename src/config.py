@@ -141,7 +141,7 @@ class Config(object):
             model_constructor = model_constructor.Model_NP_HV
         elif self.model_type == 'np_hv_opt':
             model_constructor = importlib.import_module('model.hover_opt')
-            model_constructor = model_constructor.Model_NP_HV
+            model_constructor = model_constructor.Model_NP_HV_OPT
         elif self.model_type == 'np_dist':
             model_constructor = importlib.import_module('model.graph')
             model_constructor = model_constructor.Model_NP_DIST

@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from tensorpack import Inferencer, logger
 from tensorpack.callbacks import (DataParallelInferenceRunner, ModelSaver,
-                                  MinSaver, MaxSaver, ScheduledHyperParamSetter)
+                                  MinSaver, MaxSaver, ScheduledHyperParamSetter, InjectShell)
 from tensorpack.tfutils import SaverRestore, get_model_loader
 from tensorpack.train import (SyncMultiGPUTrainerParameterServer, TrainConfig,
                               launch_train_with_config)
@@ -42,7 +42,7 @@ class StatCollector(Inferencer, Config):
     def _after_inference(self):
         # ! factor this out
         def _dice(true, pred, label):
-            true = np.array(true == label, np.int32)
+            true = np.array(true == label, np.int32)            
             pred = np.array(pred == label, np.int32)
             inter = (pred * true).sum()
             total = (pred + true).sum()
@@ -80,12 +80,29 @@ class StatCollector(Inferencer, Config):
             error = pred_dst - true_dst
             mse = np.sum(error * error) / nr_pixels
             stat_dict[self.prefix + '_mse'] = mse
-        elif self.model_type == 'np_hv':
+
+        elif self.model_type == 'np_hv' or self.model_type == 'np_hv_opt':
             pred_hv = pred_inst[...,-2:]
             true_hv = true_inst[...,-2:]
             error = pred_hv - true_hv
+
+            logger.info("---")
+            logger.info(np.shape(true_hv))
+            logger.info(np.unique(true_hv))
+            logger.info("---")
+            logger.info(np.shape(pred_hv))
+            logger.info(np.unique(pred_hv))
+            logger.info("---")
+            logger.info(np.shape(true_type))
+            logger.info(np.unique(true_type))
+            logger.info("---")
+
+            logger.info(np.sum(error))
+
             mse = np.sum(error * error) / nr_pixels
             stat_dict[self.prefix + '_mse'] = mse
+
+            stat_dict['mse_calc_nr_pixels'] = nr_pixels
 
         # classification statistic
         if self.model_type != 'dist':
@@ -118,11 +135,6 @@ class StatCollector(Inferencer, Config):
 
         if self.type_classification:
             pred_type = np.argmax(pred_type, axis=-1)
-            # # ! either automate this or set the nuclei type name by hand
-            # stat_dict[self.prefix + '_dice_msc'] = _dice(true_type, pred_type, 1)
-            # stat_dict[self.prefix + '_dice_inf'] = _dice(true_type, pred_type, 2)
-            # stat_dict[self.prefix + '_dice_epi'] = _dice(true_type, pred_type, 3)
-            # stat_dict[self.prefix + '_dice_fib'] = _dice(true_type, pred_type, 4)
 
             type_dict = self.nuclei_type_dict
             type_dice_list = []
@@ -193,6 +205,7 @@ class Trainer(Config):
         callbacks=[
                 # ModelSaver(max_to_keep=20), # TODO dynamic this
                 ModelSaver(max_to_keep=opt['nr_epochs']),
+                # InjectShell(file='/tools/hover_net/src/config.yml', shell='ipython'),
         ]
 
         for param_name, param_info in opt['manual_parameters'].items():

@@ -57,22 +57,27 @@ def dense_blk(name, l, ch, ksize, count, split=1, padding='valid'):
         l = BNReLU('blk_bna', l)
     return l
 ####
-def encoder(i):
+def encoder(i, freeze):
     """
     Pre-activated ResNet50 Encoder
     """
 
     d1 = Conv2D('conv0',  i, 64, 7, padding='same', strides=1, activation=BNReLU)
-    d1 = res_blk('group0', d1, [ 64,  64,  256], [1, 3, 1], 3, strides=1)                       
-    
-    d2 = res_blk('group1', d1, [128, 128,  512], [1, 3, 1], 4, strides=2)
+    d1 = res_blk('group0', d1, [ 64,  64,  256], [1, 3, 1], 3, strides=1, freeze=freeze)
 
-    d3 = res_blk('group2', d2, [256, 256, 1024], [1, 3, 1], 6, strides=2)
+    d2 = res_blk('group1', d1, [128, 128,  512], [1, 3, 1], 4, strides=2, freeze=freeze)
+    d2 = tf.stop_gradient(d2) if freeze else d2
 
-    d4 = res_blk('group3', d3, [512, 512, 2048], [1, 3, 1], 3, strides=2)
-    
+    d3 = res_blk('group2', d2, [256, 256, 1024], [1, 3, 1], 6, strides=2, freeze=freeze)
+    d3 = tf.stop_gradient(d3) if freeze else d3
+
+    d4 = res_blk('group3', d3, [512, 512, 2048], [1, 3, 1], 3, strides=2, freeze=freeze)
+    d4 = tf.stop_gradient(d4) if freeze else d4
+
     d4 = Conv2D('conv_bot',  d4, 1024, 1, padding='same')
+
     return [d1, d2, d3, d4]
+
 ####
 def decoder(name, i):
     pad = 'valid' # to prevent boundary artifacts
@@ -103,9 +108,10 @@ def decoder(name, i):
 ####
 
 class Model(ModelDesc, Config):
-    def __init__(self):
+    def __init__(self, freeze=False):
         super(Model, self).__init__()
         assert tf.test.is_gpu_available()
+        self.freeze = freeze
         self.data_format = 'NCHW'
 
     def _get_inputs(self):
@@ -126,7 +132,7 @@ class Model(ModelDesc, Config):
         return opt
 ####
 
-class Model_NP_HV(Model):
+class Model_NP_HV_OPT(Model):
 
     def _build_graph(self, inputs):
         
@@ -157,7 +163,7 @@ class Model_NP_HV(Model):
             i = i if not self.input_norm else i / 255.0
 
             ####
-            d = encoder(i)
+            d = encoder(i, self.freeze)
             d[0] = crop_op(d[0], (92, 92))
             d[1] = crop_op(d[1], (36, 36))
 
@@ -192,5 +198,136 @@ class Model_NP_HV(Model):
             # * channel ordering: type-map, segmentation map
             # encoded so that inference can extract all output at once
             predmap_coded = tf.concat([soft_class, prob_np, pred_hv], axis=-1, name='predmap-coded')
+
+        # return
+
+        def get_gradient_hv(l, h_ch, v_ch):
+            """
+            Calculate the horizontal partial differentiation for horizontal channel
+            and the vertical partial differentiation for vertical channel.
+            The partial differentiation is approximated by calculating the central differnce
+            which is obtained by using Sobel kernel of size 5x5. The boundary is zero-padded
+            when channel is convolved with the Sobel kernel.
+            Args:
+                l (tensor): tensor of shape NHWC with C should be 2 (1 channel for horizonal 
+                            and 1 channel for vertical)
+                h_ch(int) : index within C axis of `l` that corresponds to horizontal channel
+                v_ch(int) : index within C axis of `l` that corresponds to vertical channel
+            """
+            def get_sobel_kernel(size):
+                assert size % 2 == 1, 'Must be odd, get size=%d' % size
+
+                h_range = np.arange(-size//2+1, size//2+1, dtype=np.float32)
+                v_range = np.arange(-size//2+1, size//2+1, dtype=np.float32)
+                h, v = np.meshgrid(h_range, v_range)
+                kernel_h = h / (h * h + v * v + 1.0e-15)
+                kernel_v = v / (h * h + v * v + 1.0e-15)
+                return kernel_h, kernel_v
+
+            mh, mv = get_sobel_kernel(5)
+            mh = tf.constant(mh, dtype=tf.float32)
+            mv = tf.constant(mv, dtype=tf.float32)
+
+            mh = tf.reshape(mh, [5, 5, 1, 1])
+            mv = tf.reshape(mv, [5, 5, 1, 1])
+
+            # central difference to get gradient, ignore the boundary problem
+            h = tf.expand_dims(l[...,h_ch], axis=-1)
+            v = tf.expand_dims(l[...,v_ch], axis=-1)
+            dh = tf.nn.conv2d(h, mh, strides=[1, 1, 1, 1], padding='SAME')
+            dv = tf.nn.conv2d(v, mv, strides=[1, 1, 1, 1], padding='SAME')
+            output = tf.concat([dh, dv], axis=-1)
+            return output
+        def loss_mse(true, pred, name=None):
+            ### regression loss
+            loss = pred - true
+            loss = tf.reduce_mean(loss * loss, name=name)
+            return loss
+        def loss_msge(true, pred, focus, name=None):
+            focus = tf.stack([focus, focus], axis=-1)
+            pred_grad = get_gradient_hv(pred, 1, 0)
+            true_grad = get_gradient_hv(true, 1, 0)
+            loss = pred_grad - true_grad
+            loss = focus * (loss * loss)
+            # artificial reduce_mean with focus region
+            loss = tf.reduce_sum(loss) / (tf.reduce_sum(focus) + 1.0e-8)
+            loss = tf.identity(loss, name=name)
+            return loss
+
+        ####
+        if get_current_tower_context().is_training:
+            #---- LOSS ----#
+            loss = 0
+            for term, weight in self.loss_term.items():
+                if term == 'mse':
+                    term_loss = loss_mse(true_hv, pred_hv, name='loss-mse')
+                elif term == 'msge':
+                    focus = truemap_coded[...,0]
+                    term_loss = loss_msge(true_hv, pred_hv, focus, name='loss-msge')
+                elif term == 'bce':
+                    term_loss = categorical_crossentropy(soft_np, one_np)
+                    term_loss = tf.reduce_mean(term_loss, name='loss-bce')
+                elif 'dice' in self.loss_term:
+                    term_loss = dice_loss(soft_np[...,0], one_np[...,0]) \
+                              + dice_loss(soft_np[...,1], one_np[...,1])
+                    term_loss = tf.identity(term_loss, name='loss-dice')
+                else:
+                    assert False, 'Not support loss term: %s' % term
+                add_moving_summary(term_loss)
+                loss += term_loss * weight
+
+            if self.type_classification:
+                term_loss = categorical_crossentropy(soft_class, one_type)
+                term_loss = tf.reduce_mean(term_loss, name='loss-xentropy-class')
+                add_moving_summary(term_loss)
+                loss = loss + term_loss
+
+                term_loss = 0
+                for type_id in range(self.nr_types):
+                    term_loss += dice_loss(soft_class[...,type_id], one_type[...,type_id])
+
+                term_loss = tf.identity(term_loss, name='loss-dice-class')
+                add_moving_summary(term_loss)
+                loss = loss + term_loss
+
+            ### combine the loss into single cost function
+            self.cost = tf.identity(loss, name='overall-loss')
+            add_moving_summary(self.cost)
+            ####
+
+            add_param_summary(('.*/W', ['histogram']))   # monitor W
+
+            ### logging visual sthg
+            orig_imgs = tf.cast(orig_imgs  , tf.uint8)
+            tf.summary.image('input', orig_imgs, max_outputs=1)
+
+            orig_imgs = crop_op(orig_imgs, (92, 92), "NHWC")
+
+            pred_np = colorize(prob_np[...,0], cmap='jet')
+            true_np = colorize(true_np[...,0], cmap='jet')
+
+            pred_h = colorize(prob_hv[...,0], vmin=-1, vmax=1, cmap='jet')
+            pred_v = colorize(prob_hv[...,1], vmin=-1, vmax=1, cmap='jet')
+            true_h = colorize(true_hv[...,0], vmin=-1, vmax=1, cmap='jet')
+            true_v = colorize(true_hv[...,1], vmin=-1, vmax=1, cmap='jet')
+
+            if not self.type_classification:
+                viz = tf.concat([orig_imgs,
+                                pred_h, pred_v, pred_np,
+                                true_h, true_v, true_np], 2)
+            else:
+                pred_type = tf.transpose(soft_class, (0, 1, 3, 2))
+                pred_type = tf.reshape(pred_type, [-1, 164, 164 * self.nr_types])
+                true_type = tf.cast(true_type[...,0] / self.nr_classes, tf.float32)
+                true_type = colorize(true_type, vmin=0, vmax=1, cmap='jet')
+                pred_type = colorize(pred_type, vmin=0, vmax=1, cmap='jet')
+
+                viz = tf.concat([orig_imgs,
+                                pred_h, pred_v, pred_np, pred_type,
+                                true_h, true_v, true_np, true_type,], 2)
+
+            viz = tf.concat([viz[0], viz[-1]], axis=0)
+            viz = tf.expand_dims(viz, axis=0)
+            tf.summary.image('output', viz, max_outputs=1)
 
         return
