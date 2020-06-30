@@ -86,19 +86,6 @@ class StatCollector(Inferencer, Config):
             true_hv = true_inst[...,-2:]
             error = pred_hv - true_hv
 
-            logger.info("---")
-            logger.info(np.shape(true_hv))
-            logger.info(np.unique(true_hv))
-            logger.info("---")
-            logger.info(np.shape(pred_hv))
-            logger.info(np.unique(pred_hv))
-            logger.info("---")
-            logger.info(np.shape(true_type))
-            logger.info(np.unique(true_type))
-            logger.info("---")
-
-            logger.info(np.sum(error))
-
             mse = np.sum(error * error) / nr_pixels
             stat_dict[self.prefix + '_mse'] = mse
 
