@@ -11,8 +11,8 @@ from tensorpack import imgaug
 
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
-                         GenInstanceContourMap, 
-                         ColorShiftOCV, EqRGB2HED, RGB2HED)
+                         GenInstanceContourMap,
+                         EqRGB2HED, RGB2HED)
 ####
 class Config(object):
     def __init__(self, ):
@@ -90,7 +90,7 @@ class Config(object):
 
         exp_id = data_config['exp_id']
         model_id = self.model_type
-        self.model_name = '{}-{}-{}'.format(self.model_config, model_id, exp_id)
+        self.model_name = '{}-{}-{}-{}'.format(self.model_config, model_id, data_config['input_augs'], exp_id)
 
         self.data_ext = data_config['data_ext']
         # list of directories containing validation patches
@@ -134,6 +134,70 @@ class Config(object):
         # For inference during training mode i.e run by trainer.py
         self.train_inf_output_tensor_names = ['predmap-coded', 'truemap-coded']
 
+        assert data_config['input_augs'] != '' or data_config['input_augs'] != None
+
+        if data_config['input_augs'] == 'st_hed_random':
+            self.input_augs = [
+                imgaug.RandomApplyAug(
+                    imgaug.RandomChooseAug([
+                        GaussianBlur(),
+                        MedianBlur(),
+                        imgaug.GaussianNoise(),
+                        #
+                        imgaug.ColorSpace(cv2.COLOR_RGB2HSV),
+                        imgaug.ColorSpace(cv2.COLOR_HSV2RGB),
+                        #
+                        RGB2HED(),
+                        EqRGB2HED(),
+                    ]), 0.5
+                ),
+                # standard color augmentation
+                imgaug.RandomOrderAug([
+                    imgaug.Hue((-8, 8), rgb=True), 
+                    imgaug.Saturation(0.2, rgb=True),
+                    imgaug.Brightness(26, clip=True),  
+                    imgaug.Contrast((0.75, 1.25), clip=True),
+                    ]),
+                imgaug.ToUint8(), 
+                #imgaug.ToFloat32()
+            ]
+
+        if data_config['input_augs'] == 'test':
+            self.input_augs = [
+                imgaug.RandomOrderAug([
+                    imgaug.Hue((179, 180), rgb=True), 
+                    imgaug.Saturation(0.5, rgb=True), 
+                    imgaug.Brightness(50, clip=True), 
+                    imgaug.Contrast((1.00, 1.50), clip=True),
+                ]),
+                imgaug.RandomApplyAug(
+                    imgaug.RandomChooseAug([
+                        GaussianBlur(),
+                        MedianBlur(),
+                        imgaug.GaussianNoise(),
+                    ]
+                    ), 0.5
+                ),
+                imgaug.ToUint8(),
+            ]
+
+        if data_config['input_augs'] == 'st':
+            self.input_augs = [
+                imgaug.RandomApplyAug(
+                    imgaug.RandomChooseAug([
+                        GaussianBlur(),
+                        MedianBlur(),
+                        imgaug.GaussianNoise(),
+                    ]), 0.5
+                ),
+                imgaug.RandomOrderAug([
+                    imgaug.Hue((-8, 8), rgb=True), 
+                    imgaug.Saturation(0.2, rgb=True),
+                    imgaug.Brightness(26, clip=True),  
+                    imgaug.Contrast((0.75, 1.25), clip=True),
+                    ]),
+                imgaug.ToUint8(),
+            ]
 
     def get_model(self):
         if self.model_type == 'np_hv':
@@ -167,45 +231,7 @@ class Config(object):
             imgaug.CenterCrop(input_shape),
         ]
 
-        input_augs = [
-            imgaug.RandomApplyAug(
-                imgaug.RandomChooseAug([
-                    GaussianBlur(),
-                    MedianBlur(),
-                    imgaug.GaussianNoise(),
-                    RGB2HED(), 
-                    ColorShiftOCV(), EqRGB2HED(),
-                ]), 0.5
-            ),
-            # standard color augmentation
-            imgaug.RandomOrderAug([
-                imgaug.Hue((-8, 8), rgb=True), 
-                imgaug.Saturation(0.2, rgb=True),
-                imgaug.Brightness(26, clip=True),  
-                imgaug.Contrast((0.75, 1.25), clip=True),
-                ]),
-            imgaug.ToUint8(),
-        ]
-
-        view_augs = [
-            imgaug.RandomOrderAug([
-                imgaug.Hue((179, 180), rgb=True), 
-                imgaug.Saturation(0.5, rgb=True), 
-                imgaug.Brightness(50, clip=True), 
-                imgaug.Contrast((1.00, 1.50), clip=True),
-            ]),
-            imgaug.RandomApplyAug(
-                imgaug.RandomChooseAug([
-                    GaussianBlur(),
-                    MedianBlur(),
-                    imgaug.GaussianNoise(),
-                    RGB2HED(),
-                    ColorShiftOCV(), EqRGB2HED(),
-                ]
-                ), 0.5
-            ),
-            imgaug.ToUint8(),
-        ]
+        input_augs = self.input_augs
 
         label_augs = []
         if self.model_type == 'unet' or self.model_type == 'micronet':
