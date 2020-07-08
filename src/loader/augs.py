@@ -453,13 +453,13 @@ class EqRGB2HED(ImageAugmentor):
 #         # return plt.plot(img_hed[:, :, idx], cmap=pick)
 
 
-class ColorShiftOCV(ImageAugmentor):
-    def __init__(self,):
-        super(ColorShiftOCV, self).__init__()
+# class ColorShiftOCV(ImageAugmentor):
+#     def __init__(self,):
+#         super(ColorShiftOCV, self).__init__()
 
-    def _get_augment_params(self, img):
-        return None
+#     def _get_augment_params(self, img):
+#         return None
 
-    def _augment(self, img, s):
-        # return random.choice([rgb2hsv(img), hsv2rgb(img)])
-        return cv2.cvtColor(img, random.choice([cv2.COLOR_RGB2HSV, cv2.COLOR_HSV2RGB]))
+#     def _augment(self, img, s):
+#         # return random.choice([rgb2hsv(img), hsv2rgb(img)])
+#         return cv2.cvtColor(img, random.choice([cv2.COLOR_RGB2HSV, cv2.COLOR_HSV2RGB]))

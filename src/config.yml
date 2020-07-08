@@ -44,6 +44,7 @@ hv_kumar:
 
   ### Train parameters
   data_ext: '.npy' # Data extension
+  input_augs: 'st'
   # List of directories containing validation patches
   train_dir:
     - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
@@ -96,6 +97,7 @@ hv_cmp17:
     Spindle: 4
 
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_cmp17_540x540_80x80/train/Labels/'
   valid_dir:
@@ -137,6 +139,7 @@ hv_consep_seg:
     Spindle: 4
 
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
   valid_dir:
@@ -178,6 +181,7 @@ hv_consep_seg_class:
     Spindle: 4
 
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
   valid_dir:
@@ -193,7 +197,7 @@ hv_consep_seg_class:
     - '/data/input/data_consep/data/test/Images'
   
   remap_labels: True
-  outline: 'Inflammatory'
+  outline: ''
 
 ###################################
 #### Custom profiles and mixes ####
@@ -224,6 +228,7 @@ hv_consep_seg_class_ppatch_batch:
     Spindle: 4
 
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
   valid_dir:
@@ -267,6 +272,7 @@ hv_consep_seg_class_uit_2001:
     Spindle: 4
 
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
   valid_dir:
@@ -313,6 +319,7 @@ hv_pannuke_seg_class:
     Epithelial: 5
     
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_seg_pannuke_256x256_164x164/train/Labels/'
   valid_dir:
@@ -360,6 +367,7 @@ hv_pannuke_seg_class_consep_data:
     Epithelial: 5
     
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/input/data_pannuke/train/Labels/'
   valid_dir:
@@ -407,6 +415,7 @@ hv_pannuke_seg_class_ppatch_batch:
     Epithelial: 5
     
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/input/data_pannuke/train/Labels/'
   valid_dir:
@@ -454,6 +463,7 @@ hv_pannuke_seg_class_uit_2001:
     Epithelial: 5
     
   data_ext: '.npy'
+  input_augs: 'st'
   train_dir:
     - '/data/input/data_pannuke/train/Labels/'
   valid_dir:
@@ -470,3 +480,46 @@ hv_pannuke_seg_class_uit_2001:
     
   remap_labels: True
   outline: 'Inflammatory'
+
+
+hv_consep_seg_class_aug_mod:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  extract_data_dir: '/data/input/data_consep/'
+  extract_type: 'mirror'
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  seed: 10
+  type_classification: True
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle: 4
+
+  data_ext: '.npy'
+  input_augs: 'st_hed_random'
+  train_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_consep/data/test/Images'
+  
+  remap_labels: True
+  outline: ''
