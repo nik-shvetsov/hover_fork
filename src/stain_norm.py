@@ -2,6 +2,7 @@ import os
 import cv2
 import glob
 import staintools
+import argparse
 
 from misc.utils import rm_n_mkdir
 
