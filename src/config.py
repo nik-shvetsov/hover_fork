@@ -24,13 +24,28 @@ class Config(object):
         data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
 
         # data extraion params
-        self.extract_data_dir = data_config['extract_data_dir']
+        self.data_dir_root = data_config['data_dir'] # without modes
+        
         self.extract_type = data_config['extract_type']
         self.data_modes = data_config['data_modes']
         self.win_size = data_config['win_size']
         self.step_size = data_config['step_size']
         self.img_ext = data_config['img_ext']
+        self.out_norm_root = os.path.join(self.log_path, 'norm')
         self.out_extract_root = os.path.join(self.log_path, 'extract')
+
+        self.no_norm_img_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Images') 
+                for mode in self.data_modes])}
+        self.out_norm = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_norm_root, mode, 'Images') 
+                for mode in self.data_modes])}
+        
+        win_code = ('{}_{}x{}_{}x{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1]))
+        self.out_extract = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_extract_root, win_code, mode, 'Labels') 
+                for mode in self.data_modes])}
+
+        # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
+        self.norm_target = os.path.join(self.data_dir_root, data_config['norm_target']['mode'], 'Images', f"{data_config['norm_target']['image']}{self.img_ext}")
+        self.norm_brightness = data_config['norm_brightness']
 
         # init model params
         self.seed = data_config['seed']

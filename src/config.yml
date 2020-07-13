@@ -11,7 +11,7 @@ hv_kumar:
   model_type: 'np_hv' # Net subtype
 
   ### Data preparaion (if needed)
-  extract_data_dir: '/data/input/data_kumar/'
+  data_dir: '/data/input/data_kumar/'
   extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
                             # 'mirror' for u-net etc.
   # check the patch_extractor.py 'main' to see the different
@@ -29,6 +29,10 @@ hv_kumar:
   win_size: [540, 540] # should be at least twice time larger than
                          # self.train_base_shape (config.py) to reduce
                          # the padding effect during augmentation
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   ### Network parameters
   seed: 10
@@ -77,7 +81,7 @@ hv_cmp17:
   mode: 'hover'
   model_type: 'np_hv'
 
-  extract_data_dir: '/data/input/data_cpm17/'
+  data_dir: '/data/input/data_cpm17/'
   extract_type: 'mirror'
   img_ext: '.png'
   data_modes:
@@ -85,6 +89,11 @@ hv_cmp17:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: False
@@ -120,7 +129,7 @@ hv_consep_seg:
   mode: 'hover'
   model_type: 'np_hv'
 
-  extract_data_dir: '/data/input/data_consep/'
+  data_dir: '/data/input/data_consep/data/'
   extract_type: 'mirror' 
   img_ext: '.png'
   data_modes:
@@ -128,6 +137,11 @@ hv_consep_seg:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: False
@@ -162,7 +176,7 @@ hv_consep_seg_class:
   mode: 'hover'
   model_type: 'np_hv'
 
-  extract_data_dir: '/data/input/data_consep/'
+  data_dir: '/data/input/data_consep/data/'
   extract_type: 'mirror'
   img_ext: '.png'
   data_modes:
@@ -170,6 +184,11 @@ hv_consep_seg_class:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -208,7 +227,7 @@ hv_consep_seg_class_ppatch_batch:
   mode: 'hover'
   model_type: 'np_hv'
 
-  extract_data_dir: '/data/input/data_consep/'
+  data_dir: '/data/input/data_consep/data/'
   extract_type: 'mirror' 
 
   img_ext: '.png'
@@ -217,6 +236,11 @@ hv_consep_seg_class_ppatch_batch:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -252,7 +276,7 @@ hv_consep_seg_class_uit_2001:
   mode: 'hover'
   model_type: 'np_hv'
 
-  extract_data_dir: '/data/input/data_consep/'
+  data_dir: '/data/input/data_consep/data/'
   extract_type: 'mirror' 
 
   img_ext: '.png'
@@ -261,6 +285,11 @@ hv_consep_seg_class_uit_2001:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -296,7 +325,7 @@ hv_pannuke_seg_class:
   mode: 'hover'
   model_type: 'np_hv_opt'
 
-  extract_data_dir: '/data/input/data_pannuke/'
+  data_dir: '/data/input/data_pannuke/'
   extract_type: 'mirror' 
 
   img_ext: '.png'
@@ -306,6 +335,11 @@ hv_pannuke_seg_class:
     - 'test'
   step_size: [164, 164]
   win_size: [256, 256]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -344,7 +378,7 @@ hv_pannuke_seg_class_consep_data:
   mode: 'hover'
   model_type: 'np_hv_opt'
 
-  extract_data_dir: '/data/input/data_pannuke/'
+  data_dir: '/data/input/data_pannuke/'
   extract_type: 'mirror' 
 
   img_ext: '.png'
@@ -354,6 +388,11 @@ hv_pannuke_seg_class_consep_data:
     - 'test'
   step_size: [164, 164]
   win_size: [256, 256]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -392,7 +431,7 @@ hv_pannuke_seg_class_ppatch_batch:
   mode: 'hover'
   model_type: 'np_hv_opt'
 
-  extract_data_dir: '/data/input/data_pannuke/'
+  data_dir: '/data/input/data_pannuke/'
   extract_type: 'mirror' 
 
   img_ext: '.png'
@@ -402,6 +441,11 @@ hv_pannuke_seg_class_ppatch_batch:
     - 'test'
   step_size: [164, 164]
   win_size: [256, 256]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -440,7 +484,7 @@ hv_pannuke_seg_class_uit_2001:
   mode: 'hover'
   model_type: 'np_hv_opt'
 
-  extract_data_dir: '/data/input/data_pannuke/'
+  data_dir: '/data/input/data_pannuke/'
   extract_type: 'mirror' 
 
   img_ext: '.png'
@@ -450,6 +494,11 @@ hv_pannuke_seg_class_uit_2001:
     - 'test'
   step_size: [164, 164]
   win_size: [256, 256]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True
@@ -487,7 +536,7 @@ hv_consep_seg_class_aug_mod:
   mode: 'hover'
   model_type: 'np_hv'
 
-  extract_data_dir: '/data/input/data_consep/'
+  data_dir: '/data/input/data_consep/data/'
   extract_type: 'mirror'
   img_ext: '.png'
   data_modes:
@@ -495,6 +544,11 @@ hv_consep_seg_class_aug_mod:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
 
   seed: 10
   type_classification: True

@@ -1,5 +1,6 @@
 import glob
 import os
+import argparse
 
 import cv2
 import numpy as np
@@ -11,7 +12,15 @@ from config import Config
 
 ###########################################################################
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--norm', help='Whether images were normalized before with stain_norm step', default=False, action='store_true')
+    args = parser.parse_args()
     cfg = Config()
+    print(f"Normalization was performed: {args.norm}")
+    input_dirs = cfg.out_norm if args.norm else cfg.data_dir
+    
+
+    print(f"Using folder <{}> as input")
 
     for data_mode in os.listdir(cfg.extract_data_dir):
         if data_mode in cfg.data_modes:
