@@ -202,9 +202,9 @@ hv_consep_seg_class:
   data_ext: '.npy'
   input_augs: 'st'
   train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80_norm/train/Labels'
   valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80_norm/test/Labels'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True

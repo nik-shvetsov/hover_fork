@@ -143,6 +143,7 @@ class Trainer(Config):
                                             self.train_mask_shape,
                                             view)
             data_files = get_files(self.train_dir, self.data_ext)
+            # print (data_files)
             data_generator = loader.train_generator
             nr_procs = self.nr_procs_train
         else:

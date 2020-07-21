@@ -36,11 +36,10 @@ class Config(object):
 
         self.no_norm_img_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Images') 
                 for mode in self.data_modes])}
-        self.out_norm = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_norm_root, mode, 'Images') 
+        self.labels_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Labels') 
                 for mode in self.data_modes])}
-        
-        win_code = ('{}_{}x{}_{}x{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1]))
-        self.out_extract = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_extract_root, win_code, mode, 'Labels') 
+
+        self.out_norm = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_norm_root, self.model_config, mode, 'Images') 
                 for mode in self.data_modes])}
 
         # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
@@ -232,7 +231,6 @@ class Config(object):
     # refer to https://tensorpack.readthedocs.io/modules/dataflow.imgaug.html for
     # information on how to modify the augmentation parameters
     def get_train_augmentors(self, input_shape, output_shape, view=False):
-        print(input_shape, output_shape)
         shape_augs = [
             imgaug.Affine(
                         shear=5, # in degree
@@ -269,7 +267,6 @@ class Config(object):
         return shape_augs, input_augs, label_augs
 
     def get_valid_augmentors(self, input_shape, output_shape, view=False):
-        print(input_shape, output_shape)
         shape_augs = [
             imgaug.CenterCrop(input_shape),
         ]
