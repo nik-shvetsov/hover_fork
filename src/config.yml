@@ -185,10 +185,13 @@ hv_consep_seg_class:
   step_size: [80, 80]
   win_size: [540, 540]
 
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
+  ### preprocess
+  stain_norm: 
+   norm_brightness: True
+   mode: 'train'
+   image: 'train_1'
+  # or
+  # histtk: True
 
   seed: 10
   type_classification: True
@@ -544,6 +547,15 @@ hv_consep_seg_class_aug_mod:
     - 'test'
   step_size: [80, 80]
   win_size: [540, 540]
+  
+
+  # preprocess:
+    # stain_norm: 
+    #  norm_brightness: True
+    #  mode: 'train'
+    #  image: 'train_1'
+    #
+    # histtk: True
 
   norm_target: 
     mode: 'train'

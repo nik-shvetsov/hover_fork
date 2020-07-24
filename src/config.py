@@ -31,21 +31,25 @@ class Config(object):
         self.win_size = data_config['win_size']
         self.step_size = data_config['step_size']
         self.img_ext = data_config['img_ext']
-        self.out_norm_root = os.path.join(self.log_path, 'norm')
+
+        self.out_preproc_root = os.path.join(self.log_path, 'preprocess')
         self.out_extract_root = os.path.join(self.log_path, 'extract')
 
-        self.no_norm_img_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Images') 
+        self.no_preproc_img_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Images') 
                 for mode in self.data_modes])}
         self.labels_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Labels') 
                 for mode in self.data_modes])}
 
-        self.out_norm = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_norm_root, self.model_config, mode, 'Images') 
+        self.out_preproc = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_preproc_root, self.model_config, mode, 'Images') 
                 for mode in self.data_modes])}
-
-        # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
-        self.norm_target = os.path.join(self.data_dir_root, data_config['norm_target']['mode'], 'Images', f"{data_config['norm_target']['image']}{self.img_ext}")
-        self.norm_brightness = data_config['norm_brightness']
-
+        
+        if data_config['stain_norm'] is not None:
+            # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
+            self.norm_target = os.path.join(self.data_dir_root, data_config['stain_norm']['mode'], 'Images', f"{data_config['stain_norm']['image']}{self.img_ext}")
+            self.norm_brightness = data_config['stain_norm']['norm_brightness']
+        elif data_config['histtk'] is not None:
+            self.norm_histtk = True
+        
         # init model params
         self.seed = data_config['seed']
         mode = data_config['mode']

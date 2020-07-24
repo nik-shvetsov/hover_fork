@@ -41,10 +41,26 @@ def stain_normilize(img_dir, save_dir, stain_norm_target, norm_brightness=False)
         cv2.imwrite(os.path.join(norm_dir, '{}.png'.format(basename)), img)
         print(f"Saved {os.path.join(norm_dir, '{}.png'.format(basename))}.")
 
+def histtk(img_dir, save_dir):
+    pass
+
 if __name__ == '__main__':
     cfg = Config()
-    assert os.path.exists(cfg.norm_target)
-    print(f'Normalization, using target: {cfg.norm_target}')
-    for mode in cfg.no_norm_img_dirs.keys():
-        stain_normilize(cfg.no_norm_img_dirs[mode], cfg.out_norm[mode], \
-            cfg.norm_target, norm_brightness=cfg.norm_brightness)
+
+    if cfg.norm_target and cfg.norm_brightness:
+        assert cfg.norm_target is not None
+        assert os.path.exists(cfg.norm_target)
+        print(f'Normalization, using target: {cfg.norm_target}')
+        for mode in cfg.no_preproc_img_dirs.keys():
+            stain_normilize(cfg.no_preproc_img_dirs[mode], cfg.out_preproc[mode], \
+                cfg.norm_target, norm_brightness=cfg.norm_brightness)
+    elif cfg.norm_histtk:
+        histtk()
+        print ('hist')
+    
+
+
+
+    
+
+    
