@@ -15,8 +15,8 @@ if __name__ == '__main__':
     cfg = Config()
     normalized = False
     for mode in cfg.data_modes:
-        normalized = (os.path.exists(cfg.out_norm[mode]) and \
-            len(os.listdir(cfg.out_norm[mode])) != 0 and \
+        normalized = (os.path.exists(cfg.out_preproc[mode]) and \
+            len(os.listdir(cfg.out_preproc[mode])) != 0 and \
             cfg.norm_target != None)
         if not normalized: 
             normalized = False
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     
     print(f"Normalization was performed: {normalized}")
     
-    img_dirs = cfg.out_norm if normalized else cfg.no_norm_img_dirs
+    img_dirs = cfg.out_preproc if normalized else cfg.no_preproc_img_dirs
 
     win_code = '{}_{}x{}_{}x{}{}'.format(cfg.model_config, cfg.win_size[0], cfg.win_size[1], cfg.step_size[0], cfg.step_size[1], '_norm' if normalized else '')
     out_extract = {k: v for k, v in zip(cfg.data_modes, [os.path.join(cfg.out_extract_root, win_code, mode, 'Labels') 
