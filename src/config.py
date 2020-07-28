@@ -108,7 +108,7 @@ class Config(object):
 
         exp_id = data_config['exp_id']
         model_id = self.model_type
-        self.model_name = '{}-{}-{}-{}'.format(self.model_config, model_id, data_config['input_augs'], exp_id)
+        self.model_name = f"{self.model_config}-{model_id}-{data_config['input_augs']}-{exp_id}"
 
         self.data_ext = data_config['data_ext']
         # list of directories containing validation patches
