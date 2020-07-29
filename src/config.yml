@@ -203,6 +203,8 @@ hv_consep_seg_class:
     Spindle: 4
 
   data_ext: '.npy'
+  input_norm: True
+
   input_augs: 'st'
   train_dir:
     - '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/train/Labels'
@@ -210,8 +212,7 @@ hv_consep_seg_class:
     - '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/test/Labels'
   nr_procs_train: 8
   nr_procs_valid: 4
-  input_norm: True
-
+  
   inf_auto_find_chkpt: False
   inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
   inf_imgs_ext: '.png'
@@ -549,18 +550,13 @@ hv_consep_seg_class_aug_mod:
   win_size: [540, 540]
   
 
-  # preprocess:
-    # stain_norm: 
-    #  norm_brightness: True
-    #  mode: 'train'
-    #  image: 'train_1'
-    #
-    # histtk: True
-
-  norm_target: 
+### preprocess
+  stain_norm: 
+    norm_brightness: True
     mode: 'train'
     image: 'train_1'
-  norm_brightness: True
+ # or
+ # histtk: True
 
   seed: 10
   type_classification: True
@@ -574,9 +570,9 @@ hv_consep_seg_class_aug_mod:
   data_ext: '.npy'
   input_augs: 'st_hed_random'
   train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/train/Labels/'
   valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/test/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
