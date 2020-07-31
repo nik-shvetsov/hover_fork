@@ -8,25 +8,23 @@ import numpy as np
 import scipy.io as sio
 import pandas as pd
 
+from config import Config
+
 from metrics.stats_utils import *
 
-def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True):
+def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=None, exhaustive=True):
     """
     GT must be exhaustively annotated for instance location (detection)
-
     Args:
-        true_dir, pred_dir: Directory contains .mat annotation for each image.
+        true_dir, pred_dir: Directory contains .mat annotation for each image. 
                             Each .mat must contain:
-
                     --`inst_centroid`: Nx2, contains N instance centroid
                                        of mass coordinates (X, Y)
                     --`inst_type`    : Nx1: type of each instance at each index
-
                     `inst_centroid` and `inst_type` must be aligned and each
                     index must be associated to the same instance
-        type_uid_list: list of id for nuclei type which the score should be calculated.
-                       Default to 'None' means available nuclei type in GT.
-
+        type_uid_list : list of id for nuclei type which the score should be calculated.
+                        Default to `None` means available nuclei type in GT.
         exhaustive : Flag to indicate whether GT is exhaustively labelled
                      for instance types
     """
@@ -42,22 +40,22 @@ def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True
     for file_idx, filename in enumerate(file_list[:]):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
-
+        
         true_info = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
         # dont squeeze, may be 1 instance exist
         true_centroid  = (true_info['inst_centroid']).astype('float32')
         true_inst_type = (true_info['inst_type']).astype('int32')
 
         if true_centroid.shape[0] != 0:
-                true_inst_type = true_inst_type[:,0]
+            true_inst_type = true_inst_type[:,0]                
         else: # no instance at all
             true_centroid = np.array([[0, 0]])
             true_inst_type = np.array([0])
 
         # * for converting the GT type in CoNSeP
-        # true_inst_type[(true_inst_type == 3) | (true_inst_type == 4)] = 3
-        # true_inst_type[(true_inst_type == 5) | (true_inst_type == 6) | (true_inst_type == 7)] = 4
-
+        true_inst_type[(true_inst_type == 3) | (true_inst_type == 4)] = 3
+        true_inst_type[(true_inst_type == 5) | (true_inst_type == 6) | (true_inst_type == 7)] = 4
+        
         pred_info = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
         # dont squeeze, may be 1 instance exist
         pred_centroid  = (pred_info['inst_centroid']).astype('float32')
@@ -71,7 +69,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True
 
         # ! if take longer than 1min for 1000 vs 1000 pairing, sthg is wrong with coord
         paired, unpaired_true, unpaired_pred = pair_coordinates(true_centroid, pred_centroid, 12)
-
+ 
         # * Aggreate information
         # get the offset as each index represent 1 independent instance
         true_idx_offset = true_idx_offset + true_inst_type_all[-1].shape[0] if file_idx != 0 else 0
@@ -104,7 +102,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True
     ###
     def _f1_type(paired_true, paired_pred, unpaired_true, unpaired_pred, type_id, w):
         type_samples = (paired_true == type_id) | (paired_pred == type_id)
-
+        
         paired_true = paired_true[type_samples]
         paired_pred = paired_pred[type_samples]
 
@@ -117,8 +115,8 @@ def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True
             ignore = (paired_true == -1).sum()
             fp_dt -= ignore
 
-        fp_d = (unpaired_pred == type_id).sum()
-        fn_d = (unpaired_true == type_id).sum()
+        fp_d = (unpaired_pred == type_id).sum() 
+        fn_d = (unpaired_true == type_id).sum() 
 
         f1_type = (2 * (tp_dt + tn_dt)) / \
                     (2 * (tp_dt + tn_dt) + w[0] * fp_dt + w[1] * fn_dt \
@@ -129,8 +127,8 @@ def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True
     # * quite meaningless for not exhaustive annotated dataset
     w = [1, 1]
     tp_d = paired_pred_type.shape[0]
-    fp_d = unpaired_pred_type.shape[0]
-    fn_d = unpaired_true_type.shape[0]
+    fp_d = unpaired_pred_type.shape[0] 
+    fn_d = unpaired_true_type.shape[0] 
 
     tp_tn_dt = (paired_pred_type == paired_true_type).sum()
     fp_fn_dt = (paired_pred_type != paired_true_type).sum()
@@ -143,47 +141,37 @@ def run_nuclei_type_stat(pred_dir, true_dir, type_uid_list=None, exhaustive=True
     f1_d = 2 * tp_d / (2 * tp_d + w[0] * fp_d + w[1] * fn_d)
 
     w = [2, 2, 1, 1]
-    # f1_type_1 = _f1_type(paired_true_type, paired_pred_type, unpaired_pred_type, unpaired_true_type, 1, w)
-    # f1_type_2 = _f1_type(paired_true_type, paired_pred_type, unpaired_pred_type, unpaired_true_type, 2, w)
-    # f1_type_3 = _f1_type(paired_true_type, paired_pred_type, unpaired_pred_type, unpaired_true_type, 3, w)
-    # f1_type_4 = _f1_type(paired_true_type, paired_pred_type, unpaired_pred_type, unpaired_true_type, 4, w)
-    # results = [f1_d, acc_type, f1_type_1, f1_type_2, f1_type_3, f1_type_4]
-    # print(np.array(results))
-
+    
     if type_uid_list is None:
         type_uid_list = np.unique(true_inst_type_all).tolist()
 
     results_list = [f1_d, acc_type]
     for type_uid in type_uid_list:
-        f1_type = _f1_type(paired_true_type, paired_pred_type, unpaired_pred_type, unpaired_true_type, type_uid, w)
+        f1_type = _f1_type(paired_true_type, paired_pred_type, 
+                        unpaired_pred_type, unpaired_true_type, type_uid, w)
         results_list.append(f1_type)
 
     np.set_printoptions(formatter={'float': '{: 0.5f}'.format})
-    print(np.array(results_list))
 
+    types = [f'{k}_{v}' for k,v in nuclei_type_dict.items()]
+    for k,v in zip(('f1_d', 'accuracy_type', *types), np.array(results_list)):
+        print (f"{k}: {v}")
     return
+
 
 def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
     # print stats of each image
     print(pred_dir)
 
-    file_list = glob.glob(os.path.join(pred_dir,'*{}'.format(ext)))
+    file_list = glob.glob('%s/*%s' % (pred_dir, ext))
     file_list.sort() # ensure same order
 
     metrics = [[], [], [], [], [], []]
-
-    if print_img_stats:
-        print("Filename", end="\t")
-        print ("StdDICE", "dq", "sq", "pq", "fast_aji_plus", "get_fast_aji", sep='    ')
-
     for filename in file_list[:]:
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
 
-        # true = np.load(os.path.join(true_dir, '{}.npy'.format(basename)))
-        # true = true.astype('int32')
-        # true = true[...,0] # HxWx1, uncomment to use label class from CoNSeP
-        true = sio.loadmat(true_dir + basename + '.mat')
+        true = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
         true = (true['inst_map']).astype('int32')
 
         pred = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
@@ -195,19 +183,17 @@ def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
 
         pq_info = get_fast_pq(true, pred, match_iou=0.5)[0]
         metrics[0].append(get_dice_1(true, pred))
-        metrics[1].append(pq_info[0]) # dq
-        metrics[2].append(pq_info[1]) # sq
-        metrics[3].append(pq_info[2]) # pq
-        metrics[4].append(get_fast_aji_plus(true, pred))
-        metrics[5].append(get_fast_aji(true, pred))
+        metrics[1].append(get_fast_aji(true, pred))
+        metrics[2].append(pq_info[0]) # dq
+        metrics[3].append(pq_info[1]) # sq
+        metrics[4].append(pq_info[2]) # pq
+        metrics[5].append(get_fast_aji_plus(true, pred))
 
         if print_img_stats:
             print(basename, end="\t")
             for scores in metrics:
                 print("%f " % scores[-1], end="  ")
             print()
-
-
     ####
     metrics = np.array(metrics)
     metrics_avg = np.mean(metrics, axis=-1)
@@ -217,16 +203,19 @@ def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
     return metrics
 
 if __name__ == '__main__':
+    cfg = Config()
+    mode = 'type' if cfg.type_classification else 'instance'
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', help="mode to run the measurement,"
                                 "`type` for nuclei instance type classification or"
-                                "`instance` for nuclei instance segmentation",
-                        nargs='?', default='instance', const='instance')
-    parser.add_argument('--pred_dir', help="point to output dir", nargs='?', default='', const='')
-    parser.add_argument('--true_dir', help="point to ground truth dir", nargs='?', default='', const='')
+                                "`instance` for nuclei instance segmentation", default=mode)
+    parser.add_argument('--pred_dir', help="Point to output dir", required=True)
+    parser.add_argument('--true_dir', help="Point to ground truth dir", required=True)
+
     args = parser.parse_args()
 
     if args.mode == 'instance':
-        run_nuclei_inst_stat(args.pred_dir, args.true_dir, print_img_stats=True)
+        run_nuclei_inst_stat(args.pred_dir, args.true_dir, print_img_stats=False)
     if args.mode == 'type':
-        run_nuclei_type_stat(args.pred_dir, args.true_dir)
+        run_nuclei_type_stat(args.pred_dir, args.true_dir, cfg.nuclei_type_dict)
