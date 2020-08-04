@@ -32,6 +32,7 @@ if __name__ == '__main__':
         for mode in cfg.data_modes])}
 
     print(f"Using folders <{list(img_dirs.values())}> as input")
+    print(f"Saving results to <{list(out_extract.values())}>")
 
     for data_mode in img_dirs.keys():
         xtractor = PatchExtractor(cfg.win_size, cfg.step_size)

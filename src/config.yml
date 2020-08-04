@@ -585,3 +585,55 @@ hv_consep_seg_class_aug_mod:
   
   remap_labels: True
   outline: ''
+
+
+hv_consep_seg_class_aug_testing:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  data_dir: '/data/input/data_consep/data/'
+  extract_type: 'mirror'
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+  
+
+  ### preprocess
+  stain_norm: 
+    norm_brightness: True
+    mode: 'train'
+    image: 'train_1'
+  # or
+  # histtk: True
+
+  seed: 10
+  type_classification: True
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle: 4
+
+  data_ext: '.npy'
+  input_augs: 'test_hed'
+  train_dir:
+    - '/data/output/extract/hv_consep_seg_class_aug_testing_540x540_80x80_stain_norm/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_consep_seg_class_aug_testing_540x540_80x80_stain_norm/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: True
+  inf_model_path: '/data/output/train/hv_consep_seg_class_aug_testing-np_hv-test_hed-1.0/0/'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_consep/data/test/Images'
+  
+  remap_labels: True
+  outline: ''
