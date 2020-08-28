@@ -1,175 +1,5 @@
 # YAML config file
 
-##################################
-#########Default profiles#########
-##################################
-
-hv_kumar:
-  # Id inforamtion
-  exp_id: '1.0' #
-  mode: 'hover' # Net type
-  model_type: 'np_hv' # Net subtype
-
-  ### Data preparaion (if needed)
-  data_dir: '/data/input/data_kumar/'
-  extract_type: 'mirror' # 'valid' for fcn8 segnet etc.
-                            # 'mirror' for u-net etc.
-  # check the patch_extractor.py 'main' to see the different
-  img_ext: '.tif'
-  data_modes:
-    - 'train'
-    - 'test_diff'
-    - 'test_same'
-  # orignal size (win size) - input size - output size (step size)
-  # 512x512 - 256x256 - 256x256 fcn8, dcan, segnet
-  # 536x536 - 268x268 - 84x84   unet, dist
-  # 540x540 - 270x270 - 80x80   xy, hover
-  # 504x504 - 252x252 - 252x252 micronet
-  step_size: [80, 80] # should match self.train_mask_shape (config.py)
-  win_size: [540, 540] # should be at least twice time larger than
-                         # self.train_base_shape (config.py) to reduce
-                         # the padding effect during augmentation
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  ### Network parameters
-  seed: 10
-  # self.nr_classes = 2 # Nuclei Pixels vs Background
-  type_classification: False
-  nr_types: 5 # denotes number of classes for nuclear type classification, plus background class
-  nuclei_types: # define your nuclei type name here, 0 preserved for background id
-    # Background: 0
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  ### Train parameters
-  data_ext: '.npy' # Data extension
-  input_augs: 'st'
-  # List of directories containing validation patches
-  train_dir:
-    - '/data/output/extract/hv_kumar_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_kumar_540x540_80x80/test_diff/Labels/'
-    - '/data/output/extract/hv_kumar_540x540_80x80/test_same/Labels/'
-  # Number of processes for parallel processing input
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True # normalize RGB to 0-1 range
-
-  ### Inference parameters
-  inf_auto_find_chkpt: False # Use that only if you've trained from scratch and have <stats.json> file
-  inf_model_path: '/data/input/weights_hv_kumar.npz' # Path to weights
-      # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
-      # where [Nuclei Type] will be used for getting the type of each instance
-      # while [Nuclei Pixels]self.out_extract_root = os.path.join(self.log_path, 'extract')[Additional] will be used for extracting instances
-
-  inf_imgs_ext: '.tif' # Data extension of inference data
-
-  inf_data_list:
-    - '/data/input/data_kumar/test_diff/Images'
-    - '/data/input/data_kumar/test_same/Images'
-  
-  remap_labels: False
-##################################
-
-hv_cmp17:
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  data_dir: '/data/input/data_cpm17/'
-  extract_type: 'mirror'
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: False
-
-  nr_types: 5
-  nuclei_types:
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_cmp17_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_cmp17_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_CPM17.npz'
-  inf_imgs_ext: '.png'
-  inf_data_list:
-    - '/data/input/data_cpm17/test/Images'
-
-  remap_labels: False
-##################################
-
-hv_consep_seg:
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror' 
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: False
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_hv_seg_CoNSeP.npz'
-  inf_imgs_ext: '.png'
-  inf_data_list:
-    - '/data/input/data_consep/data/test/Images'
-
-  remap_labels: False
-##################################
 
 hv_consep_seg_class:
   exp_id: '1.0'
@@ -222,107 +52,6 @@ hv_consep_seg_class:
   remap_labels: True
   outline: ''
 
-###################################
-#### Custom profiles and mixes ####
-###################################
-
-hv_consep_seg_class_ppatch_batch:
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror' 
-
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: True
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
-  inf_imgs_ext: '.png'
-  inf_data_list:
-    - '/data/input/data_ppatches/test/Images'
-    
-  remap_labels: True
-  outline: 'Inflammatory'
-##################################
-
-hv_consep_seg_class_uit_2001:
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror' 
-
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: True
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_seg_consep_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
-  inf_imgs_ext: '.png'
-  inf_data_list:
-    - '/data/input/data_uit_2001/test/Images'
-    
-  remap_labels: True
-  outline: 'Inflammatory'
-##################################
 
 hv_pannuke_seg_class:
   exp_id: '1.0'
@@ -359,9 +88,9 @@ hv_pannuke_seg_class:
   data_ext: '.npy'
   input_augs: 'st'
   train_dir:
-    - '/data/output/extract/hv_seg_pannuke_256x256_164x164/train/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
   valid_dir:
-    - '/data/output/extract/hv_seg_pannuke_256x256_164x164/valid/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -375,7 +104,6 @@ hv_pannuke_seg_class:
   remap_labels: True
   outline: ''
 
-#####
 
 hv_pannuke_seg_class_consep_data:
   exp_id: '1.0'
@@ -412,9 +140,9 @@ hv_pannuke_seg_class_consep_data:
   data_ext: '.npy'
   input_augs: 'st'
   train_dir:
-    - '/data/input/data_pannuke/train/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
   valid_dir:
-    - '/data/input/data_pannuke/valid/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -428,7 +156,56 @@ hv_pannuke_seg_class_consep_data:
   remap_labels: True
   outline: ''
 
-#####
+################################
+
+hv_consep_seg_class_ppatch_batch:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  data_dir: '/data/input/data_consep/data/'
+  extract_type: 'mirror' 
+
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
+
+  seed: 10
+  type_classification: True
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle: 4
+
+  data_ext: '.npy'
+  input_augs: 'st'
+  train_dir:
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_ppatches/test/Images'
+    
+  remap_labels: True
+  outline: ''
+
 
 hv_pannuke_seg_class_ppatch_batch:
   exp_id: '1.0'
@@ -465,9 +242,9 @@ hv_pannuke_seg_class_ppatch_batch:
   data_ext: '.npy'
   input_augs: 'st'
   train_dir:
-    - '/data/input/data_pannuke/train/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
   valid_dir:
-    - '/data/input/data_pannuke/valid/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -479,9 +256,60 @@ hv_pannuke_seg_class_ppatch_batch:
     - '/data/input/data_ppatches/test/Images'
     
   remap_labels: True
-  outline: 'Inflammatory'
+  outline: ''
 
   ####
+
+################################
+
+hv_consep_seg_class_uit_2001:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+
+  data_dir: '/data/input/data_consep/data/'
+  extract_type: 'mirror' 
+
+  img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+
+  norm_target: 
+    mode: 'train'
+    image: 'train_1'
+  norm_brightness: True
+
+  seed: 10
+  type_classification: True
+  nr_types: 5 
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle: 4
+
+  data_ext: '.npy'
+  input_augs: 'st'
+  train_dir:
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/train/Labels/'
+  valid_dir:
+    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/test/Labels/'
+  nr_procs_train: 8
+  nr_procs_valid: 4
+  input_norm: True
+
+  inf_auto_find_chkpt: False
+  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
+  inf_imgs_ext: '.png'
+  inf_data_list:
+    - '/data/input/data_uit_2001/test/Images'
+    
+  remap_labels: True
+  outline: ''
+
 
 hv_pannuke_seg_class_uit_2001:
   exp_id: '1.0'
@@ -518,9 +346,9 @@ hv_pannuke_seg_class_uit_2001:
   data_ext: '.npy'
   input_augs: 'st'
   train_dir:
-    - '/data/input/data_pannuke/train/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
   valid_dir:
-    - '/data/input/data_pannuke/valid/Labels/'
+    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
   nr_procs_train: 8
   nr_procs_valid: 4
   input_norm: True
@@ -532,8 +360,9 @@ hv_pannuke_seg_class_uit_2001:
     - '/data/input/data_uit_2001/test/Images'
     
   remap_labels: True
-  outline: 'Inflammatory'
+  outline: ''
 
+################################
 
 hv_consep_seg_class_aug_mod:
   exp_id: '1.0'
@@ -550,13 +379,13 @@ hv_consep_seg_class_aug_mod:
   win_size: [540, 540]
   
 
-### preprocess
+  ### preprocess
   stain_norm: 
     norm_brightness: True
     mode: 'train'
     image: 'train_1'
- # or
- # histtk: True
+  # or
+  # histtk: True
 
   seed: 10
   type_classification: True
