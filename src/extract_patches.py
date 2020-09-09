@@ -64,9 +64,11 @@ if __name__ == '__main__':
 
                 # merge classes for CoNSeP (in paper we only utilise 3 nuclei classes and background)
                 # If own dataset is used, then the below may need to be modified
-                ann_type[(ann_type == 3) | (ann_type == 4)] = 3
-                ann_type[(ann_type == 5) | (ann_type == 6) | (ann_type == 7)] = 4
-
+                # TODO: move to preproc CoNSeP dataset
+                #ann_type[(ann_type == 3) | (ann_type == 4)] = 3
+                #ann_type[(ann_type == 5) | (ann_type == 6) | (ann_type == 7)] = 4
+                
+                print (f"nr_types = {cfg.nr_types}, max in annotation = {np.max(ann_type)}")
                 assert np.max(ann_type) <= cfg.nr_types - 1, \
                                 ("Only {} types of nuclei are defined for training"\
                                 "but there are {} types found in the input image.").format(cfg.nr_types, np.max(ann_type))
@@ -80,7 +82,6 @@ if __name__ == '__main__':
                 # ann_inst = (ann_inst['inst_map']).astype('int32')
                 ann_inst = ann_inst.astype('int32')
                 ann = np.expand_dims(ann_inst, -1)
-
             img = np.concatenate([img, ann], axis=-1)
             sub_patches = xtractor.extract(img, cfg.extract_type)
             for idx, patch in enumerate(sub_patches):

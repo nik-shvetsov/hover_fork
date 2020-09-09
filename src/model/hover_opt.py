@@ -34,6 +34,7 @@ def res_blk(name, l, ch, ksize, count, split=1, strides=1, freeze=False):
                 x = Conv2D('conv3', x, ch[2], ksize[2], activation=tf.identity)
                 if (strides != 1 or ch_in[1] != ch[2]) and i == 0:
                     l = Conv2D('convshortcut', l, ch[2], 1, strides=strides)
+                x = tf.stop_gradient(x) if freeze else x
                 l = l + x
         # end of each group need an extra activation
         l = BNReLU('bnlast',l)
@@ -135,7 +136,6 @@ class Model(ModelDesc, Config):
 class Model_NP_HV_OPT(Model):
 
     def _build_graph(self, inputs):
-        
         images, truemap_coded = inputs
         orig_imgs = images
 
@@ -281,6 +281,7 @@ class Model_NP_HV_OPT(Model):
                 term_loss = tf.reduce_mean(term_loss, name='loss-xentropy-class')
                 add_moving_summary(term_loss)
                 loss = loss + term_loss
+                # term_loss = dice_loss(soft_class[...,0], one_type[...,0]) \
 
                 term_loss = 0
                 for type_id in range(self.nr_types):

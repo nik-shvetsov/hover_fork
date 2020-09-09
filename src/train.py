@@ -51,15 +51,13 @@ class StatCollector(Inferencer, Config):
         stat_dict = {}
         pred = np.array(self.pred_list)
         true = np.array(self.true_list)
-
         # have to get total number pixels for mean per pixel
         nr_pixels = np.size(true[...,:1])
 
         if self.type_classification:
-
             pred_type = pred[...,:self.nr_types]
             pred_inst = pred[...,self.nr_types:]
-
+            
             true_inst = true
             true_type = true[...,1]
             true_np = (true_type > 0).astype('int32')
@@ -143,7 +141,7 @@ class Trainer(Config):
                                             self.train_mask_shape,
                                             view)
             data_files = get_files(self.train_dir, self.data_ext)
-            # print (data_files)
+            print(f"Train data length: {len(data_files)}")
             data_generator = loader.train_generator
             nr_procs = self.nr_procs_train
         else:

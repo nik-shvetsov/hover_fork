@@ -62,8 +62,6 @@ class Config(object):
         self.nuclei_type_dict = data_config['nuclei_types']
         self.nr_types = len(self.nuclei_type_dict.values()) + 1
 
-        assert len(self.nuclei_type_dict.values()) == self.nr_types - 1
-
         #### Dynamically setting the config file into variable
         if mode == 'hover':
             config_file = importlib.import_module('opt.hover') # np_hv, np_dist
@@ -261,7 +259,7 @@ class Config(object):
             label_augs =[GenInstanceContourMap(crop_shape=output_shape)]
         if self.model_type == 'dist':
             label_augs = [GenInstanceDistance(crop_shape=output_shape, inst_norm=False)]
-        if self.model_type == 'np_hv':
+        if self.model_type == 'np_hv' or self.model_type == 'np_hv_opt':
             label_augs = [GenInstanceHV(crop_shape=output_shape)]
         if self.model_type == 'np_dist':
             label_augs = [GenInstanceDistance(crop_shape=output_shape, inst_norm=True)]
@@ -288,7 +286,7 @@ class Config(object):
             label_augs =[GenInstanceContourMap(crop_shape=output_shape)]
         if self.model_type == 'dist':
             label_augs = [GenInstanceDistance(crop_shape=output_shape, inst_norm=False)]
-        if self.model_type == 'np_hv':
+        if self.model_type == 'np_hv' or self.model_type == 'np_hv_opt':
             label_augs = [GenInstanceHV(crop_shape=output_shape)]
         if self.model_type == 'np_dist':
             label_augs = [GenInstanceDistance(crop_shape=output_shape, inst_norm=True)]
