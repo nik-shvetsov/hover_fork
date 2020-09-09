@@ -79,11 +79,11 @@ hv_pannuke_seg_class:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic: 1
-    Inflammatory: 2
-    Connective: 3
-    Dead cells: 4
-    Epithelial: 5
+    Inflammatory: 1
+    Connective: 2
+    Dead Cells: 3
+    Epithelial: 4
+    Neoplastic cells: 5
     
   data_ext: '.npy'
   input_augs: 'st'
@@ -131,11 +131,11 @@ hv_pannuke_seg_class_consep_data:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic: 1
-    Inflammatory: 2
-    Connective: 3
-    Dead cells: 4
-    Epithelial: 5
+    Inflammatory: 1
+    Connective: 2
+    Dead Cells: 3
+    Epithelial: 4
+    Neoplastic cells: 5
     
   data_ext: '.npy'
   input_augs: 'st'
@@ -233,11 +233,11 @@ hv_pannuke_seg_class_ppatch_batch:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic: 1
-    Inflammatory: 2
-    Connective: 3
-    Dead cells: 4
-    Epithelial: 5
+    Inflammatory: 1
+    Connective: 2
+    Dead Cells: 3
+    Epithelial: 4
+    Neoplastic cells: 5
     
   data_ext: '.npy'
   input_augs: 'st'
@@ -337,11 +337,11 @@ hv_pannuke_seg_class_uit_2001:
   
   nr_types: 6 
   nuclei_types:
-    Neoplastic: 1
-    Inflammatory: 2
-    Connective: 3
-    Dead cells: 4
-    Epithelial: 5
+    Inflammatory: 1
+    Connective: 2
+    Dead Cells: 3
+    Epithelial: 4
+    Neoplastic cells: 5
     
   data_ext: '.npy'
   input_augs: 'st'
