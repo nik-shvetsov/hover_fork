@@ -22,9 +22,7 @@ class Config(object):
         # Load config yml file
         data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
         self.log_path = data_config['output_prefix'] # log root path
-        self.pipeline = data_config['pipeline']
 
-        assert (data_config['pipeline'] is not None)
         assert (data_config['input_prefix'] is not None)
         assert (data_config['output_prefix'] is not None)
 
@@ -37,7 +35,7 @@ class Config(object):
         self.step_size = data_config['step_size']
         self.img_ext = '.png' if data_config['img_ext'] is None else data_config['img_ext']
 
-        for step in data_config['pipeline']:
+        for step in ['preproc', 'extract', 'train', 'infer', 'export', 'process']:
             exec(f"self.out_{step}_root = os.path.join(data_config['output_prefix'], '{step}')")
         #self.out_preproc_root = os.path.join(data_config['output_prefix'], 'preprocess')
         #self.out_extract_root = os.path.join(data_config['output_prefix'], 'extract')
@@ -48,7 +46,7 @@ class Config(object):
                 for mode in self.data_modes])}
 
         # normalized images
-        if 'preproc' in data_config['pipeline']:
+        if data_config['include_preproc']:
             self.out_preproc = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_preproc_root, self.model_config, mode, 'Images') 
                     for mode in self.data_modes])}
         
@@ -59,7 +57,7 @@ class Config(object):
         elif data_config['histtk'] is not None:
             self.norm_histtk = True
         
-        normalized = ('preproc' in data_config['pipeline']) and (data_config['stain_norm'] is not None)
+        normalized = (data_config['include_preproc']) and (data_config['stain_norm'] is not None)
         win_code = '{}_{}x{}_{}x{}{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1], '_stain_norm' if normalized else '')
         self.out_extract = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_extract_root, win_code, mode, 'Annotations') 
             for mode in self.data_modes])}
@@ -126,7 +124,7 @@ class Config(object):
 
         # self.train_dir = data_config['train_dir']
         # self.valid_dir = data_config['valid_dir']
-        if 'extract' in data_config['pipeline']:
+        if data_config['include_extract']:
             self.train_dir = [os.path.join(self.out_extract_root, win_code, x) for x in data_config['train_dir']]
             self.valid_dir = [os.path.join(self.out_extract_root, win_code, x) for x in data_config['valid_dir']]
         else:

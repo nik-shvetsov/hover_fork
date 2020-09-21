@@ -13,15 +13,11 @@ hv_consep_class:
   output_prefix: '/data/output/'
 
   ###
-  # Pipeline steps that are being run through experiment
+  # Choosing optional steps 
   ###
-  pipeline:
-    - 'preproc'
-    - 'extract'
-    - 'train'
-    - 'infer'
-    - 'export'
-    - 'process'
+  include_preproc: True
+  include_extract: True
+  include_export: True
   
   ###
   # Normaliztion or preprocessing step
