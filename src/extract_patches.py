@@ -25,14 +25,10 @@ if __name__ == '__main__':
     
     print(f"Stain normalization was performed: {normalized}")
     
-    img_dirs = cfg.out_preproc if normalized else cfg.no_preproc_img_dirs
-
-    win_code = '{}_{}x{}_{}x{}{}'.format(cfg.model_config, cfg.win_size[0], cfg.win_size[1], cfg.step_size[0], cfg.step_size[1], '_stain_norm' if normalized else '')
-    out_extract = {k: v for k, v in zip(cfg.data_modes, [os.path.join(cfg.out_extract_root, win_code, mode, 'Labels') 
-        for mode in cfg.data_modes])}
+    img_dirs = cfg.out_preproc if normalized else cfg.img_dirs
 
     print(f"Using folders <{list(img_dirs.values())}> as input")
-    print(f"Saving results to <{list(out_extract.values())}>")
+    print(f"Saving results to <{list(cfg.out_extract.values())}>")
 
     for data_mode in img_dirs.keys():
         xtractor = PatchExtractor(cfg.win_size, cfg.step_size)
@@ -42,7 +38,7 @@ if __name__ == '__main__':
         
         file_list = glob.glob(os.path.join(img_dir, '*{}'.format(cfg.img_ext)))
         file_list.sort()
-        out_dir = out_extract[data_mode]
+        out_dir = cfg.out_extract[data_mode]
 
         rm_n_mkdir(out_dir)
         for filename in file_list:
@@ -65,11 +61,11 @@ if __name__ == '__main__':
                 # merge classes for CoNSeP (in paper we only utilise 3 nuclei classes and background)
                 # If own dataset is used, then the below may need to be modified
                 # TODO: move to preproc CoNSeP dataset
-                #ann_type[(ann_type == 3) | (ann_type == 4)] = 3
-                #ann_type[(ann_type == 5) | (ann_type == 6) | (ann_type == 7)] = 4
+                # ann_type[(ann_type == 3) | (ann_type == 4)] = 3
+                # ann_type[(ann_type == 5) | (ann_type == 6) | (ann_type == 7)] = 4
                 
-                print (f"nr_types = {cfg.nr_types}, max in annotation = {np.max(ann_type)}")
-                assert np.max(ann_type) <= cfg.nr_types - 1, \
+                # print (f"nr_types = {cfg.nr_types}, max in annotation = {np.max(ann_type)}")
+                assert np.max(ann_type) <= cfg.nr_types, \
                                 ("Only {} types of nuclei are defined for training"\
                                 "but there are {} types found in the input image.").format(cfg.nr_types, np.max(ann_type))
 
@@ -86,3 +82,4 @@ if __name__ == '__main__':
             sub_patches = xtractor.extract(img, cfg.extract_type)
             for idx, patch in enumerate(sub_patches):
                 np.save("{0}/{1}_{2:03d}.npy".format(out_dir, basename, idx), patch)
+            print (f"{out_dir}/{basename} saved.")

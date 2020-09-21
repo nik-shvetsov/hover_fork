@@ -18,30 +18,39 @@ class Config(object):
     def __init__(self, ):
         # Select template (hv_kumar, hv_uit_w_kumar, hv_consep, hv_cmp17)
         self.model_config = os.environ['H_PROFILE'] if 'H_PROFILE' in os.environ else ''
-        self.log_path = '/data/output/' # log root path
-
+        
         # Load config yml file
         data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
+        self.log_path = data_config['output_prefix'] # log root path
+        self.pipeline = data_config['pipeline']
+
+        assert (data_config['pipeline'] is not None)
+        assert (data_config['input_prefix'] is not None)
+        assert (data_config['output_prefix'] is not None)
 
         # data extraion params
-        self.data_dir_root = data_config['data_dir'] # without modes
+        self.data_dir_root = os.path.join(data_config['input_prefix'], data_config['data_dir']) # without modes
         
         self.extract_type = data_config['extract_type']
         self.data_modes = data_config['data_modes']
         self.win_size = data_config['win_size']
         self.step_size = data_config['step_size']
-        self.img_ext = data_config['img_ext']
+        self.img_ext = '.png' if data_config['img_ext'] is None else data_config['img_ext']
 
-        self.out_preproc_root = os.path.join(self.log_path, 'preprocess')
-        self.out_extract_root = os.path.join(self.log_path, 'extract')
+        for step in data_config['pipeline']:
+            exec(f"self.out_{step}_root = os.path.join(data_config['output_prefix'], '{step}')")
+        #self.out_preproc_root = os.path.join(data_config['output_prefix'], 'preprocess')
+        #self.out_extract_root = os.path.join(data_config['output_prefix'], 'extract')
 
-        self.no_preproc_img_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Images') 
+        self.img_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Images') 
                 for mode in self.data_modes])}
         self.labels_dirs = {k: v for k, v in zip(self.data_modes, [os.path.join(self.data_dir_root, mode, 'Labels') 
                 for mode in self.data_modes])}
 
-        self.out_preproc = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_preproc_root, self.model_config, mode, 'Images') 
-                for mode in self.data_modes])}
+        # normalized images
+        if 'preproc' in data_config['pipeline']:
+            self.out_preproc = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_preproc_root, self.model_config, mode, 'Images') 
+                    for mode in self.data_modes])}
         
         if data_config['stain_norm'] is not None:
             # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
@@ -50,6 +59,11 @@ class Config(object):
         elif data_config['histtk'] is not None:
             self.norm_histtk = True
         
+        normalized = ('preproc' in data_config['pipeline']) and (data_config['stain_norm'] is not None)
+        win_code = '{}_{}x{}_{}x{}{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1], '_stain_norm' if normalized else '')
+        self.out_extract = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_extract_root, win_code, mode, 'Annotations') 
+            for mode in self.data_modes])}
+
         # init model params
         self.seed = data_config['seed']
         mode = data_config['mode']
@@ -104,28 +118,35 @@ class Config(object):
         'cyan': [0.0, 170.0, 255.0]        # cyan
         }
 
-        exp_id = data_config['exp_id']
-        model_id = self.model_type
-        self.model_name = f"{self.model_config}-{model_id}-{data_config['input_augs']}-{exp_id}"
+        # self.model_name = f"{self.model_config}-{self.model_type}-{data_config['input_augs']}-{data_config['exp_id']}"
+        self.model_name = f"{self.model_config}-{data_config['input_augs']}-{data_config['exp_id']}"
 
-        self.data_ext = data_config['data_ext']
+        self.data_ext = '.npy' if data_config['data_ext'] is None else data_config['data_ext']
         # list of directories containing validation patches
-        self.train_dir = data_config['train_dir']
-        self.valid_dir = data_config['valid_dir']
+
+        # self.train_dir = data_config['train_dir']
+        # self.valid_dir = data_config['valid_dir']
+        if 'extract' in data_config['pipeline']:
+            self.train_dir = os.path.join(self.out_extract_root, win_code, data_config['train_dir'])
+            self.valid_dir = os.path.join(self.out_extract_root, win_code, data_config['valid_dir'])
+        else:
+            self.train_dir = os.path.join(self.data_dir_root, data_config['train_dir'])
+            self.valid_dir = os.path.join(self.data_dir_root, data_config['valid_dir'])
+
 
         # nr of processes for parallel processing input
-        self.nr_procs_train = data_config['nr_procs_train']
-        self.nr_procs_valid = data_config['nr_procs_valid']
+        self.nr_procs_train = 8 if data_config['nr_procs_train'] is None else data_config['nr_procs_train']
+        self.nr_procs_valid = 4 if data_config['nr_procs_valid'] is None else data_config['nr_procs_valid']
 
         self.input_norm = data_config['input_norm'] # normalize RGB to 0-1 range
 
-        # loading chkpts in tensorflow, the path must not contain extra '/'
-        self.save_dir = os.path.join(self.log_path, 'train', self.model_name)
+        #self.save_dir = os.path.join(data_config['output_prefix'], 'train', self.model_name)
+        self.save_dir = os.path.join(self.out_train_root, self.model_name)
 
         #### Info for running inference
         self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
         # path to checkpoints will be used for inference, replace accordingly
-        self.inf_model_path  = data_config['inf_model_path']
+        self.inf_model_path = os.path.join(data_config['input_prefix'], data_config['inf_model_path'])
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
@@ -135,12 +156,12 @@ class Config(object):
         # TODO: encode the file extension for each folder?
         # list of [[root_dir1, codeX, subdirA, subdirB], [root_dir2, codeY, subdirC, subdirD] etc.]
         # code is used together with 'inf_output_dir' to make output dir for each set
-        self.inf_imgs_ext = data_config['inf_imgs_ext']
+        self.inf_imgs_ext = '.png' if data_config['inf_imgs_ext'] is None else data_config['inf_imgs_ext']
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
-        self.inf_data_list = data_config['inf_data_list']
-        self.inf_output_dir = os.path.join(self.log_path, 'infer', self.model_name)
-        self.model_export_dir = os.path.join(self.log_path, 'export', self.model_name)
+        self.inf_data_list = os.path.join(data_config['input_prefix'], data_config['inf_data_list'])
+        self.inf_output_dir = os.path.join(self.out_infer_root, self.model_name)
+        self.model_export_dir = os.path.join(self.out_export_root, self.model_name)
         self.remap_labels = data_config['remap_labels']
         self.outline = data_config['outline']
         
@@ -150,7 +171,7 @@ class Config(object):
         # For inference during training mode i.e run by trainer.py
         self.train_inf_output_tensor_names = ['predmap-coded', 'truemap-coded']
 
-        assert data_config['input_augs'] != '' or data_config['input_augs'] != None
+        assert data_config['input_augs'] != '' or data_config['input_augs'] is not None
 
         if data_config['input_augs'] == 'st_hed_random':
             self.input_augs = [
