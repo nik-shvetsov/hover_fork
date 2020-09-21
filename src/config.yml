@@ -64,11 +64,12 @@ hv_consep_class:
     Spindle: 4
   # data_ext: '.npy'
   input_norm: True
-  input_augs: 
-    - 'st'
-  train_dir: 'train/Annotations'
+  input_augs: 'p_standard'
+  train_dir: 
+    - 'train/Annotations'
     # '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/train/Annotations'
-  valid_dir: 'test/Annotations'
+  valid_dir: 
+    - 'test/Annotations'
   # nr_procs_train: 8
   # nr_procs_valid: 4
   

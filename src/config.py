@@ -127,11 +127,11 @@ class Config(object):
         # self.train_dir = data_config['train_dir']
         # self.valid_dir = data_config['valid_dir']
         if 'extract' in data_config['pipeline']:
-            self.train_dir = os.path.join(self.out_extract_root, win_code, data_config['train_dir'])
-            self.valid_dir = os.path.join(self.out_extract_root, win_code, data_config['valid_dir'])
+            self.train_dir = [os.path.join(self.out_extract_root, win_code, x) for x in data_config['train_dir']]
+            self.valid_dir = [os.path.join(self.out_extract_root, win_code, x) for x in data_config['valid_dir']]
         else:
-            self.train_dir = os.path.join(self.data_dir_root, data_config['train_dir'])
-            self.valid_dir = os.path.join(self.data_dir_root, data_config['valid_dir'])
+            self.train_dir = [os.path.join(self.data_dir_root, x) for x in data_config['train_dir']]
+            self.valid_dir = [os.path.join(self.data_dir_root, x) for x in data_config['valid_dir']]
 
 
         # nr of processes for parallel processing input
@@ -173,72 +173,74 @@ class Config(object):
 
         assert data_config['input_augs'] != '' or data_config['input_augs'] is not None
 
-        if data_config['input_augs'] == 'st_hed_random':
-            self.input_augs = [
-                imgaug.RandomApplyAug(
-                    imgaug.RandomChooseAug([
-                        GaussianBlur(),
-                        MedianBlur(),
-                        imgaug.GaussianNoise(),
-                        #
-                        imgaug.ColorSpace(cv2.COLOR_RGB2HSV),
-                        imgaug.ColorSpace(cv2.COLOR_HSV2RGB),
-                        #
-                        RGB2HED(),
-                        EqRGB2HED(),
-                    ]), 0.5
-                ),
-                # standard color augmentation
-                imgaug.RandomOrderAug([
-                    imgaug.Hue((-8, 8), rgb=True), 
-                    imgaug.Saturation(0.2, rgb=True),
+        #### Policies
+        
+        p_standard = [
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    GaussianBlur(),
+                    MedianBlur(),
+                    imgaug.GaussianNoise(),
+                ]), 0.5
+            ),
+            imgaug.RandomOrderAug([
+                imgaug.Hue((-8, 8), rgb=True), 
+                imgaug.Saturation(0.2, rgb=True),
+                imgaug.Brightness(26, clip=True),  
+                imgaug.Contrast((0.75, 1.25), clip=True),
+                ]),
+            imgaug.ToUint8(),
+        ]
+
+        p_hed_random = [
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    GaussianBlur(),
+                    MedianBlur(),
+                    imgaug.GaussianNoise(),
+                    #
+                    imgaug.ColorSpace(cv2.COLOR_RGB2HSV),
+                    imgaug.ColorSpace(cv2.COLOR_HSV2RGB),
+                    #
+                    RGB2HED(),
+                    EqRGB2HED(),
+                ]), 0.5
+            ),
+            # standard color augmentation
+            imgaug.RandomOrderAug([
+                imgaug.Hue((-8, 8), rgb=True), 
+                imgaug.Saturation(0.2, rgb=True),
+                imgaug.Brightness(26, clip=True),  
+                imgaug.Contrast((0.75, 1.25), clip=True),
+                ]),
+            imgaug.ToUint8(),
+        ]
+
+        p_test_hed = [
+            imgaug.Hue((-8, 8), rgb=True),
+            # random blur and noise
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    GaussianBlur(),
+                    MedianBlur(),
+                    imgaug.GaussianNoise(),
+                ]), 0.5
+            ),
+            # 
+            # color augmentation
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    imgaug.Saturation(0.6, rgb=True),
                     imgaug.Brightness(26, clip=True),  
                     imgaug.Contrast((0.75, 1.25), clip=True),
-                    ]),
-                imgaug.ToUint8(), 
-                #imgaug.ToFloat32()
-            ]
+                ]), 0.5
+            ),
+            imgaug.ToUint8(),
+        ]
 
-        if data_config['input_augs'] == 'test_hed':
-            self.input_augs = [
-                imgaug.Hue((-8, 8), rgb=True),
-                # random blur and noise
-                imgaug.RandomApplyAug(
-                    imgaug.RandomChooseAug([
-                        GaussianBlur(),
-                        MedianBlur(),
-                        imgaug.GaussianNoise(),
-                    ]), 0.5
-                ),
-                # 
-                # color augmentation
-                imgaug.RandomApplyAug(
-                    imgaug.RandomChooseAug([
-                        imgaug.Saturation(0.6, rgb=True),
-                        imgaug.Brightness(26, clip=True),  
-                        imgaug.Contrast((0.75, 1.25), clip=True),
-                    ]), 0.5
-                ),
-                imgaug.ToUint8(),
-            ]
-
-        if data_config['input_augs'] == 'st':
-            self.input_augs = [
-                imgaug.RandomApplyAug(
-                    imgaug.RandomChooseAug([
-                        GaussianBlur(),
-                        MedianBlur(),
-                        imgaug.GaussianNoise(),
-                    ]), 0.5
-                ),
-                imgaug.RandomOrderAug([
-                    imgaug.Hue((-8, 8), rgb=True), 
-                    imgaug.Saturation(0.2, rgb=True),
-                    imgaug.Brightness(26, clip=True),  
-                    imgaug.Contrast((0.75, 1.25), clip=True),
-                    ]),
-                imgaug.ToUint8(),
-            ]
+        policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_test_hed': p_test_hed}
+        self.input_augs = policies[(data_config['input_augs'])]
+        ####
 
     def get_model(self):
         if self.model_type == 'np_hv':

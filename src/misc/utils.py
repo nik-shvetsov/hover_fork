@@ -49,10 +49,9 @@ def get_files(data_dir_list, data_ext):
     Given a list of directories containing data with extention 'data_ext',
     generate a list of paths for all files within these directories
     """
-
     data_files = []
     for sub_dir in data_dir_list:
-        files_list = glob.glob('{}/*{}'.format(sub_dir,data_ext))
+        files_list = glob.glob('{}/*{}'.format(sub_dir, data_ext))
         files_list.sort() # ensure same order
         data_files.extend(files_list)
     return data_files
