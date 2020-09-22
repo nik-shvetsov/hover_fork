@@ -16,6 +16,9 @@ from skimage import img_as_ubyte
 from skimage.color import rgb2hed, rgb2gray, gray2rgb, rgb2hsv
 from skimage.exposure import equalize_hist, rescale_intensity
 
+# from histomicstk.preprocessing.augmentation.color_augmentation import rgb_perturb_stain_concentration
+import staintools
+
 from matplotlib.colors import LinearSegmentedColormap
 
 from tensorpack.dataflow.imgaug import ImageAugmentor
@@ -460,3 +463,29 @@ class pipeHEDAug(ImageAugmentor):
         h = rescale_intensity(ihc_hed[..., 0], out_range=(0, 1))
         d = rescale_intensity(ihc_hed[..., 2], out_range=(0, 1))
         return img_as_ubyte(np.dstack((np.zeros_like(h), d, h)))
+
+# class smartAugmentationHTK(ImageAugmentor):
+#     def __init__(self,):
+#         super(smartAugmentationHTK, self).__init__()
+
+#     def _get_augment_params(self, img):
+#         return None
+
+#     def _augment(self, img, s):
+#         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+#         augmented_rgb = rgb_perturb_stain_concentration(img)
+#         return augmented_rgb
+
+class smartAugmentationST(ImageAugmentor):
+    def __init__(self,):
+        super(smartAugmentationST, self).__init__()
+        self.augmentor = staintools.StainAugmentor(method='vahadane', sigma1=0.2, sigma2=0.2)
+
+    def _get_augment_params(self, img):
+        return None
+
+    def _augment(self, img, s):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = staintools.LuminosityStandardizer.standardize(img)
+        self.augmentor.fit(img)
+        return self.augmentor.pop()
