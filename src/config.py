@@ -12,7 +12,7 @@ from tensorpack import imgaug
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
                          GenInstanceContourMap,
-                         EqRGB2HED, RGB2HED, pipeHEDAug, smartAugmentationST)
+                         EqRGB2HED, RGB2HED, pipeHEDAug, smartAugmentation)
 ####
 class Config(object):
     def __init__(self, ):
@@ -157,7 +157,7 @@ class Config(object):
         self.inf_imgs_ext = '.png' if data_config['inf_imgs_ext'] is None else data_config['inf_imgs_ext']
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
-        self.inf_data_list = os.path.join(data_config['input_prefix'], data_config['inf_data_list'])
+        self.inf_data_list = [os.path.join(data_config['input_prefix'], x) for x in data_config['inf_data_list']]
         self.inf_output_dir = os.path.join(self.out_infer_root, self.model_name)
         self.model_export_dir = os.path.join(self.out_export_root, self.model_name)
         self.remap_labels = data_config['remap_labels']
@@ -215,7 +215,7 @@ class Config(object):
         ]
 
         p_test = [
-            smartAugmentationST(),
+            smartAugmentation(),
             # imgaug.Hue((-8, 8), rgb=True),
             # random blur and noise
             imgaug.RandomApplyAug(
