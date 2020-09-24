@@ -121,7 +121,7 @@ hv_pannuke_class:
   # Extraction step
   # assume that patches have png format
   ###
-  data_dir: 'data_consep/data/'
+  data_dir: 'data_pannuke/'
   extract_type: 'mirror'
   # img_ext: '.png'
   data_modes:

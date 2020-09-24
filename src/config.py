@@ -46,6 +46,7 @@ class Config(object):
                 for mode in self.data_modes])}
 
         # normalized images
+        self.out_preproc = None
         if data_config['include_preproc']:
             self.out_preproc = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_preproc_root, self.model_config, mode, 'Images') 
                     for mode in self.data_modes])}

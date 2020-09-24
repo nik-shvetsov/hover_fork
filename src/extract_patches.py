@@ -16,9 +16,10 @@ if __name__ == '__main__':
     
     normalized = False
     for mode in cfg.data_modes:
-        normalized = (os.path.exists(cfg.out_preproc[mode]) and \
-            len(os.listdir(cfg.out_preproc[mode])) != 0 and \
-            cfg.norm_target != None)
+        if cfg.out_preproc is not None:
+            normalized = (os.path.exists(cfg.out_preproc[mode]) and \
+                len(os.listdir(cfg.out_preproc[mode])) != 0 and \
+                cfg.norm_target != None)
         if not normalized: 
             normalized = False
             break
