@@ -60,7 +60,96 @@ hv_consep_class:
     Spindle: 4
   # data_ext: '.npy'
   input_norm: True
-  input_augs: 'p_test'
+  input_augs: 'p_standard'
+  train_dir: 
+    - 'train/Annotations'
+    # '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/train/Annotations'
+  valid_dir: 
+    - 'test/Annotations'
+  # nr_procs_train: 8
+  # nr_procs_valid: 4
+  
+  ###
+  # Inference step
+  # Model path have format <input_prefix/path>
+  # Input images path have format <input_prefix/path>
+  # Images are .png by default
+  ###
+  inf_auto_find_chkpt: False
+  inf_model_path: 'weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
+  # inf_imgs_ext: '.png'
+  inf_data_list: 
+    - 'test/Images'
+
+  ###
+  # Process step
+  # Remap labels used for optimizing analysis later on
+  # Outline expects name of the type of nuclei, that are in nuclei_types dict
+  ###
+  remap_labels: True
+  outline: ''
+
+
+hv_consep_class_linear:
+  
+  ###
+  # Meta information about profile pipeline
+  ###  
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv'
+  input_prefix: '/data/input/'
+  output_prefix: '/data/output/'
+
+  ###
+  # Choosing optional steps 
+  ###
+  include_preproc: True
+  include_extract: True
+  include_export: True
+  
+  ###
+  # Normaliztion or preprocessing step
+  ###
+  stain_norm: 
+   norm_brightness: True
+   mode: 'train'
+   image: 'train_1'
+  # or
+  # histtk: True
+
+  ###
+  # Extraction step
+  # assume that patches have png format
+  ###
+  data_dir: 'data_consep/data/'
+  extract_type: 'mirror'
+  # img_ext: '.png'
+  data_modes:
+    - 'train'
+    - 'test'
+  step_size: [80, 80]
+  win_size: [540, 540]
+  
+  ###
+  # Train step
+  # Number of types - len(nuclei_types.values()) + 1, 0 is background
+  # Data type - .npy
+  # Augmentations ...
+  # Train directory have format <prefix/dataset/train/Annotations>, note that it SHOULD be <R|G|B|instance|type> and of the right size
+  # Valid directory have format <prefix/dataset/valid/Annotations>, note that it SHOULD be <R|G|B|instance|type> and of the right size
+  # Train procs - 8, valid procs - 4 by default
+  ###
+  seed: 10
+  type_classification: True
+  nuclei_types: 
+    Misc: 1
+    Inflammatory: 2
+    Epithelial: 3
+    Spindle: 4
+  # data_ext: '.npy'
+  input_norm: True
+  input_augs: 'p_linear'
   train_dir: 
     - 'train/Annotations'
     # '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/train/Annotations'
@@ -179,160 +268,122 @@ hv_pannuke_class:
   outline: ''
 
 
-hv_pannuke_seg_class_consep_data:
+hv_pannuke_class_linear:
+  ###
+  # Meta information about profile pipeline
+  ###  
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv_opt'
+  input_prefix: '/data/input/'
+  output_prefix: '/data/output/'
 
-  data_dir: '/data/input/data_pannuke/'
-  extract_type: 'mirror' 
+  ###
+  # Choosing optional steps 
+  ###
+  include_preproc: False
+  include_extract: True
+  include_export: True
+  
+  ###
+  # Normaliztion or preprocessing step
+  ###
+  # stain_norm:
+  #  norm_brightness: True
+  #  mode: 'train'
+  #  image: 'train_1'
+  # or
+  # histtk: True
 
-  img_ext: '.png'
+  ###
+  # Extraction step
+  # assume that patches have png format
+  ###
+  data_dir: 'data_pannuke/'
+  extract_type: 'mirror'
+  # img_ext: '.png'
   data_modes:
     - 'train'
     - 'valid'
     - 'test'
   step_size: [164, 164]
-  win_size: [256, 256]
+  win_size: [256, 256] 
 
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
+  ###
+  # Train step
+  # Number of types - len(nuclei_types.values()) + 1, 0 is background
+  # Data type - .npy
+  # Augmentations ...
+  # Train directory have format <prefix/dataset/train/Annotations>, note that it SHOULD be <R|G|B|instance|type> and of the right size
+  # Valid directory have format <prefix/dataset/valid/Annotations>, note that it SHOULD be <R|G|B|instance|type> and of the right size
+  # Train procs - 8, valid procs - 4 by default
+  ###
   seed: 10
   type_classification: True
-  
-  nr_types: 6 
   nuclei_types:
     Inflammatory: 1
     Connective: 2
     Dead Cells: 3
     Epithelial: 4
     Neoplastic cells: 5
-    
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
+  # data_ext: '.npy'
   input_norm: True
+  input_augs: 'p_linear'
+  train_dir: 
+    - 'train/Annotations'
+  valid_dir: 
+    - 'test/Annotations'
+  # nr_procs_train: 8
+  # nr_procs_valid: 4
 
+  ###
+  # Inference step
+  # Model path have format <input_prefix/path>
+  # Input images path have format <input_prefix/path>
+  # Images are .png by default
+  ###
   inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
-  inf_imgs_ext: '.png'
+  inf_model_path: 'weights_pannuke/weights_pannuke.npz'
+  # inf_imgs_ext: '.png'
   inf_data_list:
-    - '/data/input/data_consep/data/test/Images'
-    
+    - 'test/Images'
+
+  ###
+  # Process step
+  # Remap labels used for optimizing analysis later on
+  # Outline expects name of the type of nuclei, that are in nuclei_types dict
+  ###
   remap_labels: True
   outline: ''
 
+hv_consep_class_linear_pannuke_data:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv_opt'
+
+hv_pannuke_class_linear_consep_data:
+  exp_id: '1.0'
+  mode: 'hover'
+  model_type: 'np_hv_opt'
+
 ################################
 
-hv_consep_seg_class_ppatch_batch:
+hv_consep_class_linear_ppatch_batch:
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv'
 
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror' 
-
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: True
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
-  inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_ppatches/test/Images'
-    
-  remap_labels: True
-  outline: ''
 
 
-hv_pannuke_seg_class_ppatch_batch:
+hv_pannuke_class_linear_ppatch_batch:
   exp_id: '1.0'
   mode: 'hover'
   model_type: 'np_hv_opt'
 
-  data_dir: '/data/input/data_pannuke/'
-  extract_type: 'mirror' 
-
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'valid'
-    - 'test'
-  step_size: [164, 164]
-  win_size: [256, 256]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: True
-  
-  nr_types: 6 
-  nuclei_types:
-    Inflammatory: 1
-    Connective: 2
-    Dead Cells: 3
-    Epithelial: 4
-    Neoplastic cells: 5
-    
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
-  inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_ppatches/test/Images'
-    
-  remap_labels: True
-  outline: ''
-
-  ####
 
 ################################
 
@@ -341,48 +392,8 @@ hv_consep_seg_class_uit_2001:
   mode: 'hover'
   model_type: 'np_hv'
 
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror' 
-
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: True
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_consep_seg_class_540x540_80x80/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
-  inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_uit_2001/test/Images'
-    
-  remap_labels: True
-  outline: ''
 
 
 hv_pannuke_seg_class_uit_2001:
@@ -390,153 +401,7 @@ hv_pannuke_seg_class_uit_2001:
   mode: 'hover'
   model_type: 'np_hv_opt'
 
-  data_dir: '/data/input/data_pannuke/'
-  extract_type: 'mirror' 
-
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'valid'
-    - 'test'
-  step_size: [164, 164]
-  win_size: [256, 256]
-
-  norm_target: 
-    mode: 'train'
-    image: 'train_1'
-  norm_brightness: True
-
-  seed: 10
-  type_classification: True
-  
-  nr_types: 6 
-  nuclei_types:
-    Inflammatory: 1
-    Connective: 2
-    Dead Cells: 3
-    Epithelial: 4
-    Neoplastic cells: 5
-    
-  data_ext: '.npy'
-  input_augs: 'st'
-  train_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_pannuke_seg_class_256x256_164x164/valid/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_pannuke/weights_pannuke.npz'
-  inf_imgs_ext: '.png'
   inf_data_list:
     - '/data/input/data_uit_2001/test/Images'
-    
-  remap_labels: True
-  outline: ''
 
 ################################
-
-hv_consep_seg_class_aug_mod:
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror'
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-  
-
-  ### preprocess
-  stain_norm: 
-    norm_brightness: True
-    mode: 'train'
-    image: 'train_1'
-  # or
-  # histtk: True
-
-  seed: 10
-  type_classification: True
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'st_hed_random'
-  train_dir:
-    - '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_consep_seg_class_540x540_80x80_stain_norm/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: False
-  inf_model_path: '/data/input/weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
-  inf_imgs_ext: '.png'
-  inf_data_list:
-    - '/data/input/data_consep/data/test/Images'
-  
-  remap_labels: True
-  outline: ''
-
-
-hv_consep_seg_class_aug_testing:
-  exp_id: '1.0'
-  mode: 'hover'
-  model_type: 'np_hv'
-
-  data_dir: '/data/input/data_consep/data/'
-  extract_type: 'mirror'
-  img_ext: '.png'
-  data_modes:
-    - 'train'
-    - 'test'
-  step_size: [80, 80]
-  win_size: [540, 540]
-  
-
-  ### preprocess
-  stain_norm: 
-    norm_brightness: True
-    mode: 'train'
-    image: 'train_1'
-  # or
-  # histtk: True
-
-  seed: 10
-  type_classification: True
-  nr_types: 5 
-  nuclei_types: 
-    Misc: 1
-    Inflammatory: 2
-    Epithelial: 3
-    Spindle: 4
-
-  data_ext: '.npy'
-  input_augs: 'test_hed'
-  train_dir:
-    - '/data/output/extract/hv_consep_seg_class_aug_testing_540x540_80x80_stain_norm/train/Labels/'
-  valid_dir:
-    - '/data/output/extract/hv_consep_seg_class_aug_testing_540x540_80x80_stain_norm/test/Labels/'
-  nr_procs_train: 8
-  nr_procs_valid: 4
-  input_norm: True
-
-  inf_auto_find_chkpt: True
-  inf_model_path: '/data/output/train/hv_consep_seg_class_aug_testing-np_hv-test_hed-1.0/0/'
-  inf_imgs_ext: '.png'
-  inf_data_list:
-    - '/data/input/data_consep/data/test/Images'
-  
-  remap_labels: True
-  outline: ''

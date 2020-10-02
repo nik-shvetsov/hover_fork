@@ -13,7 +13,7 @@ from scipy.ndimage.morphology import (distance_transform_cdt,
                                       distance_transform_edt)
 from skimage import morphology as morph
 from skimage import img_as_ubyte
-from skimage.color import rgb2hed, rgb2gray, gray2rgb, rgb2hsv
+from skimage.color import rgb2hed, hed2rgb, rgb2gray, gray2rgb, rgb2hsv
 from skimage.exposure import equalize_hist, rescale_intensity
 
 from matplotlib.colors import LinearSegmentedColormap
@@ -408,9 +408,9 @@ class MedianBlur(ImageAugmentor):
         return cv2.medianBlur(img, ksize)
 
 
-class RGB2HED(ImageAugmentor):
+class eqHistCV(ImageAugmentor):
     def __init__(self,):
-        super(RGB2HED, self).__init__()
+        super(eqHistCV, self).__init__()
 
     def _get_augment_params(self, img):
         return None
@@ -420,7 +420,7 @@ class RGB2HED(ImageAugmentor):
         return cv2.merge((cv2.equalizeHist(R), cv2.equalizeHist(G), cv2.equalizeHist(B)))
 
 
-class EqRGB2HED(ImageAugmentor):
+class eqRGB2HED(ImageAugmentor):
     def __init__(self,):
         super(EqRGB2HED, self).__init__()
 
@@ -435,9 +435,9 @@ class EqRGB2HED(ImageAugmentor):
         image[..., 2] = equalize_hist(image[..., 2])
         return img_as_ubyte(image)
 
-class pipeHEDAug(ImageAugmentor):
+class pipeHEDAugment(ImageAugmentor):
     def __init__(self,):
-        super(pipeHEDAug, self).__init__()
+        super(pipeHEDAugment, self).__init__()
 
     def _get_augment_params(self, img):
         return None
@@ -461,13 +461,18 @@ class pipeHEDAug(ImageAugmentor):
         d = rescale_intensity(ihc_hed[..., 2], out_range=(0, 1))
         return img_as_ubyte(np.dstack((np.zeros_like(h), d, h)))
 
-class smartAugmentation(ImageAugmentor):
+class linearAugmentation(ImageAugmentor):
     def __init__(self,):
-        super(smartAugmentation, self).__init__()
+        super(linearAugmentation, self).__init__()
 
     def _get_augment_params(self, img):
         return None
 
     def _augment(self, img, s):
-        aug_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        return aug_img
+        alpha = [0.95, 1.05]
+        bias = [-0.05,  0.05]
+        hed_img = rgb2hed(img)
+        for channel in range(3):
+            hed_img[..., channel] *= random.choice(np.arange(alpha[0], alpha[1], 0.01))
+            hed_img[..., channel] += random.choice(np.arange(bias[0], bias[1], 0.01))
+        return img_as_ubyte(hed2rgb(hed_img))

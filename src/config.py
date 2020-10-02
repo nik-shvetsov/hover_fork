@@ -12,7 +12,7 @@ from tensorpack import imgaug
 from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          GenInstanceHV, MedianBlur, GenInstanceUnetMap,
                          GenInstanceContourMap,
-                         EqRGB2HED, RGB2HED, pipeHEDAug, smartAugmentation)
+                         eqRGB2HED, eqHistCV, pipeHEDAugment, linearAugmentation)
 ####
 class Config(object):
     def __init__(self, ):
@@ -215,10 +215,8 @@ class Config(object):
             imgaug.ToUint8(),
         ]
 
-        p_test = [
-            smartAugmentation(),
-            # imgaug.Hue((-8, 8), rgb=True),
-            # random blur and noise
+        p_linear = [
+            linearAugmentation(),
             imgaug.RandomApplyAug(
                 imgaug.RandomChooseAug([
                     GaussianBlur(),
@@ -226,10 +224,16 @@ class Config(object):
                     imgaug.GaussianNoise(),
                 ]), 0.5
             ),
+            imgaug.RandomOrderAug([
+                imgaug.Hue((-8, 8), rgb=True), 
+                imgaug.Saturation(0.2, rgb=True),
+                imgaug.Brightness(26, clip=True),  
+                imgaug.Contrast((0.75, 1.25), clip=True),
+                ]),
             imgaug.ToUint8(),
         ]
 
-        policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_test': p_test}
+        policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_linear': p_linear}
         self.input_augs = policies[(data_config['input_augs'])]
         ####
 
