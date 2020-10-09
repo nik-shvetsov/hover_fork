@@ -164,7 +164,7 @@ hv_consep_class_linear:
   # Input images path have format <input_prefix/path>
   # Images are .png by default
   ###
-  inf_auto_find_chkpt: False
+  inf_auto_find_chkpt: True
   inf_model_path: 'weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
   # inf_imgs_ext: '.png'
   inf_data_list: 
@@ -234,7 +234,7 @@ hv_pannuke_class:
   nuclei_types:
     Inflammatory: 1
     Connective: 2
-    Dead Cells: 3
+    Dead cells: 3
     Epithelial: 4
     Neoplastic cells: 5
   # data_ext: '.npy'
@@ -323,7 +323,7 @@ hv_pannuke_class_linear:
   nuclei_types:
     Inflammatory: 1
     Connective: 2
-    Dead Cells: 3
+    Dead cells: 3
     Epithelial: 4
     Neoplastic cells: 5
   # data_ext: '.npy'
@@ -342,7 +342,7 @@ hv_pannuke_class_linear:
   # Input images path have format <input_prefix/path>
   # Images are .png by default
   ###
-  inf_auto_find_chkpt: False
+  inf_auto_find_chkpt: True
   inf_model_path: 'weights_pannuke/weights_pannuke.npz'
   # inf_imgs_ext: '.png'
   inf_data_list:

@@ -105,7 +105,7 @@ class Config(object):
 
         self.color_palete = {
         'Background': [255.0, 0.0, 0.0],    # red
-        'Neoplastic': [255.0, 255.0, 0.0],  # bright yellow
+        'Neoplastic cells': [255.0, 255.0, 0.0],  # bright yellow
         'Inflammatory': [0.0, 255.0, 0.0],  # bright green
         'Connective': [0.0, 255.0, 170.0],  # emerald       # Soft tissue cells
         'Epithelial': [0.0, 0.0, 255.0],    # dark blue
@@ -145,7 +145,10 @@ class Config(object):
         #### Info for running inference
         self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
         # path to checkpoints will be used for inference, replace accordingly
-        self.inf_model_path = os.path.join(data_config['input_prefix'], data_config['inf_model_path'])
+        if self.inf_auto_find_chkpt:
+            self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
+        else:
+            self.inf_model_path = os.path.join(data_config['input_prefix'], data_config['inf_model_path'])
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
