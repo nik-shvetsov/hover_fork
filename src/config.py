@@ -55,8 +55,6 @@ class Config(object):
             # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
             self.norm_target = os.path.join(self.data_dir_root, data_config['stain_norm']['mode'], 'Images', f"{data_config['stain_norm']['image']}{self.img_ext}")
             self.norm_brightness = data_config['stain_norm']['norm_brightness']
-        elif data_config['histtk'] is not None:
-            self.norm_histtk = True
         
         normalized = (data_config['include_preproc']) and (data_config['stain_norm'] is not None)
         win_code = '{}_{}x{}_{}x{}{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1], '_stain_norm' if normalized else '')
@@ -105,7 +103,7 @@ class Config(object):
 
         self.color_palete = {
         'Background': [255.0, 0.0, 0.0],    # red
-        'Neoplastic': [255.0, 255.0, 0.0],  # bright yellow
+        'Neoplastic cells': [255.0, 255.0, 0.0],  # bright yellow
         'Inflammatory': [0.0, 255.0, 0.0],  # bright green
         'Connective': [0.0, 255.0, 170.0],  # emerald       # Soft tissue cells
         'Epithelial': [0.0, 0.0, 255.0],    # dark blue
@@ -145,7 +143,10 @@ class Config(object):
         #### Info for running inference
         self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
         # path to checkpoints will be used for inference, replace accordingly
-        self.inf_model_path = os.path.join(data_config['input_prefix'], data_config['inf_model_path'])
+        if self.inf_auto_find_chkpt:
+            self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
+        else:
+            self.inf_model_path = os.path.join(data_config['input_prefix'], data_config['inf_model_path'])
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
