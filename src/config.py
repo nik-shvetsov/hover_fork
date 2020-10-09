@@ -201,8 +201,7 @@ class Config(object):
                     imgaug.ColorSpace(cv2.COLOR_RGB2HSV),
                     imgaug.ColorSpace(cv2.COLOR_HSV2RGB),
                     #
-                    RGB2HED(),
-                    EqRGB2HED(),
+                    eqRGB2HED(),
                 ]), 0.5
             ),
             # standard color augmentation

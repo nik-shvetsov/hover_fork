@@ -422,7 +422,7 @@ class eqHistCV(ImageAugmentor):
 
 class eqRGB2HED(ImageAugmentor):
     def __init__(self,):
-        super(EqRGB2HED, self).__init__()
+        super(eqRGB2HED, self).__init__()
 
     def _get_augment_params(self, img):
         return None
