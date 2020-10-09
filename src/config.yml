@@ -168,7 +168,7 @@ hv_consep_class_linear:
   inf_model_path: 'weights_class_CoNSeP/weights_hv_seg_class_CoNSeP.npz'
   # inf_imgs_ext: '.png'
   inf_data_list: 
-    - 'test/Images'
+    - 'data_ppatches/test/Images'
 
   ###
   # Process step
@@ -346,7 +346,7 @@ hv_pannuke_class_linear:
   inf_model_path: 'weights_pannuke/weights_pannuke.npz'
   # inf_imgs_ext: '.png'
   inf_data_list:
-    - 'test/Images'
+    - 'data_ppatches/test/Images'
 
   ###
   # Process step
