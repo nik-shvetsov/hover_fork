@@ -55,8 +55,6 @@ class Config(object):
             # self.target_norm = f"{self._data_dir}/{self.data_modes[0]}/'Images'/{data_config['stain_norm']['target']}{self.img_ext}"
             self.norm_target = os.path.join(self.data_dir_root, data_config['stain_norm']['mode'], 'Images', f"{data_config['stain_norm']['image']}{self.img_ext}")
             self.norm_brightness = data_config['stain_norm']['norm_brightness']
-        elif data_config['histtk'] is not None:
-            self.norm_histtk = True
         
         normalized = (data_config['include_preproc']) and (data_config['stain_norm'] is not None)
         win_code = '{}_{}x{}_{}x{}{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1], '_stain_norm' if normalized else '')
