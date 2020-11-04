@@ -1,5 +1,7 @@
+export H_PROFILE=hv_consep
+
 python create_config.py \
-    --profile hv_consep\
+    --profile $H_PROFILE \
     --id 1.0 \
     --input_prefix /data/input/ \
     --output_prefix /data/output/ \

@@ -20,6 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--profile', required=True, choices=['hv_consep', 'hv_pannuke'])
     parser.add_argument('--data_dir', required=True)
+    parser.add_argument('--model_type', required=True, choices=['np_hv', 'np_hv_opt'])
     parser.add_argument('--preproc', default=False, action='store_true')
     parser.add_argument('--step_size', help='80 if consep, 164 if pannuke', required=True)
     parser.add_argument('--win_size', help='540 if consep, 256 if pannuke', required=True)
@@ -64,7 +65,7 @@ if __name__ == '__main__':
         f'{args.profile}': # H_PROFILE
         {   
             'mode': 'hover',
-            'model_type': 'np_hv',
+            'model_type': args.model_type,
             'seed': 10,
             'type_classification': True,
 
