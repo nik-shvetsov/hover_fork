@@ -24,12 +24,9 @@ from metrics.stats_utils import remap_label
 
 from joblib import Parallel, delayed
 
-
-AV_CPU = os.cpu_count()
-
 ###################
 
-def process(parallel=False):
+def process(parallel_procs):
 
     ## ! WARNING:
     ## check the prediction channels, wrong ordering will break the code !
@@ -151,8 +148,8 @@ def process(parallel=False):
         start = datetime.now()
         if parallel: 
             print(f"Stared parallel process for ```{data_dir}``` {start.strftime('%d/%m %H:%M:%S.%f')}")
-            print(f"Using {AV_CPU - 2} CPU cores")
-            Parallel(n_jobs=AV_CPU - 2, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
+            print(f"Using {parallel_procs} CPU cores")
+            Parallel(n_jobs=parallel_procs, prefer='threads')(delayed(process_image)(filename) for filename in file_list)
             end = datetime.now()
             print(f"Done parallel process for ```{data_dir}``` {end.strftime('%d/%m %H:%M:%S.%f')}")
         else:
@@ -162,7 +159,10 @@ def process(parallel=False):
         print(f"Overall time elapsed: {end - start}")
 
 if __name__ == '__main__':
+    AV_CPU = os.cpu_count() - 4
     parser = argparse.ArgumentParser()
-    parser.add_argument('--parallel', help='Whether to run process in parallel, consider using with large images', default=False, action='store_true')
+    parser.add_argument('--parallel', help='Whether to run process in parallel, \
+        consider using with large number of images and use specified number of cores', default=False)
     args = parser.parse_args()
+    if args.parallel: print (f'Recomended number of parallel cores for this system is {AV_CPU}.')
     process(args.parallel)
