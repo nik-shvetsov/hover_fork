@@ -277,3 +277,10 @@ if __name__ == '__main__':
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
         nr_gpus = len(args.gpu.split(','))
         trainer.run()
+        
+        # Save config
+        with open('config.yml', 'r') as source:
+            with open(os.path.join(self.save_dir, 'config.yml'), 'w') as train_config:
+                for line in source.readlines():
+                    train_config.write(line)
+        print (f"Saved config.yml to {os.path.join(self.save_dir, 'config.yml')}")
