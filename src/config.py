@@ -16,17 +16,15 @@ from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
 ####
 class Config(object):
     def __init__(self, ):
-        # Select template (hv_kumar, hv_uit_w_kumar, hv_consep, hv_cmp17)
         self.model_config = os.environ['H_PROFILE'] if 'H_PROFILE' in os.environ else ''
-        
-        # Load config yml file
         data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
-        self.log_path = data_config['output_prefix'] # log root path
 
+        # Validation
         assert (data_config['input_prefix'] is not None)
         assert (data_config['output_prefix'] is not None)
 
-        # data extraion params
+        # Load config yml file
+        self.log_path = data_config['output_prefix'] # log root path
         self.data_dir_root = os.path.join(data_config['input_prefix'], data_config['data_dir']) # without modes
         
         self.extract_type = data_config['extract_type']
@@ -71,7 +69,7 @@ class Config(object):
         self.nr_classes = 2 # Nuclei Pixels vs Background
         
         self.nuclei_type_dict = data_config['nuclei_types']
-        self.nr_types = len(self.nuclei_type_dict.values()) + 1
+        self.nr_types = len(self.nuclei_type_dict.values()) + 1 # plus background
 
         #### Dynamically setting the config file into variable
         if mode == 'hover':
@@ -102,17 +100,19 @@ class Config(object):
         }
 
         self.color_palete = {
-        'Background': [255.0, 0.0, 0.0],    # red
-        'Neoplastic cells': [255.0, 255.0, 0.0],  # bright yellow
         'Inflammatory': [0.0, 255.0, 0.0],  # bright green
-        'Connective': [0.0, 255.0, 170.0],  # emerald       # Soft tissue cells
-        'Epithelial': [0.0, 0.0, 255.0],    # dark blue
-        'Dead cells': [255.0, 0.0, 170.0],  # pink
-        'Spindle': [0.0, 170.0, 255.0],     # light blue
-        'Misc': [255.0, 170.0, 0.0],        # orange
+        'Dead cells': [32.0, 32.0, 32.0]    # black
+        'Neoplastic cells': [0.0, 0.0, 255.0], # dark blue      # aka Epithelial malignant
+        'Epithelial': [255.0, 255.0, 0.0],  # bright yellow     # aka Epithelial healthy
+        'Misc': [0.0, 0.0, 0.0],            # pure black
+        'Spindle': [0.0, 255.0, 255.0],     # cyan              # Fibroblast, Muscle and Endothelial cells
+        'Connective': [0.0, 220.0, 220.0],  # darker cyan       # plus Soft tissue cells
+        'Background': [255.0, 0.0, 170.0],  # pink
+        ###
         'light green': [170.0, 255.0, 0.0], # light green
         'purple': [170.0, 0.0, 255.0],      # purple
-        'cyan': [0.0, 170.0, 255.0]        # cyan
+        'orange': [255.0, 170.0, 0.0],      # orange
+        'red': [255.0, 0.0, 0.0],           # red
         }
 
         # self.model_name = f"{self.model_config}-{self.model_type}-{data_config['input_augs']}-{data_config['exp_id']}"
@@ -146,7 +146,7 @@ class Config(object):
         if self.inf_auto_find_chkpt:
             self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
         else:
-            self.inf_model_path = os.path.join(data_config['input_prefix'], data_config['inf_model_path'])
+            self.inf_model_path = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
@@ -235,6 +235,23 @@ class Config(object):
 
         policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_linear': p_linear}
         self.input_augs = policies[(data_config['input_augs'])]
+
+        # Checks
+        print(f"Log path: <{self.log_path}>")
+        print(f"Extraction out dirs: <{self.out_extract}>")
+        print("--------")
+        print("Training")
+        print(f"Model name: <{self.model_name}>")
+        print(f"Input img dirs: <{self.img_dirs}>")
+        print(f"Input labels dirs: <{self.labels_dirs}>")
+        print(f"Train out dir: <{self.save_dir}>")
+        print("--------")
+        print("Inference")
+        print(f"Inference model path: <{self.inf_model_path}>")
+        print(f"Input inference path: <{self.inf_data_list}>")
+        print(f"Output inference path: <{self.inf_output_dir}>")
+        print(f"Model export out: <{self.model_export_dir}>")
+        print("--------")
         ####
 
     def get_model(self):
