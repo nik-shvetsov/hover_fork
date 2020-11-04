@@ -101,7 +101,7 @@ class Config(object):
 
         self.color_palete = {
         'Inflammatory': [0.0, 255.0, 0.0],  # bright green
-        'Dead cells': [32.0, 32.0, 32.0]    # black
+        'Dead cells': [32.0, 32.0, 32.0],    # black
         'Neoplastic cells': [0.0, 0.0, 255.0], # dark blue      # aka Epithelial malignant
         'Epithelial': [255.0, 255.0, 0.0],  # bright yellow     # aka Epithelial healthy
         'Misc': [0.0, 0.0, 0.0],            # pure black
@@ -112,7 +112,7 @@ class Config(object):
         'light green': [170.0, 255.0, 0.0], # light green
         'purple': [170.0, 0.0, 255.0],      # purple
         'orange': [255.0, 170.0, 0.0],      # orange
-        'red': [255.0, 0.0, 0.0],           # red
+        'red': [255.0, 0.0, 0.0]           # red
         }
 
         # self.model_name = f"{self.model_config}-{self.model_type}-{data_config['input_augs']}-{data_config['exp_id']}"

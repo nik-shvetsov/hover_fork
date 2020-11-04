@@ -3,6 +3,7 @@ python create_config.py \
     --id 1.0 \
     --input_prefix /data/input/ \
     --output_prefix /data/output/ \
+    --data_dir data_hv_consep/data/ \
     --preproc \
     --norm_brightness \
     --mode train \
@@ -16,6 +17,7 @@ python create_config.py \
     --input_augs p_standard \
     --data_modes train,test \
     --inf_model hv_class_consep.npz \
+    --inf_data_list data_hv_consep/data/test/Images/ \
     --remap_labels \
     --outline ''
 

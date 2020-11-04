@@ -19,9 +19,11 @@ info = {
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--profile', required=True, choices=['hv_consep', 'hv_pannuke'])
+    parser.add_argument('--data_dir', required=True)
     parser.add_argument('--preproc', default=False, action='store_true')
     parser.add_argument('--step_size', help='80 if consep, 164 if pannuke', required=True)
     parser.add_argument('--win_size', help='540 if consep, 256 if pannuke', required=True)
+    
 
     parser.add_argument('--inf_auto_find_chkpt', action='store_true')
     parser.add_argument('--inf_model')
@@ -42,7 +44,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--data_modes', default='train,test')
 
-    parser.add_argument('--inf_data_list', default='test/Images')
+    parser.add_argument('--inf_data_list', required=True)
     parser.add_argument('--remap_labels', default=True, action='store_true')
     parser.add_argument('--outline', default='')
 
@@ -80,7 +82,7 @@ if __name__ == '__main__':
                 'image': args.image
             } if args.preproc else None,
 
-            'data_dir': f'data_{args.profile}/data/',
+            'data_dir': args.data_dir,
             'extract_type': args.extract_type,
             # 'img_ext': args.img_ext,
             'data_modes': args.data_modes.split(','),
