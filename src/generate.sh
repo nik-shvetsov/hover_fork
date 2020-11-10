@@ -6,7 +6,7 @@ python create_config.py \
     --id 1.0 \
     --input_prefix /data/input/ \
     --output_prefix /data/output/ \
-    --data_dir data_hv_consep/data/ \
+    --data_dir data_hv_consep/ \
     --preproc \
     --norm_brightness \
     --mode train \
@@ -17,10 +17,10 @@ python create_config.py \
     --step_size 80 \
     --win_size 540 \
     --input_norm \
-    --input_augs p_linear_plus \
+    --input_augs p_linear \
     --data_modes train,test \
     --inf_auto_find_chkpt \
-    --inf_data_list data_hv_consep/data/test/Images/ \
+    --inf_data_list data_hv_consep/test/Images/ \
     --remap_labels \
     --outline ''
 
