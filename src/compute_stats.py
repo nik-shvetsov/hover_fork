@@ -29,9 +29,9 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
                      for instance types
     """
     ###
+    
     file_list = glob.glob(os.path.join(pred_dir, '*.mat'))
     file_list.sort() # ensure same order [1]
-
     paired_all = [] # unique matched index pair
     unpaired_true_all = [] # the index must exist in `true_inst_type_all` and unique
     unpaired_pred_all = [] # the index must exist in `pred_inst_type_all` and unique
@@ -41,10 +41,15 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
         
-        true_info = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
+        # true_info = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
+        # # dont squeeze, may be 1 instance exist
+        # true_centroid  = (true_info['inst_centroid']).astype('float32')
+        # true_inst_type = (true_info['inst_type']).astype('int32')
+
+        true_info = np.load(os.path.join(true_dir, '{}.npy'.format(basename)), allow_pickle=True)
         # dont squeeze, may be 1 instance exist
-        true_centroid  = (true_info['inst_centroid']).astype('float32')
-        true_inst_type = (true_info['inst_type']).astype('int32')
+        true_centroid  = (true_info.item().get('inst_centroid')).astype('float32')
+        true_inst_type = (true_info.item().get('inst_type')).astype('int32')
 
         if true_centroid.shape[0] != 0:
             true_inst_type = true_inst_type[:,0]                
@@ -52,9 +57,9 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
             true_centroid = np.array([[0, 0]])
             true_inst_type = np.array([0])
 
-        # * for converting the GT type in CoNSeP
-        true_inst_type[(true_inst_type == 3) | (true_inst_type == 4)] = 3
-        true_inst_type[(true_inst_type == 5) | (true_inst_type == 6) | (true_inst_type == 7)] = 4
+        # # * for converting the GT type in CoNSeP
+        # true_inst_type[(true_inst_type == 3) | (true_inst_type == 4)] = 3
+        # true_inst_type[(true_inst_type == 5) | (true_inst_type == 6) | (true_inst_type == 7)] = 4
         
         pred_info = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
         # dont squeeze, may be 1 instance exist
@@ -159,11 +164,9 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
     return
 
 
-def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
+def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False):
     # print stats of each image
-    print(pred_dir)
-
-    file_list = glob.glob('%s/*%s' % (pred_dir, ext))
+    file_list = glob.glob(os.path.join(pred_dir, '*.mat'))
     file_list.sort() # ensure same order
 
     metrics = [[], [], [], [], [], []]
@@ -171,8 +174,10 @@ def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
         filename = os.path.basename(filename)
         basename = filename.split('.')[0]
 
-        true = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
-        true = (true['inst_map']).astype('int32')
+        # true = sio.loadmat(os.path.join(true_dir, '{}.mat'.format(basename)))
+        # true = (true['inst_map']).astype('int32')
+        true = np.load(os.path.join(true_dir, '{}.npy'.format(basename)), allow_pickle=True)
+        true = (true.item().get('inst_map')).astype('int32')
 
         pred = sio.loadmat(os.path.join(pred_dir, '{}.mat'.format(basename)))
         pred = (pred['inst_map']).astype('int32')
@@ -204,12 +209,10 @@ def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False, ext='.mat'):
 
 if __name__ == '__main__':
     cfg = Config()
-    mode = 'type' if cfg.type_classification else 'instance'
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', help="mode to run the measurement,"
                                 "`type` for nuclei instance type classification or"
-                                "`instance` for nuclei instance segmentation", default=mode)
+                                "`instance` for nuclei instance segmentation", default='instance')
     parser.add_argument('--pred_dir', help="Point to output dir", required=True)
     parser.add_argument('--true_dir', help="Point to ground truth dir", required=True)
 

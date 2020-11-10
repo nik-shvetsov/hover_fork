@@ -52,9 +52,12 @@ if __name__ == '__main__':
 
             if cfg.type_classification:
                 # # assumes that ann is HxWx2 (nuclei class labels are available at index 1 of C)
-                ann = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
-                ann_inst = ann[...,0]
-                ann_type = ann[...,1]
+                ann = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)), allow_pickle=True)
+                # ann_inst = ann[...,0]
+                # ann_type = ann[...,1]
+                ann_inst = ann.item().get('inst_map')
+                ann_type = ann.item().get('type_map')
+
                 #ann = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename)))
                 #ann_inst = ann['inst_map']
                 #ann_type = ann['type_map']
@@ -76,9 +79,10 @@ if __name__ == '__main__':
                 # assumes that ann is HxW
                 # ann_inst = sio.loadmat(os.path.join(ann_dir, '{}.mat'.format(basename)))
                 ann = np.load(os.path.join(ann_dir, '{}.npy'.format(basename)))
-                # ann_inst = (ann_inst['inst_map']).astype('int32')
-                ann_inst = ann_inst.astype('int32')
+                ann_inst = (ann_inst.item().get('inst_map')).astype('int32')
+                # ann_inst = ann_inst.astype('int32')
                 ann = np.expand_dims(ann_inst, -1)
+                
             img = np.concatenate([img, ann], axis=-1)
             sub_patches = xtractor.extract(img, cfg.extract_type)
             for idx, patch in enumerate(sub_patches):

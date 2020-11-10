@@ -17,16 +17,17 @@ def transform(input_dir, output_dir, modes):
                 if str(key).startswith('__'):
                     to_transform.pop(key, None)
 
-            ## * for converting the GT type in CoNSeP
-            to_transform['type_map'][(to_transform['type_map'] == 3) | (to_transform['type_map'] == 4)] = 3
-            to_transform['type_map'][(to_transform['type_map'] == 5) | (to_transform['type_map'] == 6) | (to_transform['type_map'] == 7)] = 4
-            assert (np.max(to_transform['type_map']) <= 4)
+            ## * for converting the GT types in CoNSeP (see paper for explanations)
+            for key in ['type_map', 'inst_type']:
+                to_transform[key][(to_transform[key] == 3) | (to_transform[key] == 4)] = 3
+                to_transform[key][(to_transform[key] == 5) | (to_transform[key] == 6) | (to_transform[key] == 7)] = 4
+                assert (np.max(to_transform[key]) <= 4)
 
             # save only maps
-            result = np.dstack((to_transform['inst_map'], to_transform['type_map']))
-            np.save(f"{os.path.join(output_dir, mode.lower(), 'Labels', basename)}.npy", result)
+            # result = np.dstack((to_transform['inst_map'], to_transform['type_map']))
+            np.save(f"{os.path.join(output_dir, mode.lower(), 'Labels', basename)}.npy", to_transform)
             print(f"{os.path.join(output_dir, mode.lower(), 'Labels', basename)}.npy saved.")
 
 
 if __name__ == '__main__':
-    transform('/data/input/data_consep/CoNSeP/', '/data/input/data_consep/data/', ['Train', 'Test'])
+    transform('/data/input/data_consep/CoNSeP/', '/data/input/data_hv_consep/', ['Train', 'Test'])
