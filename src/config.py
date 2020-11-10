@@ -143,10 +143,12 @@ class Config(object):
         #### Info for running inference
         self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
         # path to checkpoints will be used for inference, replace accordingly
-        if self.inf_auto_find_chkpt:
-            self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
-        else:
-            self.inf_model_path = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
+        
+        # evaluated at infer.py
+        # if self.inf_auto_find_chkpt:
+        #     self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
+        # else:
+        #     self.inf_model_path = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
@@ -160,8 +162,10 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = [os.path.join(data_config['input_prefix'], x) for x in data_config['inf_data_list']]
+        
+        model_used = self.model_name if self.inf_auto_find_chkpt else f"{data_config['inf_model'].split('.')[0]}"
 
-        self.inf_output_dir = os.path.join(self.out_infer_root, f"{self.model_name}.{''.join(data_config['inf_data_list']).replace('/', '_').rstrip('_')}")
+        self.inf_output_dir = os.path.join(self.out_infer_root, f"{model_used}.{''.join(data_config['inf_data_list']).replace('/', '_').rstrip('_')}")
         self.model_export_dir = os.path.join(self.out_export_root, self.model_name)
         self.remap_labels = data_config['remap_labels']
         self.outline = data_config['outline']
@@ -270,7 +274,7 @@ class Config(object):
         print(f"Train out dir: <{self.save_dir}>")
         print("--------")
         print("Inference")
-        print(f"Inference model path: <{self.inf_model_path}>")
+        print(f"Auto-find trained model: <{self.inf_auto_find_chkpt}>")
         print(f"Input inference path: <{self.inf_data_list}>")
         print(f"Output inference path: <{self.inf_output_dir}>")
         print(f"Model export out: <{self.model_export_dir}>")

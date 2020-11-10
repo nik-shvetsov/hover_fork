@@ -25,4 +25,4 @@ python create_config.py \
     --outline ''
 
 # --inf_auto_find_chkpt \
-# --inf_model hv_class_consep.npz \
+# --inf_model dm_hv_class_consep.npz \
