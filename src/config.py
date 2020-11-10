@@ -256,6 +256,10 @@ class Config(object):
         self.input_augs = policies[(data_config['input_augs'])]
 
         # Checks
+        print("--------")
+        print("Config info:")
+        print()
+        print("--------")
         print(f"Log path: <{self.log_path}>")
         print(f"Extraction out dirs: <{self.out_extract}>")
         print("--------")
@@ -271,6 +275,7 @@ class Config(object):
         print(f"Output inference path: <{self.inf_output_dir}>")
         print(f"Model export out: <{self.model_export_dir}>")
         print("--------")
+        print()
         ####
 
     def get_model(self):
