@@ -2,6 +2,7 @@ export H_PROFILE=hv_consep
 
 python create_config.py \
     --profile $H_PROFILE \
+    --model_type np_hv \
     --id 1.0 \
     --input_prefix /data/input/ \
     --output_prefix /data/output/ \
@@ -16,7 +17,7 @@ python create_config.py \
     --step_size 80 \
     --win_size 540 \
     --input_norm \
-    --input_augs p_standard \
+    --input_augs p_linear_plus \
     --data_modes train,test \
     --inf_model hv_class_consep.npz \
     --inf_data_list data_hv_consep/data/test/Images/ \
