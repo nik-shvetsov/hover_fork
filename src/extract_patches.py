@@ -18,14 +18,13 @@ if __name__ == '__main__':
     for mode in cfg.data_modes:
         if cfg.out_preproc is not None:
             normalized = (os.path.exists(cfg.out_preproc[mode]) and \
-                len(os.listdir(cfg.out_preproc[mode])) != 0 and \
-                cfg.norm_target != None)
+                len(os.listdir(cfg.out_preproc[mode])) != 0)
         if not normalized: 
             normalized = False
             break
-    
+        
+    assert (cfg.normalized == normalized)
     print(f"Stain normalization was performed: {normalized}")
-    
     img_dirs = cfg.out_preproc if normalized else cfg.img_dirs
 
     print(f"Using folders <{list(img_dirs.values())}> as input")

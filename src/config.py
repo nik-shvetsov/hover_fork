@@ -54,8 +54,8 @@ class Config(object):
             self.norm_target = os.path.join(self.data_dir_root, data_config['stain_norm']['mode'], 'Images', f"{data_config['stain_norm']['image']}{self.img_ext}")
             self.norm_brightness = data_config['stain_norm']['norm_brightness']
         
-        normalized = (data_config['include_preproc']) and (data_config['stain_norm'] is not None)
-        win_code = '{}_{}x{}_{}x{}{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1], '_stain_norm' if normalized else '')
+        self.normalized = (data_config['include_preproc']) and (data_config['stain_norm'] is not None)
+        win_code = '{}_{}x{}_{}x{}{}'.format(self.model_config, self.win_size[0], self.win_size[1], self.step_size[0], self.step_size[1], '_stain_norm' if self.normalized else '')
         self.out_extract = {k: v for k, v in zip(self.data_modes, [os.path.join(self.out_extract_root, win_code, mode, 'Annotations') 
             for mode in self.data_modes])}
 
