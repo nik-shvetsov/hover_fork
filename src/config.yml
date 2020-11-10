@@ -8,10 +8,10 @@ hv_consep:
   include_export: true
   include_extract: true
   include_preproc: true
+  inf_auto_find_chkpt: true
   inf_data_list:
-  - test/Images
-  inf_model: hv_class_consep.npz
-  input_augs: p_standard
+  - data_hv_consep/data/test/Images/
+  input_augs: p_linear_plus
   input_norm: true
   input_prefix: /data/input/
   mode: hover

@@ -160,7 +160,8 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = [os.path.join(data_config['input_prefix'], x) for x in data_config['inf_data_list']]
-        self.inf_output_dir = os.path.join(self.out_infer_root, self.model_name)
+
+        self.inf_output_dir = os.path.join(self.out_infer_root, f"{self.model_name}.{''.join(data_config['inf_data_list']).replace('/', '_').rstrip('_')}")
         self.model_export_dir = os.path.join(self.out_export_root, self.model_name)
         self.remap_labels = data_config['remap_labels']
         self.outline = data_config['outline']
@@ -233,7 +234,25 @@ class Config(object):
             imgaug.ToUint8(),
         ]
 
-        policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_linear': p_linear}
+        p_linear_plus = [
+            linearAugmentation(),
+            imgaug.RandomApplyAug(
+                imgaug.RandomChooseAug([
+                    GaussianBlur(),
+                    MedianBlur(),
+                    imgaug.GaussianNoise(),
+                ]), 0.5
+            ),
+            imgaug.RandomOrderAug([
+                imgaug.Hue((-4, 4), rgb=True), 
+                imgaug.Saturation(0.2, rgb=True),
+                imgaug.Brightness(26, clip=True),  
+                imgaug.Contrast((0.75, 1.25), clip=True),
+                ]),
+            imgaug.ToUint8(),
+        ]
+
+        policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_linear': p_linear, 'p_linear_plus': p_linear_plus}
         self.input_augs = policies[(data_config['input_augs'])]
 
         # Checks

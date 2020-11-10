@@ -19,7 +19,7 @@ python create_config.py \
     --input_norm \
     --input_augs p_linear_plus \
     --data_modes train,test \
-    --inf_model hv_class_consep.npz \
+    --inf_auto_find_chkpt \
     --inf_data_list data_hv_consep/data/test/Images/ \
     --remap_labels \
     --outline ''
