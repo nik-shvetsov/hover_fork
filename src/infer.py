@@ -132,8 +132,9 @@ class Inferer(Config):
 
     ####
     def run(self, save_only):
-
         if self.inf_auto_find_chkpt:
+            self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
+            print(f"Inference model path: <{self.inf_model_path}>")
             print('-----Auto Selecting Checkpoint Basing On "%s" Through "%s" Comparison' % \
                         (self.inf_auto_metric, self.inf_auto_comparator))
             model_path, stat = get_best_chkpts(self.inf_model_path, self.inf_auto_metric, self.inf_auto_comparator)
@@ -183,13 +184,6 @@ class Inferer(Config):
 
 ####
 if __name__ == '__main__':
-    cfg = Config()
-    if cfg.inf_auto_find_chkpt:
-        cfg.inf_model_path = os.path.join(cfg.save_dir, str(max([int(x) for x in os.listdir(cfg.save_dir)])))
-    else:
-        cfg.inf_model_path = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
-    print(f"Inference model path: <{self.inf_model_path}>")
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', help='Comma separated list of GPU(s) to use.', default="0")
     parser.add_argument('--save_only', help='Whether to save the model, without actual inference', default=False, action='store_true')

@@ -115,22 +115,6 @@ class Config(object):
         'red': [255.0, 0.0, 0.0]           # red
         }
 
-        self.color_palete_original = {
-        'Inflammatory': [0.0, 255.0, 0.0],  # bright green
-        'Dead cells': [32.0, 32.0, 32.0],    # black
-        'Neoplastic cells': [0.0, 0.0, 255.0], # dark blue      # aka Epithelial malignant
-        'Epithelial': [255.0, 255.0, 0.0],  # bright yellow     # aka Epithelial healthy
-        'Misc': [0.0, 0.0, 0.0],            # pure black
-        'Spindle': [0.0, 255.0, 255.0],     # cyan              # Fibroblast, Muscle and Endothelial cells
-        'Connective': [0.0, 220.0, 220.0],  # darker cyan       # plus Soft tissue cells
-        'Background': [255.0, 0.0, 170.0],  # pink
-        ###
-        'light green': [170.0, 255.0, 0.0], # light green
-        'purple': [170.0, 0.0, 255.0],      # purple
-        'orange': [255.0, 170.0, 0.0],      # orange
-        'red': [255.0, 0.0, 0.0]           # red
-        }
-
         # self.model_name = f"{self.model_config}-{self.model_type}-{data_config['input_augs']}-{data_config['exp_id']}"
         self.model_name = f"{self.model_config}-{data_config['input_augs']}-{data_config['exp_id']}"
 
@@ -161,9 +145,9 @@ class Config(object):
         # path to checkpoints will be used for inference, replace accordingly
         
         if self.inf_auto_find_chkpt:
-            inf_model_path_dir = os.path.join(cfg.save_dir)
+            self.inf_model_path = os.path.join(self.save_dir)
         else:
-            inf_model_path_dir = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
+            self.inf_model_path = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
         #self.save_dir + '/model-19640.index'
 
         # output will have channel ordering as [Nuclei Type][Nuclei Pixels][Additional]
@@ -177,8 +161,6 @@ class Config(object):
 
         # rootdir, outputdirname, subdir1, subdir2(opt) ...
         self.inf_data_list = [os.path.join(data_config['input_prefix'], x) for x in data_config['inf_data_list']]
-
-        
         
         model_used = self.model_name if self.inf_auto_find_chkpt else f"{data_config['inf_model'].split('.')[0]}"
 
@@ -292,7 +274,7 @@ class Config(object):
         print("--------")
         print("Inference")
         print(f"Auto-find trained model: <{self.inf_auto_find_chkpt}>")
-        print(f"Inference model path dir: <{inf_model_path_dir}>")
+        print(f"Inference model path dir: <{self.inf_model_path}>")
         print(f"Input inference path: <{self.inf_data_list}>")
         print(f"Output inference path: <{self.inf_output_dir}>")
         print(f"Model export out: <{self.model_export_dir}>")

@@ -28,7 +28,7 @@ AV_CPU = os.cpu_count()
 
 ###################
 
-def process(parallel=False):
+def process(parallel):
 
     ## ! WARNING:
     ## check the prediction channels, wrong ordering will break the code !
