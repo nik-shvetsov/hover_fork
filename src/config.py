@@ -115,6 +115,22 @@ class Config(object):
         'red': [255.0, 0.0, 0.0]           # red
         }
 
+        self.color_palete_original = {
+        'Inflammatory': [0.0, 255.0, 0.0],  # bright green
+        'Dead cells': [32.0, 32.0, 32.0],    # black
+        'Neoplastic cells': [0.0, 0.0, 255.0], # dark blue      # aka Epithelial malignant
+        'Epithelial': [255.0, 255.0, 0.0],  # bright yellow     # aka Epithelial healthy
+        'Misc': [0.0, 0.0, 0.0],            # pure black
+        'Spindle': [0.0, 255.0, 255.0],     # cyan              # Fibroblast, Muscle and Endothelial cells
+        'Connective': [0.0, 220.0, 220.0],  # darker cyan       # plus Soft tissue cells
+        'Background': [255.0, 0.0, 170.0],  # pink
+        ###
+        'light green': [170.0, 255.0, 0.0], # light green
+        'purple': [170.0, 0.0, 255.0],      # purple
+        'orange': [255.0, 170.0, 0.0],      # orange
+        'red': [255.0, 0.0, 0.0]           # red
+        }
+
         # self.model_name = f"{self.model_config}-{self.model_type}-{data_config['input_augs']}-{data_config['exp_id']}"
         self.model_name = f"{self.model_config}-{data_config['input_augs']}-{data_config['exp_id']}"
 
@@ -144,9 +160,9 @@ class Config(object):
         self.inf_auto_find_chkpt = data_config['inf_auto_find_chkpt']
         # path to checkpoints will be used for inference, replace accordingly
         
-        if cfg.inf_auto_find_chkpt:
+        if self.inf_auto_find_chkpt:
             inf_model_path_dir = os.path.join(cfg.save_dir)
-         else:
+        else:
             inf_model_path_dir = os.path.join(data_config['input_prefix'], 'models', data_config['inf_model'])
         #self.save_dir + '/model-19640.index'
 
