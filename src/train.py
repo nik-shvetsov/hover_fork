@@ -150,6 +150,7 @@ class Trainer(Config):
                                             self.infer_mask_shape,
                                             view)
             data_files = get_files(self.valid_dir, self.data_ext)
+            print(f"Valid data length: {len(data_files)} in <{self.valid_dir}>.{self.data_ext}")
             data_generator = loader.valid_generator
             nr_procs = self.nr_procs_valid
 
@@ -199,8 +200,7 @@ class Trainer(Config):
             callbacks.append(ScheduledHyperParamSetter(param_name, param_info[1]))
         # multi-GPU inference (with mandatory queue prefetch)
         infs = [StatCollector()]
-        callbacks.append(DataParallelInferenceRunner(
-                                valid_datagen, infs, list(range(nr_gpus))))
+        callbacks.append(DataParallelInferenceRunner(valid_datagen, infs, list(range(nr_gpus))))
         callbacks.append(MaxSaver('valid_dice'))
 
         ######
