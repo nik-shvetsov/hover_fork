@@ -48,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--inf_data_list', required=True)
     parser.add_argument('--remap_labels', default=True, action='store_true')
     parser.add_argument('--outline', default='')
+    parser.add_argument('--skip_types', default='')
 
     parser.add_argument('--norm_brightness', default=True, action='store_true')
     parser.add_argument('--mode', default='train')
@@ -104,7 +105,8 @@ if __name__ == '__main__':
             # 'inf_imgs_ext': args.inf_imgs_ext,
             'inf_data_list': [ args.inf_data_list ],
             'remap_labels': args.remap_labels,
-            'outline': args.outline
+            'outline': args.outline,
+            'skip_types': args.skip_types.split(',')
         }
     }
 

@@ -24,7 +24,8 @@ python create_config.py \
     --inf_auto_find_chkpt \
     --inf_data_list data_hv_consep/test/Images/ \
     --remap_labels \
-    --outline ''
+    --outline '' \
+    --skip_types 'Misc,Spindle'
 
 # --inf_auto_find_chkpt \
 # --inf_model dm_hv_class_consep.npz \

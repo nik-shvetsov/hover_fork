@@ -168,7 +168,9 @@ class Config(object):
         self.model_export_dir = os.path.join(self.out_export_root, self.model_name)
         self.remap_labels = data_config['remap_labels']
         self.outline = data_config['outline']
-        
+        if data_config['skip_types'] is not None and data_config['skip_types'] != '':
+            self.skip_types = [self.nuclei_type_dict[x.strip()] for x in data_config['skip_types']]
+
         # For inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = ['images']
         self.eval_inf_output_tensor_names = ['predmap-coded']

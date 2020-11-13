@@ -56,7 +56,7 @@ def gen_colors(N, random_colors=True, bright=True):
 #     return list(compare_pallete / 255.0)
 
 ####
-def visualize_instances(mask, canvas=None, color_info=None, to_outline=''):
+def visualize_instances(mask, canvas=None, color_info=None, to_outline='', skip=[]):
     """
     Args:
         mask: array of NW
@@ -84,6 +84,9 @@ def visualize_instances(mask, canvas=None, color_info=None, to_outline=''):
 
     for idx, inst_id in enumerate(insts_list):
         if (color_info[1][idx][0]) == 0: # if background inst
+            continue
+        
+        if (color_info[1][idx][0]) in skip: # if we skip specific type
             continue
 
         if color_info is None:

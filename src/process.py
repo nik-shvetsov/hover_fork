@@ -126,7 +126,7 @@ def process(parallel):
                             'inst_type' :     pred_inst_type[:, None],
                             'inst_centroid' : pred_inst_centroid,
                             })
-                overlaid_output = visualize_instances(pred_inst, img, ((cfg.nuclei_type_dict, cfg.color_palete), pred_inst_type[:, None]), cfg.outline)
+                overlaid_output = visualize_instances(pred_inst, img, ((cfg.nuclei_type_dict, cfg.color_palete), pred_inst_type[:, None]), cfg.outline, cfg.skip_types)
                 overlaid_output = cv2.cvtColor(overlaid_output, cv2.COLOR_BGR2RGB)
                 cv2.imwrite(os.path.join(proc_dir, '{}.png'.format(basename)), overlaid_output)
                 with open(os.path.join(proc_dir, f'{basename}.log'), 'w') as log_file:
