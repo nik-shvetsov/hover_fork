@@ -280,7 +280,7 @@ if __name__ == '__main__':
         
         # Save config
         with open('config.yml', 'r') as source:
-            with open(os.path.join(self.save_dir, 'config.yml'), 'w') as train_config:
+            with open(os.path.join(trainer.save_dir, 'config.yml'), 'w') as train_config:
                 for line in source.readlines():
                     train_config.write(line)
-        print (f"Saved config.yml to {os.path.join(self.save_dir, 'config.yml')}")
+        print (f"Saved config.yml to {os.path.join(trainer.save_dir, 'config.yml')}")
