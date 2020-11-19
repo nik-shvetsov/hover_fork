@@ -45,6 +45,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--data_modes', default='train,test')
 
+    parser.add_argument('--inf_auto_metric', default='valid_dice') # choices=['valid_dice', 'valid_mse', 'valid_acc', 'valid_dice_Inflammatory', ...]
+    parser.add_argument('--inf_auto_comparator', default='>', choices=['>','<'])
+
     parser.add_argument('--inf_data_list', required=True)
     parser.add_argument('--remap_labels', default=True, action='store_true')
     parser.add_argument('--outline', default='')
@@ -98,6 +101,9 @@ if __name__ == '__main__':
             'valid_dir': [ args.valid_dir ],
             # 'nr_procs_train': args.nr_procs_train,
             # 'nr_procs_valid': args.nr_procs_valid,
+
+            'inf_auto_metric': args.inf_auto_metric,
+            'inf_auto_comparator': args.inf_auto_comparator,
   
             'inf_auto_find_chkpt' if args.inf_auto_find_chkpt else 'inf_model': \
                 args.inf_auto_find_chkpt if args.inf_auto_find_chkpt else args.inf_model,

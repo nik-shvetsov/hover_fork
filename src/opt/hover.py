@@ -56,9 +56,6 @@ np_hv = {
     'loss_term' : {'bce' : 1, 'dice' : 1, 'mse' : 2, 'msge' : 1},
 
     'optimizer'           : tf.train.AdamOptimizer,
-
-    'inf_auto_metric'   : 'valid_dice',
-    'inf_auto_comparator' : '>',
     'inf_batch_size' : 16,
 }
 
@@ -106,8 +103,6 @@ np_hv_opt = {
 
     'optimizer'           : tf.train.AdamOptimizer,
 
-    'inf_auto_metric'   : 'valid_dice',
-    'inf_auto_comparator' : '>',
     'inf_batch_size' : 16,
 }
 

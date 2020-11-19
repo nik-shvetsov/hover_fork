@@ -212,7 +212,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', help="mode to run the measurement,"
                                 "`type` for nuclei instance type classification or"
-                                "`instance` for nuclei instance segmentation", default='instance')
+                                "`instance` for nuclei instance segmentation", default='instance', choices=['type', 'instance'])
     parser.add_argument('--pred_dir', help="Point to output dir", required=True)
     parser.add_argument('--true_dir', help="Point to ground truth dir", required=True)
 

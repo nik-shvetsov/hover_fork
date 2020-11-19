@@ -22,6 +22,7 @@ python create_config.py \
     --input_augs p_linear \
     --data_modes train,test \
     --inf_auto_find_chkpt \
+    --inf_auto_metric 'valid_dice_Inflammatory' \
     --inf_data_list data_hv_consep/test/Images/ \
     --remap_labels \
     --outline '' \

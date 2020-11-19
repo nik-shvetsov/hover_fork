@@ -80,10 +80,9 @@ class Config(object):
 
         for variable, value in config_dict.items():
             self.__setattr__(variable, value)
-        #### Training data
 
-        # patches are stored as numpy arrays with N channels
-        # ordering as [Image][Nuclei Pixels][Nuclei Type][Additional Map]
+        # patches are stored as numpy arrays with N channels 
+        # ordering as [Image][Nuclei Pixels][Nuclei Type][Additional Map] - training data
         # Ex: with type_classification=True
         #     HoVer-Net: RGB - Nuclei Pixels - Type Map - Horizontal and Vertical Map
         # Ex: with type_classification=False
@@ -169,6 +168,9 @@ class Config(object):
         self.remap_labels = data_config['remap_labels']
         self.outline = data_config['outline']
         self.skip_types = [self.nuclei_type_dict[x.strip()] for x in data_config['skip_types']] if data_config['skip_types'] != [''] else []
+
+        self.inf_auto_metric = data_config['inf_auto_metric']
+        self.inf_auto_comparator = data_config['inf_auto_comparator']
 
         # For inference during evalutaion mode i.e run by inferer.py
         self.eval_inf_input_tensor_names = ['images']
