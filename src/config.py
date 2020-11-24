@@ -181,9 +181,9 @@ class Config(object):
         assert data_config['input_augs'] != '' or data_config['input_augs'] is not None
 
         #### Policies
-        
-        p_standard = [
-            imgaug.RandomApplyAug(
+        policies = {
+            'p_standard': [
+                imgaug.RandomApplyAug(
                 imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
@@ -197,10 +197,9 @@ class Config(object):
                 imgaug.Contrast((0.75, 1.25), clip=True),
                 ]),
             imgaug.ToUint8(),
-        ]
-
-        p_hed_random = [
-            imgaug.RandomApplyAug(
+            ], 
+            'p_hed_random': [
+                imgaug.RandomApplyAug(
                 imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
@@ -220,11 +219,10 @@ class Config(object):
                 imgaug.Contrast((0.75, 1.25), clip=True),
                 ]),
             imgaug.ToUint8(),
-        ]
-
-        p_linear = [
-            linearAugmentation(),
-            imgaug.RandomApplyAug(
+            ], 
+            'p_linear': [
+                linearAugmentation(),
+                imgaug.RandomApplyAug(
                 imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
@@ -238,33 +236,31 @@ class Config(object):
                 imgaug.Contrast((0.75, 1.25), clip=True),
                 ]),
             imgaug.ToUint8(),
-        ]
-
-        p_linear_plus = [
-            linearAugmentation(),
-            imgaug.RandomApplyAug(
+            ], 
+            'p_linear_wo_color': [
+                linearAugmentation(),
+                imgaug.RandomApplyAug(
                 imgaug.RandomChooseAug([
                     GaussianBlur(),
                     MedianBlur(),
                     imgaug.GaussianNoise(),
                 ]), 0.5
             ),
-            imgaug.RandomOrderAug([
-                imgaug.Hue((-4, 4), rgb=True), 
-                imgaug.Saturation(0.2, rgb=True),
-                imgaug.Brightness(26, clip=True),  
-                imgaug.Contrast((0.75, 1.25), clip=True),
-                ]),
+            # imgaug.RandomOrderAug([
+            #     imgaug.Hue((-4, 4), rgb=True), 
+            #     imgaug.Saturation(0.2, rgb=True),
+            #     imgaug.Brightness(26, clip=True),  
+            #     imgaug.Contrast((0.75, 1.25), clip=True),
+            #     ]),
             imgaug.ToUint8(),
-        ]
+            ]
+        }
 
-        policies = {'p_standard': p_standard, 'p_hed_random': p_hed_random, 'p_linear': p_linear, 'p_linear_plus': p_linear_plus}
         self.input_augs = policies[(data_config['input_augs'])]
 
         # Checks
         print("--------")
         print("Config info:")
-        print()
         print("--------")
         print(f"Log path: <{self.log_path}>")
         print(f"Extraction out dirs: <{self.out_extract}>")
