@@ -1,7 +1,7 @@
 import argparse
 import yaml
 
-info = {
+info_types = {
 'nuclei_types_hv_consep': {
     'Misc': 1,
     'Inflammatory': 2,
@@ -16,14 +16,19 @@ info = {
     'Neoplastic cells': 5
 }}
 
+model_types = {
+    'hv_consep': 'np_hv',
+    'hv_pannuke': 'np_hv_opt'
+}
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--profile', required=True, choices=['hv_consep', 'hv_pannuke'])
     parser.add_argument('--data_dir', required=True)
-    parser.add_argument('--model_type', required=True, choices=['np_hv', 'np_hv_opt'])
+    # parser.add_argument('--model_type', required=True, choices=['np_hv', 'np_hv_opt'])
     parser.add_argument('--preproc', default=False, action='store_true')
     parser.add_argument('--step_size', help='80 if consep, 164 if pannuke', required=True)
-    parser.add_argument('--win_size', help='540 if consep, 256 if pannuke', required=True)
+    parser.add_argument('--win_size', help='540 if consep, 512 if pannuke', required=True)
     
 
     parser.add_argument('--inf_auto_find_chkpt', action='store_true')
@@ -69,7 +74,7 @@ if __name__ == '__main__':
         f'{args.profile}': # H_PROFILE
         {   
             'mode': 'hover',
-            'model_type': args.model_type,
+            'model_type': model_types[args.profile],
             'seed': 10,
             'type_classification': True,
 
@@ -93,7 +98,7 @@ if __name__ == '__main__':
             'data_modes': args.data_modes.split(','),
             'step_size': [int(args.step_size), int(args.step_size)],
             'win_size': [int(args.win_size), int(args.win_size)],
-            'nuclei_types': info[f'nuclei_types_{args.profile}'],
+            'nuclei_types': info_types[f'nuclei_types_{args.profile}'],
             # 'data_ext': args.data_ext,
             'input_norm': args.input_norm,
             'input_augs': args.input_augs,

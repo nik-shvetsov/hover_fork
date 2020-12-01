@@ -1,12 +1,12 @@
-export H_PROFILE=hv_consep
+profile=consep
+export H_PROFILE=hv_${profile}
 
 python create_config.py \
     --profile $H_PROFILE \
-    --model_type np_hv \
     --id 1.0 \
     --input_prefix /data/input/ \
     --output_prefix /data/output/ \
-    --data_dir data_hv_consep/ \
+    --data_dir data_hv_${profile}/ \
     --train_dir train/Annotations \
     --valid_dir test/Annotations \
     --preproc \
@@ -23,10 +23,10 @@ python create_config.py \
     --data_modes train,test \
     --inf_auto_find_chkpt \
     --inf_auto_metric 'valid_dice_Inflammatory' \
-    --inf_data_list data_hv_consep/test/Images/ \
+    --inf_data_list data_hv_${profile}/test/Images/ \
     --remap_labels \
     --outline '' \
     --skip_types 'Misc,Spindle'
 
 # --inf_auto_find_chkpt \
-# --inf_model dm_hv_class_consep.npz \
+# --inf_model dm_hv_class_${profile}.npz \
