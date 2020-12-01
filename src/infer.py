@@ -131,9 +131,9 @@ class Inferer(Config):
         return pred_map
 
     ####
-    def run(self, save_only):
+    def run(self, save_only): 
         if self.inf_auto_find_chkpt:
-            self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in os.listdir(self.save_dir)])))
+            self.inf_model_path = os.path.join(self.save_dir, str(max([int(x) for x in filter(os.path.isdir, os.listdir(self.save_dir))])))
             print(f"Inference model path: <{self.inf_model_path}>")
             print('-----Auto Selecting Checkpoint Basing On "%s" Through "%s" Comparison' % \
                         (self.inf_auto_metric, self.inf_auto_comparator))
