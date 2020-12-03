@@ -143,6 +143,11 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
         fp_fn_dt -= ignore
 
     acc_type = tp_tn_dt / (tp_tn_dt + fp_fn_dt)
+
+    # precision/recall
+    precision = tp_d / (tp_d + w[0] * fp_d)
+    recall = tp_d / (tp_d + w[0] * fn_d)
+
     f1_d = 2 * tp_d / (2 * tp_d + w[0] * fp_d + w[1] * fn_d)
 
     w = [2, 2, 1, 1]
@@ -150,7 +155,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
     if type_uid_list is None:
         type_uid_list = np.unique(true_inst_type_all).tolist()
 
-    results_list = [f1_d, acc_type]
+    results_list = [f1_d, acc_type, precision, recall]
     for type_uid in type_uid_list:
         f1_type = _f1_type(paired_true_type, paired_pred_type, 
                         unpaired_true_type, unpaired_pred_type, type_uid, w)
@@ -159,7 +164,7 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
     np.set_printoptions(formatter={'float': '{: 0.5f}'.format})
 
     types = [f'{k}_{v}' for k,v in nuclei_type_dict.items()]
-    for k,v in zip(('f1_d', 'accuracy_type', *types), np.array(results_list)):
+    for k,v in zip(('f1_d', 'accuracy_type', 'precision', 'recall', *types), np.array(results_list)):
         print (f"{k}: {v}")
     return
 
