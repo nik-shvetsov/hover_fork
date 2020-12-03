@@ -15,7 +15,7 @@ from loader.augs import (BinarizeLabel, GaussianBlur, GenInstanceDistance,
                          eqRGB2HED, eqHistCV, pipeHEDAugment, linearAugmentation)
 ####
 class Config(object):
-    def __init__(self, ):
+    def __init__(self, verbose=True):
         self.model_config = os.environ['H_PROFILE'] if 'H_PROFILE' in os.environ else ''
         data_config = defaultdict(lambda: None, yaml.load(open('config.yml'), Loader=yaml.FullLoader)[self.model_config])
 
@@ -259,26 +259,27 @@ class Config(object):
         self.input_augs = policies[(data_config['input_augs'])]
 
         # Checks
-        print("--------")
-        print("Config info:")
-        print("--------")
-        print(f"Log path: <{self.log_path}>")
-        print(f"Extraction out dirs: <{self.out_extract}>")
-        print("--------")
-        print("Training")
-        print(f"Model name: <{self.model_name}>")
-        print(f"Input img dirs: <{self.img_dirs}>")
-        print(f"Input labels dirs: <{self.labels_dirs}>")
-        print(f"Train out dir: <{self.save_dir}>")
-        print("--------")
-        print("Inference")
-        print(f"Auto-find trained model: <{self.inf_auto_find_chkpt}>")
-        print(f"Inference model path dir: <{self.inf_model_path}>")
-        print(f"Input inference path: <{self.inf_data_list}>")
-        print(f"Output inference path: <{self.inf_output_dir}>")
-        print(f"Model export out: <{self.model_export_dir}>")
-        print("--------")
-        print()
+        if verbose:
+            print("--------")
+            print("Config info:")
+            print("--------")
+            print(f"Log path: <{self.log_path}>")
+            print(f"Extraction out dirs: <{self.out_extract}>")
+            print("--------")
+            print("Training")
+            print(f"Model name: <{self.model_name}>")
+            print(f"Input img dirs: <{self.img_dirs}>")
+            print(f"Input labels dirs: <{self.labels_dirs}>")
+            print(f"Train out dir: <{self.save_dir}>")
+            print("--------")
+            print("Inference")
+            print(f"Auto-find trained model: <{self.inf_auto_find_chkpt}>")
+            print(f"Inference model path dir: <{self.inf_model_path}>")
+            print(f"Input inference path: <{self.inf_data_list}>")
+            print(f"Output inference path: <{self.inf_output_dir}>")
+            print(f"Model export out: <{self.model_export_dir}>")
+            print("--------")
+            print()
         ####
 
     def get_model(self):

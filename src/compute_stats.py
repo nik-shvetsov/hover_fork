@@ -163,9 +163,11 @@ def run_nuclei_type_stat(pred_dir, true_dir, nuclei_type_dict, type_uid_list=Non
 
     np.set_printoptions(formatter={'float': '{: 0.5f}'.format})
 
-    types = [f'{k}_{v}' for k,v in nuclei_type_dict.items()]
+    types = sorted([f'{v}_{k}' for k,v in nuclei_type_dict.items()])
+    print (types)
     for k,v in zip(('f1_d', 'accuracy_type', 'precision', 'recall', *types), np.array(results_list)):
         print (f"{k}: {v}")
+    print ()
     return
 
 
@@ -208,12 +210,13 @@ def run_nuclei_inst_stat(pred_dir, true_dir, print_img_stats=False):
     metrics = np.array(metrics)
     metrics_avg = np.mean(metrics, axis=-1)
     np.set_printoptions(formatter={'float': '{: 0.5f}'.format})
-    print(metrics_avg)
+    for entry in list(zip(['dice', 'fast_aji', 'dq', 'pq', 'sq', 'aji_plus'], metrics_avg)):
+        print (f"{entry[0]}: {entry[1]}")
     metrics_avg = list(metrics_avg)
     return metrics
 
 if __name__ == '__main__':
-    cfg = Config()
+    cfg = Config(verbose=False)
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', help="mode to run the measurement,"
                                 "`type` for nuclei instance type classification or"
