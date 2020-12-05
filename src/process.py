@@ -120,6 +120,12 @@ def process(parallel):
                     pred_inst_type[idx] = inst_type
                 pred_inst_centroid = get_inst_centroid(pred_inst)
 
+
+                ###### ad hoc just once for pannuke predictions
+                # for key in ['type_map', 'inst_type']:
+                # pred_type[(pred_type == 5)] = 4
+                # pred_inst_type[(pred_inst_type == 5)] = 4
+
                 sio.savemat(os.path.join(proc_dir, '{}.mat'.format(basename)),
                             {'inst_map'  :     pred_inst,
                             'type_map'  :     pred_type,

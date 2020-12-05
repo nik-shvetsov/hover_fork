@@ -32,16 +32,23 @@ def get_best_chkpts(path, metric_name, comparator='>'):
     Args:
         path: directory contains all checkpoints, including the "stats.json" file
     """
+    # info = []
+    # for stat_file in glob.glob(f"{path}/*/*.json"):
+    #     print (stat_file)
+    #     stat = json.load(stat_file)
+    #     info.append(stat)
+    # print (info)
+
     stat_file = os.path.join(path, 'stats.json')
+    with open(stat_file) as f:
+        info = json.load(f)
+
     ops = {
             '>': operator.gt,
             '<': operator.lt,
           }
-
     op_func = ops[comparator]
-    with open(stat_file) as f:
-        info = json.load(f)
-
+    
     if comparator == '>':
         best_value  = -float("inf")
     else:

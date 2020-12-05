@@ -470,7 +470,7 @@ class linearAugmentation(ImageAugmentor):
 
     def _augment(self, img, s):
         alpha = [0.95, 1.05]
-        bias = [-0.05,  0.05]
+        bias = [-0.01,  0.01] # -0.05,  0.05
         hed_img = rgb2hed(img)
         for channel in range(3):
             hed_img[..., channel] *= random.choice(np.arange(alpha[0], alpha[1], 0.01))

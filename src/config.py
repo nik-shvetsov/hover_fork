@@ -163,13 +163,13 @@ class Config(object):
         
         model_used = self.model_name if self.inf_auto_find_chkpt else f"{data_config['inf_model'].split('.')[0]}"
 
-        self.inf_output_dir = os.path.join(self.out_infer_root, f"{model_used}.{''.join(data_config['inf_data_list']).replace('/', '_').rstrip('_')}")
+        self.inf_auto_metric = data_config['inf_auto_metric']
+        self.inf_output_dir = os.path.join(self.out_infer_root, f"{model_used}.{''.join(data_config['inf_data_list']).replace('/', '_').rstrip('_')}.{self.inf_auto_metric}")
         self.model_export_dir = os.path.join(self.out_export_root, self.model_name)
         self.remap_labels = data_config['remap_labels']
         self.outline = data_config['outline']
         self.skip_types = [self.nuclei_type_dict[x.strip()] for x in data_config['skip_types']] if data_config['skip_types'] != [''] else []
 
-        self.inf_auto_metric = data_config['inf_auto_metric']
         self.inf_auto_comparator = data_config['inf_auto_comparator']
 
         # For inference during evalutaion mode i.e run by inferer.py
@@ -220,38 +220,51 @@ class Config(object):
                 ]),
             imgaug.ToUint8(),
             ], 
-            'p_linear': [
-                linearAugmentation(),
+            'p_linear_1': [
                 imgaug.RandomApplyAug(
-                imgaug.RandomChooseAug([
-                    GaussianBlur(),
-                    MedianBlur(),
-                    imgaug.GaussianNoise(),
-                ]), 0.5
-            ),
-            imgaug.RandomOrderAug([
-                imgaug.Hue((-8, 8), rgb=True), 
-                imgaug.Saturation(0.2, rgb=True),
-                imgaug.Brightness(26, clip=True),  
-                imgaug.Contrast((0.75, 1.25), clip=True),
+                    imgaug.RandomChooseAug([
+                        GaussianBlur(),
+                        MedianBlur(),
+                        imgaug.GaussianNoise(),
+                    ]), 0.5
+                ),
+                linearAugmentation(),
+                imgaug.ToUint8(),
+            ], 
+            'p_linear_2': [
+                imgaug.RandomApplyAug(
+                    imgaug.RandomChooseAug([
+                        GaussianBlur(),
+                        MedianBlur(),
+                        imgaug.GaussianNoise(),
+                    ]), 0.5
+                ),
+                linearAugmentation(),
+                imgaug.RandomOrderAug([
+                    imgaug.Hue((-8, 8), rgb=True), 
+                    imgaug.Saturation(0.2, rgb=True),
+                    imgaug.Brightness(26, clip=True),  
+                    imgaug.Contrast((0.8, 1.20), clip=True), # 0.75, 1.25
                 ]),
             imgaug.ToUint8(),
-            ], 
-            'p_linear_wo_color': [
-                linearAugmentation(),
+            ],
+            'p_linear_3': [
                 imgaug.RandomApplyAug(
+                    imgaug.RandomChooseAug([
+                        GaussianBlur(),
+                        MedianBlur(),
+                        imgaug.GaussianNoise(),
+                    ]), 0.5
+                ),
                 imgaug.RandomChooseAug([
-                    GaussianBlur(),
-                    MedianBlur(),
-                    imgaug.GaussianNoise(),
-                ]), 0.5
-            ),
-            # imgaug.RandomOrderAug([
-            #     imgaug.Hue((-4, 4), rgb=True), 
-            #     imgaug.Saturation(0.2, rgb=True),
-            #     imgaug.Brightness(26, clip=True),  
-            #     imgaug.Contrast((0.75, 1.25), clip=True),
-            #     ]),
+                    linearAugmentation(),
+                    imgaug.RandomOrderAug([
+                        imgaug.Hue((-5, 5), rgb=True), 
+                        imgaug.Saturation(0.2, rgb=True),
+                        imgaug.Brightness(26, clip=True),  
+                        imgaug.Contrast((0.5, 1.5), clip=True), # 0.75, 1.25
+                    ])
+                ]),
             imgaug.ToUint8(),
             ]
         }
